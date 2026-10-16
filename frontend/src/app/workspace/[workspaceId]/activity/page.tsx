@@ -108,6 +108,14 @@ export default function WorkspaceActivityPage({
         return <Mail className="h-4 w-4 text-amber-400" />;
       case 'workspace':
         return <ShieldCheck className="h-4 w-4 text-sky-400" />;
+      case 'slack_installation':
+      case 'slack_mapping':
+      case 'slack':
+        return (
+          <svg className="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/>
+          </svg>
+        );
       default:
         return <Activity className="h-4 w-4 text-zinc-400" />;
     }
@@ -115,17 +123,23 @@ export default function WorkspaceActivityPage({
 
   const formatEventSummary = (act: ActivityItem) => {
     const meta = (act.metadata && typeof act.metadata === 'object' && !Array.isArray(act.metadata) ? act.metadata : {}) as Record<string, any>;
-    const actorName = act.actor?.display_name || 'System';
+    const isSlack = meta.source === 'slack' || meta.origin === 'slack';
 
     switch (act.event_type) {
       case 'created':
-        if (act.entity_type === 'task') return `created task "${meta.title || 'Untitled'}"`;
+        if (act.entity_type === 'task') {
+          return isSlack
+            ? `created task "${meta.title || 'Untitled'}" via Slack bot`
+            : `created task "${meta.title || 'Untitled'}"`;
+        }
         if (act.entity_type === 'project') return `created project "${meta.name || 'Untitled'}"`;
         if (act.entity_type === 'workspace') return `initialized workspace "${meta.name}"`;
         return `created ${act.entity_type}`;
 
       case 'status_changed':
-        return `changed status from "${meta.old_status}" to "${meta.new_status}"`;
+        return isSlack
+          ? `changed status from "${meta.old_status}" to "${meta.new_status}" via Slack`
+          : `changed status from "${meta.old_status}" to "${meta.new_status}"`;
 
       case 'assigned':
         return meta.assignee_id ? `assigned task to member` : `unassigned task`;
@@ -137,7 +151,7 @@ export default function WorkspaceActivityPage({
         return `updated priority to "${meta.priority}"`;
 
       case 'comment_added':
-        return `commented on task`;
+        return isSlack ? `posted progress update from Slack` : `commented on task`;
 
       case 'role_updated':
         return `updated member role to "${meta.new_role}"`;
@@ -153,6 +167,24 @@ export default function WorkspaceActivityPage({
 
       case 'repository_unlinked':
         return `unlinked repository ${meta.repository_url || ''}`;
+
+      case 'slack_connected':
+        return `connected Slack workspace "${meta.team_name || meta.team_id || ''}"`;
+
+      case 'slack_disconnected':
+        return `disconnected Slack workspace integration`;
+
+      case 'slack_identity_linked':
+        return `linked Slack user @${meta.slack_user_id || ''} to TaskPilot member`;
+
+      case 'slack_identity_unlinked':
+        return `unlinked Slack identity`;
+
+      case 'followup_sent':
+        return `sent automated progress follow-up via Slack`;
+
+      case 'followup_responded':
+        return `received progress update via Slack`;
 
       case 'updated':
         return `updated ${act.entity_type} properties`;

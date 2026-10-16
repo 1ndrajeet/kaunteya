@@ -30,6 +30,9 @@ export interface TaskDetailData {
   created_by: string;
   due_date: string | null;
   source: string;
+  slack_channel_id?: string | null;
+  slack_message_ts?: string | null;
+  slack_thread_ts?: string | null;
   created_at: string;
   updated_at: string;
   project?: {
@@ -274,9 +277,21 @@ export function TaskDetailDrawer({
                 {title}
               </h2>
             )}
-            <p className="text-[11px] text-zinc-500 font-mono">
-              Created {new Date(task.created_at).toLocaleDateString()} &bull; Source: {task.source}
-            </p>
+            <div className="flex items-center gap-2 pt-1 flex-wrap">
+              <span className="text-[11px] text-zinc-500 font-mono">
+                Created {new Date(task.created_at).toLocaleDateString()}
+              </span>
+              {task.source === 'slack' ? (
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 flex items-center gap-1">
+                  <MessageSquare className="h-3 w-3" /> Slack Origin
+                  {task.slack_channel_id && ` (${task.slack_channel_id})`}
+                </span>
+              ) : (
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400">
+                  Source: {task.source}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Properties Grid */}

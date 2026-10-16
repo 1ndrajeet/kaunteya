@@ -21,6 +21,7 @@ import {
   Loader2,
   AlertCircle,
   ExternalLink,
+  MessageSquare,
 } from 'lucide-react';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import { WorkspaceContext } from '@/features/workspace/workspace-context';
@@ -199,6 +200,12 @@ export default function WorkspaceLayout({
             href: `${basePath}/admin/team`,
             icon: Users,
             active: pathname.startsWith(`${basePath}/admin/team`),
+          },
+          {
+            label: 'Slack & Integrations',
+            href: `${basePath}/admin/integrations`,
+            icon: MessageSquare,
+            active: pathname.startsWith(`${basePath}/admin/integrations`),
           },
         ]
       : []),

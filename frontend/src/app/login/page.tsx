@@ -181,62 +181,7 @@ function LoginContent() {
           )}
         </div>
 
-        {/* Configuration Setup Guide Accordion */}
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-4 text-xs space-y-3">
-          <div className="flex items-center justify-between text-zinc-300 font-medium">
-            <span className="flex items-center gap-1.5">
-              <Terminal className="h-4 w-4 text-indigo-400" />
-              GitHub OAuth Setup Guide
-            </span>
-            <span
-              className={`text-[10px] px-1.5 py-0.5 rounded ${
-                configured ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
-              }`}
-            >
-              {configured ? 'Configured' : 'Needs Config'}
-            </span>
-          </div>
 
-          <div className="text-zinc-400 space-y-2 text-[11px] leading-relaxed">
-            <p>To connect live GitHub authentication with your Supabase backend:</p>
-            <ol className="list-decimal list-inside space-y-1.5 pl-1 text-zinc-300">
-              <li>
-                In GitHub: Go to <strong>Settings &gt; Developer Settings &gt; OAuth Apps</strong> and create an application.
-              </li>
-              <li>
-                Set Homepage URL: <code className="bg-zinc-800 px-1 py-0.5 rounded text-zinc-200">http://localhost:3000</code>
-              </li>
-              <li>
-                Set Authorization Callback URL to your Supabase project URL:
-                <br />
-                <code className="bg-zinc-800 px-1 py-0.5 rounded text-indigo-300 break-all">
-                  https://&lt;your-project-ref&gt;.supabase.co/auth/v1/callback
-                </code>
-              </li>
-              <li>
-                In Supabase: Go to <strong>Authentication &gt; Providers &gt; GitHub</strong>, enable it, and paste your
-                Client ID and Client Secret.
-              </li>
-              <li>
-                Set <code className="bg-zinc-800 px-1 py-0.5 rounded">NEXT_PUBLIC_SUPABASE_URL</code> and{' '}
-                <code className="bg-zinc-800 px-1 py-0.5 rounded">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> in{' '}
-                <code className="font-mono text-zinc-200">frontend/.env.local</code>.
-              </li>
-            </ol>
-          </div>
-
-          <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-500">
-            <span>Supabase Docs</span>
-            <a
-              href="https://supabase.com/docs/guides/auth/social-login/auth-github"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
-            >
-              Official Guide <ExternalLink className="h-3 w-3" />
-            </a>
-          </div>
-        </div>
       </main>
 
       {/* Simple Footer */}

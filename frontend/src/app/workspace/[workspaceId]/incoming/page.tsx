@@ -12,6 +12,7 @@ import {
   Sparkles,
   Loader2,
   Plus,
+  MessageSquare,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useWorkspace } from '@/features/workspace/workspace-context';
@@ -26,6 +27,8 @@ interface UnassignedTask {
   status: TaskStatus;
   due_date: string | null;
   source: string;
+  slack_channel_id: string | null;
+  slack_message_ts: string | null;
   created_at: string;
   project: {
     id: string;
@@ -51,6 +54,7 @@ export default function IncomingTriagePage({
 
   const [tasks, setTasks] = useState<UnassignedTask[]>([]);
   const [members, setMembers] = useState<MemberOption[]>([]);
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'slack' | 'manual'>('all');
   const [loading, setLoading] = useState<boolean>(true);
   const [assigningId, setAssigningId] = useState<string | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
@@ -71,6 +75,8 @@ export default function IncomingTriagePage({
         status,
         due_date,
         source,
+        slack_channel_id,
+        slack_message_ts,
         created_at,
         project:projects (
           id,
@@ -190,13 +196,34 @@ export default function IncomingTriagePage({
         )}
       </div>
 
+      {/* Source Filter Tabs */}
+      <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-900/60 border border-zinc-800/80 w-fit text-xs">
+        {[
+          { id: 'all', label: `All (${tasks.length})` },
+          { id: 'slack', label: `Slack Intake (${tasks.filter((t) => t.source === 'slack').length})` },
+          { id: 'manual', label: `Manual (${tasks.filter((t) => t.source !== 'slack').length})` },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setSourceFilter(tab.id as any)}
+            className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+              sourceFilter === tab.id
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                : 'text-zinc-400 hover:text-zinc-200'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       {/* Main Content */}
       {loading ? (
         <div className="flex-1 flex flex-col items-center justify-center p-12 text-zinc-500 gap-2 font-mono text-xs">
           <Loader2 className="h-5 w-5 animate-spin text-amber-400" />
           <span>Scanning incoming task queue...</span>
         </div>
-      ) : tasks.length === 0 ? (
+      ) : tasks.filter((t) => sourceFilter === 'all' || (sourceFilter === 'slack' ? t.source === 'slack' : t.source !== 'slack')).length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-12 rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 text-center space-y-3">
           <div className="h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto">
             <CheckCircle2 className="h-6 w-6" />
@@ -217,23 +244,36 @@ export default function IncomingTriagePage({
         </div>
       ) : (
         <div className="space-y-4">
-          {tasks.map((task) => (
+          {tasks
+            .filter(
+              (t) =>
+                sourceFilter === 'all' ||
+                (sourceFilter === 'slack' ? t.source === 'slack' : t.source !== 'slack')
+            )
+            .map((task) => (
             <div
               key={task.id}
               className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/60 hover:border-zinc-700 transition-all space-y-4 shadow-sm"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-zinc-800 text-indigo-400 border border-zinc-700">
                       {task.project?.identifier}-{task.task_number}
                     </span>
                     <span className="text-xs text-zinc-400 font-medium">
                       Project: {task.project?.name || 'Project'}
                     </span>
-                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400">
-                      Source: {task.source}
-                    </span>
+                    {task.source === 'slack' ? (
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 flex items-center gap-1 font-semibold">
+                        <MessageSquare className="h-3 w-3" /> Slack Origin
+                        {task.slack_channel_id && ` (${task.slack_channel_id})`}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400">
+                        Source: {task.source}
+                      </span>
+                    )}
                   </div>
                   <h3 className="text-base font-semibold text-zinc-100">{task.title}</h3>
                 </div>
