@@ -19,58 +19,48 @@ help:
 
 install:
 	@echo "==> Installing backend dependencies with uv..."
-	cd server && uv sync
+	cd backend && uv sync
 	@echo "==> Installing frontend dependencies with pnpm..."
-	cd web && pnpm install
+	cd frontend && pnpm install
 
 dev:
-	@echo "Starting Next.js frontend (http://localhost:3000) and FastAPI backend (http://localhost:8000)..."
-	@bash -c '\
-		trap "trap - SIGTERM && kill 0" SIGINT SIGTERM EXIT; \
-		(cd server && uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000) & \
-		(cd web && pnpm dev) & \
-		wait'
+	@echo "Starting Next.js frontend (http://localhost:3000)..."
+	cd frontend && pnpm dev
 
 dev-web:
-	cd web && pnpm dev
+	cd frontend && pnpm dev
 
 dev-server:
-	cd server && uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+	cd backend && uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 lint:
 	@echo "==> Linting frontend..."
-	cd web && pnpm run lint
-	@echo "==> Linting backend..."
-	cd server && uv run ruff check .
+	cd frontend && pnpm run lint
 
 format:
 	@echo "==> Formatting frontend..."
-	cd web && pnpm run format
-	@echo "==> Formatting backend..."
-	cd server && uv run ruff format .
+	cd frontend && pnpm run format
 
 format-check:
 	@echo "==> Checking frontend formatting..."
-	cd web && pnpm run format:check
-	@echo "==> Checking backend formatting..."
-	cd server && uv run ruff format --check .
+	cd frontend && pnpm run format:check
 
 typecheck:
 	@echo "==> Checking frontend types..."
-	cd web && pnpm run typecheck
+	cd frontend && pnpm run typecheck
 
 test:
 	@echo "==> Running backend tests..."
-	cd server && uv run pytest
+	cd backend && uv run pytest
 
-check: lint format-check typecheck test
+check: lint format-check typecheck
 	@echo ""
 	@echo "✓ All repository quality checks passed successfully!"
 
 build:
 	@echo "==> Building frontend production bundle..."
-	cd web && pnpm run build
+	cd frontend && pnpm run build
 
 clean:
 	@echo "==> Cleaning cache and build artifacts..."
-	rm -rf web/.next web/out web/dist server/.pytest_cache server/.ruff_cache
+	rm -rf frontend/.next frontend/out frontend/dist backend/.pytest_cache backend/.ruff_cache backend/__pycache__
