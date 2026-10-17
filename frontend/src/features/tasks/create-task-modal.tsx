@@ -57,50 +57,56 @@ export function CreateTaskModal({
     const loadData = async () => {
       const supabase = createClient();
 
-      // Fetch projects
+      // Fetch ALL active AND planning projects (not just 'active')
       const { data: projData } = await supabase
         .from('projects')
-        .select('id, name, identifier')
+        .select('id, name, identifier, status')
         .eq('workspace_id', workspaceId)
-        .eq('status', 'active')
+        .in('status', ['planning', 'active', 'at_risk'])
         .order('name');
 
-      if (projData && projData.length > 0) {
+      if (projData) {
         setProjects(projData);
-        if (!projectId && !defaultProjectId) {
-          setProjectId(projData[0].id);
+        // Only auto-select if not already set and no default was provided
+        if (!defaultProjectId) {
+          if (projData.length === 1) {
+            setProjectId(projData[0].id);
+          } else if (projData.length > 0 && !projectId) {
+            setProjectId(projData[0].id);
+          }
+        } else {
+          setProjectId(defaultProjectId);
         }
+      } else {
+        setProjects([]);
       }
 
       // Fetch members
       const { data: memData } = await supabase
         .from('workspace_members')
-        .select(`
-          user_id,
-          role,
-          profiles:user_id (
-            display_name
-          )
-        `)
+        .select(`user_id, role, profiles:user_id ( display_name )`)
         .eq('workspace_id', workspaceId);
 
       if (memData) {
-        const formatted = memData.map((m: any) => ({
-          user_id: m.user_id,
-          role: m.role,
-          display_name: m.profiles?.display_name || m.user_id.slice(0, 8),
-        }));
-        setMembers(formatted);
+        setMembers(
+          memData.map((m: any) => ({
+            user_id: m.user_id,
+            role: m.role,
+            display_name: m.profiles?.display_name || m.user_id.slice(0, 8),
+          }))
+        );
       }
     };
 
     loadData();
-  }, [isOpen, workspaceId, defaultProjectId, projectId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, workspaceId, defaultProjectId]);
 
   // Load project teams when project changes
   useEffect(() => {
     if (!projectId) {
       setProjectTeams([]);
+      setTeamId('');
       return;
     }
     const loadTeams = async () => {
@@ -112,9 +118,10 @@ export function CreateTaskModal({
         .order('name');
       if (data) {
         setProjectTeams(data);
-        if (data.length > 0 && !teamId) {
-          setTeamId(data[0].id);
-        }
+        setTeamId(data[0]?.id || '');
+      } else {
+        setProjectTeams([]);
+        setTeamId('');
       }
     };
     loadTeams();
@@ -321,22 +328,20 @@ export function CreateTaskModal({
                 <button
                   type="button"
                   onClick={() => setAssignmentType('individual')}
-                  className={`flex-1 py-1 rounded transition-colors ${
-                    assignmentType === 'individual'
-                      ? 'bg-zinc-800 text-zinc-100 font-semibold'
-                      : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
+                  className={`flex-1 py-1 rounded transition-colors ${assignmentType === 'individual'
+                    ? 'bg-zinc-800 text-zinc-100 font-semibold'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                    }`}
                 >
                   Member
                 </button>
                 <button
                   type="button"
                   onClick={() => setAssignmentType('team')}
-                  className={`flex-1 py-1 rounded transition-colors ${
-                    assignmentType === 'team'
-                      ? 'bg-zinc-800 text-zinc-100 font-semibold'
-                      : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
+                  className={`flex-1 py-1 rounded transition-colors ${assignmentType === 'team'
+                    ? 'bg-zinc-800 text-zinc-100 font-semibold'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                    }`}
                 >
                   Team
                 </button>

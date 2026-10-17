@@ -256,15 +256,15 @@ export default function ProjectDetailPage({
   const [isRegeneratingAI, setIsRegeneratingAI] = useState<boolean>(false);
   const [syncFeedback, setSyncFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-const fetchProjectData = async () => {
-  setLoading(true);
-  const supabase = createClient();
+  const fetchProjectData = async () => {
+    setLoading(true);
+    const supabase = createClient();
 
-  try {
-    // 1. Project + lead + BOTH repo tables
-    const { data: rawProjData, error: projError } = await supabase
-      .from('projects')
-      .select(`
+    try {
+      // 1. Project + lead + BOTH repo tables
+      const { data: rawProjData, error: projError } = await supabase
+        .from('projects')
+        .select(`
         id,
         name,
         identifier,
@@ -300,40 +300,40 @@ const fetchProjectData = async () => {
           description
         )
       `)
-      .eq('id', projectId)
-      .eq('workspace_id', workspaceId)
-      .single();
+        .eq('id', projectId)
+        .eq('workspace_id', workspaceId)
+        .single();
 
-    const projData = rawProjData as unknown as ProjectDetail | null;
+      const projData = rawProjData as unknown as ProjectDetail | null;
 
-    if (projError || !projData) {
-      console.error('[ProjectDetail] project fetch failed:', projError);
-      setLoading(false);
-      return;
-    }
+      if (projError || !projData) {
+        console.error('[ProjectDetail] project fetch failed:', projError);
+        setLoading(false);
+        return;
+      }
 
-    setEditName(projData.name);
-    setEditDescription(projData.description || '');
-    setEditStatus(projData.status as ProjectStatus);
-    setEditLeadId((projData as any).lead?.id || '');
-    setEditTargetDate(projData.target_date || '');
+      setEditName(projData.name);
+      setEditDescription(projData.description || '');
+      setEditStatus(projData.status as ProjectStatus);
+      setEditLeadId((projData as any).lead?.id || '');
+      setEditTargetDate(projData.target_date || '');
 
-    // 2. Tasks
-    const { data: taskData } = await supabase
-      .from('tasks')
-      .select(`
+      // 2. Tasks
+      const { data: taskData } = await supabase
+        .from('tasks')
+        .select(`
         *,
         assignee:profiles!tasks_assignee_id_fkey (id, display_name, avatar_url),
         project:projects!tasks_project_id_fkey (id, name, identifier)
       `)
-      .eq('project_id', projectId)
-      .order('task_number', { ascending: false });
-    if (taskData) setTasks(taskData as unknown as ProjectTaskItem[]);
+        .eq('project_id', projectId)
+        .order('task_number', { ascending: false });
+      if (taskData) setTasks(taskData as unknown as ProjectTaskItem[]);
 
-    // 3. Teams + members
-    const { data: teamData } = await supabase
-      .from('teams')
-      .select(`
+      // 3. Teams + members
+      const { data: teamData } = await supabase
+        .from('teams')
+        .select(`
         id, workspace_id, project_id, name, slug, description, lead_id, status, created_at,
         lead:profiles!teams_lead_id_fkey (id, display_name, avatar_url),
         team_members (
@@ -341,121 +341,121 @@ const fetchProjectData = async () => {
           profiles:user_id (id, display_name, email, avatar_url)
         )
       `)
-      .eq('project_id', projectId)
-      .order('name', { ascending: true });
-    if (teamData) setTeams(teamData as unknown as TeamItem[]);
+        .eq('project_id', projectId)
+        .order('name', { ascending: true });
+      if (teamData) setTeams(teamData as unknown as TeamItem[]);
 
-    // 4. Project members
-    const { data: pMemData } = await supabase
-      .from('project_members')
-      .select(`
+      // 4. Project members
+      const { data: pMemData } = await supabase
+        .from('project_members')
+        .select(`
         id, project_id, user_id, role, joined_at,
         profiles:user_id (id, display_name, email, avatar_url)
       `)
-      .eq('project_id', projectId)
-      .order('joined_at', { ascending: true });
-    if (pMemData) setProjectMembers(pMemData as unknown as ProjectMemberItem[]);
+        .eq('project_id', projectId)
+        .order('joined_at', { ascending: true });
+      if (pMemData) setProjectMembers(pMemData as unknown as ProjectMemberItem[]);
 
-    // 5. Workspace members (lead selectors)
-    const { data: wsMemData } = await supabase
-      .from('workspace_members')
-      .select(`user_id, role, profiles:user_id ( display_name )`)
-      .eq('workspace_id', workspaceId);
-    if (wsMemData) {
-      setWorkspaceMembers(
-        wsMemData.map((m: any) => ({
-          user_id: m.user_id,
-          role: m.role,
-          display_name: m.profiles?.display_name || m.user_id.slice(0, 8),
-        })),
-      );
-    }
+      // 5. Workspace members (lead selectors)
+      const { data: wsMemData } = await supabase
+        .from('workspace_members')
+        .select(`user_id, role, profiles:user_id ( display_name )`)
+        .eq('workspace_id', workspaceId);
+      if (wsMemData) {
+        setWorkspaceMembers(
+          wsMemData.map((m: any) => ({
+            user_id: m.user_id,
+            role: m.role,
+            display_name: m.profiles?.display_name || m.user_id.slice(0, 8),
+          })),
+        );
+      }
 
-    // 6. Activity (safe project and team scoped filter)
-    const { data: actData } = await supabase
-      .from('activity_events')
-      .select(`
+      // 6. Activity (safe project and team scoped filter)
+      const { data: actData } = await supabase
+        .from('activity_events')
+        .select(`
         id, actor_id, entity_type, entity_id, event_type, metadata, created_at,
         profiles:actor_id ( display_name )
       `)
-      .eq('workspace_id', workspaceId)
-      .or(`entity_id.eq.${projectId},metadata->>project_id.eq.${projectId}`)
-      .order('created_at', { ascending: false })
-      .limit(20);
-    if (actData) setProjectActivities(actData as unknown as ActivityEventItem[]);
+        .eq('workspace_id', workspaceId)
+        .or(`entity_id.eq.${projectId},metadata->>project_id.eq.${projectId}`)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      if (actData) setProjectActivities(actData as unknown as ActivityEventItem[]);
 
-    // 7. GitHub repo + contributors + artifacts + AI
-    const { data: gRepo } = await supabase
-      .from('github_repositories')
-      .select('*')
-      .eq('project_id', projectId)
-      .maybeSingle();
-
-    const linkedRepo = (gRepo || (projData.github_repositories && projData.github_repositories[0]) || null) as GithubRepositoryItem | null;
-
-    if (linkedRepo) {
-      setGithubRepo(linkedRepo);
-
-      const { data: contribs } = await supabase
-        .from('github_repository_contributors')
-        .select('*, profiles:taskpilot_user_id(display_name, email)')
-        .eq('repository_id', linkedRepo.id)
-        .order('contributions_count', { ascending: false });
-      if (contribs) setContributors(contribs);
-
-      const { data: artifacts } = await supabase
-        .from('evidence_artifacts')
-        .select('*')
-        .eq('repository_id', linkedRepo.id)
-        .order('last_sync_at', { ascending: false })
-        .limit(50);
-      if (artifacts) setEvidenceArtifacts(artifacts);
-
-      const { data: aiCtx } = await supabase
-        .from('project_ai_contexts')
+      // 7. GitHub repo + contributors + artifacts + AI
+      const { data: gRepo } = await supabase
+        .from('github_repositories')
         .select('*')
         .eq('project_id', projectId)
-        .eq('task_name', 'project.repository_context')
-        .order('created_at', { ascending: false })
-        .limit(1)
         .maybeSingle();
 
-      if (aiCtx) {
-        setAiContext(aiCtx.structured_output as any);
-        setAiContextStatus(aiCtx.status);
-        setAiAnalyzedAt(aiCtx.analyzed_at || aiCtx.created_at);
-        setAiModelId(aiCtx.model_id);
+      const linkedRepo = (gRepo || (projData.github_repositories && projData.github_repositories[0]) || null) as GithubRepositoryItem | null;
+
+      if (linkedRepo) {
+        setGithubRepo(linkedRepo);
+
+        const { data: contribs } = await supabase
+          .from('github_repository_contributors')
+          .select('*, profiles:taskpilot_user_id(display_name, email)')
+          .eq('repository_id', linkedRepo.id)
+          .order('contributions_count', { ascending: false });
+        if (contribs) setContributors(contribs);
+
+        const { data: artifacts } = await supabase
+          .from('evidence_artifacts')
+          .select('*')
+          .eq('repository_id', linkedRepo.id)
+          .order('last_sync_at', { ascending: false })
+          .limit(50);
+        if (artifacts) setEvidenceArtifacts(artifacts);
+
+        const { data: aiCtx } = await supabase
+          .from('project_ai_contexts')
+          .select('*')
+          .eq('project_id', projectId)
+          .eq('task_name', 'project.repository_context')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (aiCtx) {
+          setAiContext(aiCtx.structured_output as any);
+          setAiContextStatus(aiCtx.status);
+          setAiAnalyzedAt(aiCtx.analyzed_at || aiCtx.created_at);
+          setAiModelId(aiCtx.model_id);
+        }
+      } else {
+        setGithubRepo(null);
+        setContributors([]);
+        setEvidenceArtifacts([]);
+        setAiContext(null);
+        setAiContextStatus('none');
       }
-    } else {
-      setGithubRepo(null);
-      setContributors([]);
-      setEvidenceArtifacts([]);
-      setAiContext(null);
-      setAiContextStatus('none');
+
+      setProject({
+        ...projData,
+        github_repositories: linkedRepo ? [linkedRepo] : (projData.github_repositories || []),
+      });
+
+      // 8. Available workspace repositories for linking (project_id IS NULL)
+      const { data: availRepos } = await supabase
+        .from('github_repositories')
+        .select('*')
+        .eq('workspace_id', workspaceId)
+        .is('project_id', null)
+        .order('full_name', { ascending: true });
+
+      if (availRepos) {
+        setAvailableRepos(availRepos as unknown as GithubRepositoryItem[]);
+      }
+    } catch (err) {
+      console.error('Failed to load project details:', err);
+    } finally {
+      setLoading(false);
     }
-
-    setProject({
-      ...projData,
-      github_repositories: linkedRepo ? [linkedRepo] : (projData.github_repositories || []),
-    });
-
-    // 8. Available workspace repositories for linking (project_id IS NULL)
-    const { data: availRepos } = await supabase
-      .from('github_repositories')
-      .select('*')
-      .eq('workspace_id', workspaceId)
-      .is('project_id', null)
-      .order('full_name', { ascending: true });
-
-    if (availRepos) {
-      setAvailableRepos(availRepos as unknown as GithubRepositoryItem[]);
-    }
-  } catch (err) {
-    console.error('Failed to load project details:', err);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
   useEffect(() => {
     fetchProjectData();
   }, [workspaceId, projectId]);
@@ -640,7 +640,7 @@ const fetchProjectData = async () => {
 
     try {
       const cleanPath = repoUrl.trim().replace(/^https:\/\/github\.com\//i, '').replace(/\/$/, '');
-      
+
       // Check if this workspace has an authorized github_repositories row matching full_name
       const { data: matchingGhRepo } = await supabase
         .from('github_repositories')
@@ -1332,8 +1332,8 @@ const fetchProjectData = async () => {
                       Frameworks &amp; Major Tools
                     </span>
                     <div className="flex flex-wrap gap-1.5">
-                      {aiContext.frameworksAndTools.length > 0 ? (
-                        aiContext.frameworksAndTools.map((tool, idx) => (
+                      {aiContext.frameworksAndTools?.length > 0 ? (
+                        aiContext.frameworksAndTools?.map((tool, idx) => (
                           <span
                             key={idx}
                             className="font-mono text-[11px] px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700/60"
@@ -1352,8 +1352,8 @@ const fetchProjectData = async () => {
                       Architecture Characteristics
                     </span>
                     <ul className="space-y-1">
-                      {aiContext.architectureHints.length > 0 ? (
-                        aiContext.architectureHints.map((hint, idx) => (
+                      {aiContext.architectureHints?.length > 0 ? (
+                        aiContext.architectureHints?.map((hint, idx) => (
                           <li key={idx} className="text-zinc-300 text-[11px] flex items-start gap-1.5">
                             <span className="text-indigo-400">&bull;</span> {hint}
                           </li>
@@ -1378,13 +1378,13 @@ const fetchProjectData = async () => {
                 )}
 
                 {/* Blockers or Failed Checks Alert (if present) */}
-                {aiContext.notableBlockersOrFailedChecks && aiContext.notableBlockersOrFailedChecks.length > 0 && (
+                {aiContext.notableBlockersOrFailedChecks && aiContext.notableBlockersOrFailedChecks?.length > 0 && (
                   <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 space-y-1">
                     <span className="font-mono text-[10px] uppercase font-bold flex items-center gap-1.5 text-rose-400">
                       <AlertTriangle className="h-3.5 w-3.5" /> Notable Blockers &amp; Failing Checks
                     </span>
                     <ul className="space-y-0.5 pl-4 list-disc text-[11px]">
-                      {aiContext.notableBlockersOrFailedChecks.map((b, idx) => (
+                      {aiContext.notableBlockersOrFailedChecks?.map((b, idx) => (
                         <li key={idx}>{b}</li>
                       ))}
                     </ul>
@@ -1392,10 +1392,10 @@ const fetchProjectData = async () => {
                 )}
 
                 {/* Confidence & Evidence References Footer */}
-                {aiContext.confidenceNotes && aiContext.confidenceNotes.length > 0 && (
+                {aiContext.confidenceNotes && aiContext.confidenceNotes?.length > 0 && (
                   <div className="pt-2 text-[10px] text-zinc-500 font-mono space-y-1">
                     <span className="text-zinc-400 font-semibold">Confidence Notes:</span>
-                    <p>{aiContext.confidenceNotes.join(' • ')}</p>
+                    <p>{aiContext.confidenceNotes?.join(' • ')}</p>
                   </div>
                 )}
               </div>
@@ -1793,7 +1793,7 @@ const fetchProjectData = async () => {
                         <button
                           onClick={() => {
                             setAddingToTeamId(team.id);
-                            setSelectedMemberToAdd(projectMembers[0]?.user_id || '');
+                            setSelectedMemberToAdd(workspaceMembers[0]?.user_id || '');
                           }}
                           className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-dashed border-zinc-700 bg-zinc-900/40 text-xs font-medium text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
                         >
@@ -2351,9 +2351,9 @@ const fetchProjectData = async () => {
                   onChange={(e) => setSelectedMemberToAdd(e.target.value)}
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-2 text-zinc-200 focus:outline-none focus:border-indigo-500"
                 >
-                  {projectMembers.map((pm) => (
-                    <option key={pm.user_id} value={pm.user_id}>
-                      {pm.profiles?.display_name || pm.user_id} ({pm.role})
+                  {workspaceMembers.map((wm) => (
+                    <option key={wm.user_id} value={wm.user_id}>
+                      {wm.display_name} ({wm.role})
                     </option>
                   ))}
                 </select>
@@ -2451,9 +2451,12 @@ const fetchProjectData = async () => {
           <div className="w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
               <h3 className="text-sm font-semibold text-zinc-100">Enroll Member in Project</h3>
-              <button onClick={() => setIsEnrollMemberOpen(false)} className="p-1 text-zinc-400 hover:text-zinc-200">
-                <X className="h-4 w-4" />
-              </button>
+
+              {isAuthorizedToEdit && (
+                <button onClick={() => setIsEnrollMemberOpen(false)} className="p-1 text-zinc-400 hover:text-zinc-200">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
 
             {enrollError && (
