@@ -3,7 +3,7 @@
 import { useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWorkspace } from '@/features/workspace/workspace-context';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/components/ui/pica-icons';
 
 export default function WorkspaceIndexPage({
   params,

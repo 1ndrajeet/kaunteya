@@ -15,7 +15,7 @@ import {
   Calendar,
   Loader2,
   ChevronLeft,
-} from 'lucide-react';
+} from '@/components/ui/pica-icons';
 import { createClient } from '@/lib/supabase/client';
 import { useWorkspace } from '@/features/workspace/workspace-context';
 import type { WorkspaceRole } from '@/types/database';
@@ -214,6 +214,46 @@ export default function AdminTeamGovernancePage({
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
+  if (role && role !== 'admin') {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 sm:p-12 text-center space-y-4">
+        <div className="h-14 w-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20">
+          <ShieldCheck className="h-7 w-7" />
+        </div>
+        <div className="space-y-1">
+          <h2 className="text-lg font-bold text-zinc-100">Administrator Access Required</h2>
+          <p className="text-xs text-zinc-400 max-w-md">
+            You are signed in as a <span className="font-mono text-indigo-400 uppercase font-semibold">{role}</span>. Team governance and member invitations are restricted to workspace administrators.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+          {role === 'lead' && (
+            <Link
+              href={`/workspace/${workspaceId}/lead`}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors"
+            >
+              <Compass className="h-4 w-4" /> Go to Team Lead Portal
+            </Link>
+          )}
+          {role === 'member' && (
+            <Link
+              href={`/workspace/${workspaceId}/member`}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors"
+            >
+              <Users className="h-4 w-4" /> Go to My Tasks
+            </Link>
+          )}
+          <Link
+            href={`/workspace/${workspaceId}/tasks`}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-medium transition-colors"
+          >
+            Workspace Tasks
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 flex flex-col p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Back and Title Header */}
@@ -272,7 +312,7 @@ export default function AdminTeamGovernancePage({
               {members.map((m) => (
                 <tr key={m.id} className="hover:bg-zinc-800/30 transition-colors">
                   <td className="py-3 px-4 font-medium text-zinc-100 flex items-center gap-2.5">
-                    <div className="h-7 w-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                    <div className="h-7 w-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
                       {m.profiles?.avatar_url ? (
                         <img
                           src={m.profiles.avatar_url}

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import get_settings
+from routers import dignity_score, github, slack
 from schemas import HealthResponse, RootResponse
 from utils import get_utc_now_iso
 
@@ -23,6 +24,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount feature routers
+app.include_router(slack.router)
+app.include_router(github.router)
+if dignity_score and hasattr(dignity_score, "router"):
+    app.include_router(dignity_score.router)
 
 
 @app.get("/", response_model=RootResponse, tags=["General"])

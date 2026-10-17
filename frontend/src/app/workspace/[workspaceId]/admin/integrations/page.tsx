@@ -25,14 +25,19 @@ import {
   ChevronDown,
   ChevronRight,
   Info,
-} from 'lucide-react';
+  Github,
+} from '@/components/ui/pica-icons';
 import { createClient } from '@/lib/supabase/client';
 import { useWorkspace } from '@/features/workspace/workspace-context';
+import { GithubIntegrationTab } from './github-integration-tab';
+import { getIntegrationsStatus, processSlackClaim, type IntegrationBundle } from '@/lib/api';
 import type {
   SlackInstallation,
   SlackUserMapping,
   IntegrationEvent,
 } from '@/types/database';
+
+
 
 interface MemberWithMapping {
   userId: string;
@@ -51,12 +56,21 @@ export default function AdminIntegrationsPage({
   const workspaceId = unwrappedParams.workspaceId;
   const { role, user } = useWorkspace();
 
+  const [activeTab, setActiveTab] = useState<'slack' | 'github'>('slack');
   const [installation, setInstallation] = useState<SlackInstallation | null>(null);
+  const [backendStatus, setBackendStatus] = useState<IntegrationBundle | null>(null);
   const [members, setMembers] = useState<MemberWithMapping[]>([]);
   const [events, setEvents] = useState<IntegrationEvent[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  // Diagnostic Claim Simulator state
+  const [diagnosticText, setDiagnosticText] = useState<string>('CORE-14 is complete');
+  const [diagnosticSlackUser, setDiagnosticSlackUser] = useState<string>('U0C9NRMSXUM');
+  const [diagnosticRunning, setDiagnosticRunning] = useState<boolean>(false);
+  const [diagnosticResult, setDiagnosticResult] = useState<any | null>(null);
+  const [diagnosticError, setDiagnosticError] = useState<string | null>(null);
 
   // Modals & form state
   const [isConnectModalOpen, setIsConnectModalOpen] = useState<boolean>(false);
@@ -103,9 +117,24 @@ export default function AdminIntegrationsPage({
         .select('*')
         .eq('workspace_id', workspaceId)
         .eq('installation_status', 'active')
-        .single();
+        .maybeSingle();
 
-      setInstallation(instData as SlackInstallation | null);
+      let activeInst = instData as SlackInstallation | null;
+      if (!activeInst) {
+        // Fallback to server route to check if server-side installation exists
+        try {
+          const srvRes = await fetch(`/api/slack/mapping?workspaceId=${workspaceId}`);
+          if (srvRes.ok) {
+            const srvData = await srvRes.json();
+            if (srvData.installation) {
+              activeInst = srvData.installation;
+            }
+          }
+        } catch {
+          // non-fatal
+        }
+      }
+      setInstallation(activeInst);
 
       // 2. Fetch Workspace Members & Profiles
       const { data: memData } = await supabase
@@ -152,6 +181,14 @@ export default function AdminIntegrationsPage({
       if (evtData) {
         setEvents(evtData as IntegrationEvent[]);
       }
+
+      // 5. Fetch Live Backend Integration Health
+      try {
+        const bStatus = await getIntegrationsStatus(workspaceId);
+        setBackendStatus(bStatus);
+      } catch (backendErr) {
+        console.warn('Backend integrations check returned:', backendErr);
+      }
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Failed to load integration data');
     } finally {
@@ -159,8 +196,39 @@ export default function AdminIntegrationsPage({
     }
   };
 
+  const handleRunDiagnostic = async () => {
+    if (!diagnosticText.trim() || !diagnosticSlackUser.trim()) return;
+    setDiagnosticRunning(true);
+    setDiagnosticError(null);
+    setDiagnosticResult(null);
+
+    try {
+      const res = await processSlackClaim({
+        workspaceId,
+        slackUserId: diagnosticSlackUser.trim(),
+        text: diagnosticText.trim(),
+      });
+      setDiagnosticResult(res);
+      fetchData();
+    } catch (err) {
+      setDiagnosticError(err instanceof Error ? err.message : 'Diagnostic execution failed');
+    } finally {
+      setDiagnosticRunning(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('slack_success')) {
+        setSuccessMsg('Slack App installed and authorized successfully! Bot permissions are active.');
+      }
+      if (urlParams.get('slack_error')) {
+        setErrorMsg(`Slack authorization failed: ${urlParams.get('slack_error')}`);
+      }
+    }
   }, [workspaceId]);
 
   const handleCopyWebhookUrl = () => {
@@ -175,50 +243,26 @@ export default function AdminIntegrationsPage({
 
     setConnecting(true);
     setErrorMsg(null);
-    const supabase = createClient();
 
     try {
-      // 1. Insert installation record
-      const { data: newInst, error: instErr } = await supabase
-        .from('slack_installations')
-        .insert({
-          workspace_id: workspaceId,
-          slack_team_id: teamId.trim(),
-          slack_team_name: teamName.trim(),
-          bot_user_id: botUserId.trim(),
-          default_channel_id: defaultChannelId.trim() || null,
-          installation_status: 'active',
-          connected_by: user.id,
-        })
-        .select()
-        .single();
-
-      if (instErr) {
-        throw new Error(instErr.message);
-      }
-
-      // 2. Insert secret record (if botToken provided)
-      if (botToken.trim()) {
-        await supabase.from('slack_installation_secrets').insert({
-          installation_id: newInst.id,
-          bot_token: botToken.trim(),
-          signing_secret: signingSecret.trim() || null,
-        });
-      }
-
-      // 3. Log activity event
-      await supabase.from('activity_events').insert({
-        workspace_id: workspaceId,
-        actor_id: user.id,
-        entity_type: 'workspace',
-        entity_id: workspaceId,
-        event_type: 'slack_connected',
-        metadata: {
-          slack_team_id: teamId.trim(),
-          slack_team_name: teamName.trim(),
-          bot_user_id: botUserId.trim(),
-        },
+      const res = await fetch('/api/slack/install', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workspaceId,
+          teamId: teamId.trim(),
+          teamName: teamName.trim(),
+          botUserId: botUserId.trim(),
+          botToken: botToken.trim(),
+          signingSecret: signingSecret.trim() || undefined,
+          defaultChannelId: defaultChannelId.trim() || undefined,
+        }),
       });
+
+      const resData = await res.json();
+      if (!res.ok) {
+        throw new Error(resData.error || 'Connection failed');
+      }
 
       setSuccessMsg('Slack workspace connected successfully.');
       setIsConnectModalOpen(false);
@@ -274,59 +318,38 @@ export default function AdminIntegrationsPage({
 
   const handleSaveMapping = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedMember || !installation || !user || !slackUserIdInput.trim()) return;
+    if (!selectedMember || !user || !slackUserIdInput.trim()) return;
 
     setSavingMapping(true);
     setErrorMsg(null);
-    const supabase = createClient();
 
     try {
       const cleanSlackId = slackUserIdInput.trim().toUpperCase();
       const cleanUsername = slackUsernameInput.trim().replace(/^@/, '');
 
-      if (selectedMember.mapping) {
-        // Update existing mapping
-        await supabase
-          .from('slack_user_mappings')
-          .update({
-            slack_user_id: cleanSlackId,
-            slack_username: cleanUsername || null,
-            link_status: 'linked',
-            linked_by: user.id,
-            linked_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', selectedMember.mapping.id);
-      } else {
-        // Insert new mapping
-        await supabase.from('slack_user_mappings').insert({
-          installation_id: installation.id,
-          workspace_id: workspaceId,
-          slack_user_id: cleanSlackId,
-          slack_username: cleanUsername || null,
-          taskpilot_user_id: selectedMember.userId,
-          link_status: 'linked',
-          linked_by: user.id,
-        });
-      }
-
-      // Log activity
-      await supabase.from('activity_events').insert({
-        workspace_id: workspaceId,
-        actor_id: user.id,
-        entity_type: 'workspace_member',
-        entity_id: selectedMember.userId,
-        event_type: 'slack_identity_linked',
-        metadata: {
-          member_name: selectedMember.displayName,
-          slack_user_id: cleanSlackId,
-          slack_username: cleanUsername,
-        },
+      const res = await fetch('/api/slack/mapping', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workspaceId,
+          userId: selectedMember.userId,
+          slackUserId: cleanSlackId,
+          slackUsername: cleanUsername || undefined,
+          slackTeamId: installation?.slack_team_id || undefined,
+        }),
       });
 
-      setSuccessMsg(`Mapped ${selectedMember.displayName} to Slack ID ${cleanSlackId}.`);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to save identity mapping');
+      }
+
+      setSuccessMsg(data.message || `Mapped ${selectedMember.displayName} to Slack ID ${cleanSlackId}.`);
+      if (data.installation) {
+        setInstallation(data.installation);
+      }
       setIsMappingModalOpen(false);
-      fetchData();
+      await fetchData();
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Failed to save identity mapping');
     } finally {
@@ -336,21 +359,27 @@ export default function AdminIntegrationsPage({
 
   const handleUnlink = async (mappingId: string, memberName: string) => {
     if (!user || !confirm(`Unlink Slack identity for ${memberName}?`)) return;
-    const supabase = createClient();
 
-    await supabase.from('slack_user_mappings').delete().eq('id', mappingId);
+    try {
+      const res = await fetch('/api/slack/mapping', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workspaceId,
+          mappingId,
+        }),
+      });
 
-    await supabase.from('activity_events').insert({
-      workspace_id: workspaceId,
-      actor_id: user.id,
-      entity_type: 'workspace_member',
-      entity_id: workspaceId,
-      event_type: 'slack_identity_unlinked',
-      metadata: { member_name: memberName },
-    });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to unlink identity');
+      }
 
-    setSuccessMsg(`Unlinked Slack identity for ${memberName}.`);
-    fetchData();
+      setSuccessMsg(`Unlinked Slack identity for ${memberName}.`);
+      await fetchData();
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to unlink identity');
+    }
   };
 
   const handleTriggerFollowups = async () => {
@@ -406,10 +435,10 @@ export default function AdminIntegrationsPage({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-100 flex items-center gap-2">
-            <MessageSquare className="h-6 w-6 text-indigo-400" /> Slack Integration & Conversational Intake
+            <Settings className="h-6 w-6 text-indigo-400" /> Workspace Integrations & Webhooks
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Connect TaskPilot to Slack to enable conversational task creation, team lead triage, and automated follow-ups.
+            Connect TaskPilot to Slack for conversational intake and GitHub App for verifiable development evidence.
           </p>
         </div>
 
@@ -422,92 +451,236 @@ export default function AdminIntegrationsPage({
         </button>
       </div>
 
-      {errorMsg && (
-        <div className="p-3.5 rounded-xl border border-rose-900/50 bg-rose-950/30 text-rose-300 text-xs flex items-center gap-2">
-          <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
-          <span>{errorMsg}</span>
-        </div>
-      )}
+      {/* Integration Tabs */}
+      <div className="flex items-center gap-2 p-1 bg-zinc-900/80 border border-zinc-800 rounded-xl w-fit">
+        <button
+          onClick={() => setActiveTab('slack')}
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            activeTab === 'slack'
+              ? 'bg-zinc-800 text-zinc-100 shadow-sm border border-zinc-700/60'
+              : 'text-zinc-400 hover:text-zinc-200'
+          }`}
+        >
+          <MessageSquare className="h-4 w-4 text-indigo-400" />
+          Slack Workspace
+          {installation?.installation_status === 'active' && (
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('github')}
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            activeTab === 'github'
+              ? 'bg-zinc-800 text-zinc-100 shadow-sm border border-zinc-700/60'
+              : 'text-zinc-400 hover:text-zinc-200'
+          }`}
+        >
+          <Github className="h-4 w-4 text-purple-400" />
+          GitHub App &amp; Evidence
+        </button>
+      </div>
 
-      {successMsg && (
-        <div className="p-3.5 rounded-xl border border-emerald-900/50 bg-emerald-950/30 text-emerald-300 text-xs flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-          <span>{successMsg}</span>
-        </div>
-      )}
-
-      {/* 1. Connection Status Card */}
-      <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-              <MessageSquare className="h-5 w-5" />
+      {activeTab === 'github' ? (
+        <GithubIntegrationTab workspaceId={workspaceId} backendStatus={backendStatus?.github?.health} />
+      ) : (
+        <>
+          {errorMsg && (
+            <div className="p-3.5 rounded-xl border border-rose-900/50 bg-rose-950/30 text-rose-300 text-xs flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
+              <span>{errorMsg}</span>
             </div>
-            <div>
-              <h2 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
-                {installation ? installation.slack_team_name : 'No Slack Workspace Connected'}
-                <span
-                  className={`text-[10px] font-mono uppercase font-semibold px-2 py-0.5 rounded ${
-                    installation?.installation_status === 'active'
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                      : 'bg-zinc-800 text-zinc-400'
-                  }`}
-                >
-                  {installation?.installation_status || 'Disconnected'}
-                </span>
-              </h2>
-              <p className="text-xs text-zinc-400">
-                {installation
-                  ? `Team ID: ${installation.slack_team_id} &bull; Bot User: ${installation.bot_user_id}`
-                  : 'Connect an authorized Slack app to enable conversational intake and follow-up notifications.'}
-              </p>
+          )}
+
+          {successMsg && (
+            <div className="p-3.5 rounded-xl border border-emerald-900/50 bg-emerald-950/30 text-emerald-300 text-xs flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>{successMsg}</span>
+            </div>
+          )}
+
+          {/* 1. Connection Status Card */}
+          <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                  <MessageSquare className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                    {installation?.slack_team_name ||
+                      backendStatus?.slack?.health?.bot_identity?.team ||
+                      'No Slack Workspace Connected'}
+                    <span
+                      className={`text-[10px] font-mono uppercase font-semibold px-2 py-0.5 rounded flex items-center gap-1 ${
+                        installation?.installation_status === 'active' ||
+                        backendStatus?.slack?.health?.status === 'ok'
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          : 'bg-zinc-800 text-zinc-400'
+                      }`}
+                    >
+                      {(installation?.installation_status === 'active' ||
+                        backendStatus?.slack?.health?.status === 'ok') && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      )}
+                      {installation?.installation_status === 'active' ||
+                      backendStatus?.slack?.health?.status === 'ok'
+                        ? 'Connected (Events API Active)'
+                        : 'Disconnected'}
+                    </span>
+                  </h2>
+                  <p className="text-xs text-zinc-400">
+                    {installation || backendStatus?.slack?.health?.bot_identity
+                      ? `Team: ${
+                          installation?.slack_team_id ||
+                          backendStatus?.slack?.health?.bot_identity?.team_id
+                        } • Bot: @${
+                          backendStatus?.slack?.health?.bot_identity?.user ||
+                          installation?.bot_user_id
+                        } (${
+                          backendStatus?.slack?.health?.bot_identity?.bot_id || 'Active'
+                        })`
+                      : 'Connect an authorized Slack app to enable conversational intake and GitHub verification.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {installation ? (
+                  <button
+                    onClick={handleDisconnect}
+                    className="px-3 py-1.5 rounded-lg border border-rose-900/40 bg-rose-950/20 text-rose-300 hover:bg-rose-950/40 text-xs font-medium transition-colors"
+                  >
+                    Disconnect
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        window.location.href = `/api/slack/install?workspaceId=${workspaceId}`;
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#4A154B] hover:bg-[#3b113b] text-white text-xs font-semibold transition-all shadow-sm cursor-pointer"
+                    >
+                      <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
+                        <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/>
+                      </svg>
+                      Add to Slack
+                    </button>
+                    <button
+                      onClick={() => setIsConnectModalOpen(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition-colors cursor-pointer"
+                    >
+                      <Plus className="h-4 w-4" /> Manual Connect
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-zinc-800/80 text-xs">
+              <div className="space-y-0.5">
+                <span className="text-[10px] text-zinc-500 font-mono uppercase">Runtime Engine</span>
+                <p className="font-mono text-indigo-300">
+                  {backendStatus?.slack?.status?.runtime || 'FastAPI Events API'}
+                </p>
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-[10px] text-zinc-500 font-mono uppercase">HMAC Signing Secret</span>
+                <p className="font-mono text-emerald-400">
+                  {backendStatus?.slack?.health?.signing_secret_configured ? 'Verified (SHA-256)' : 'Pending'}
+                </p>
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-[10px] text-zinc-500 font-mono uppercase">Claim Detection</span>
+                <p className="font-mono text-zinc-200">
+                  {backendStatus?.slack?.status?.features?.conversational_claim_detection ? 'Enabled (Deterministic)' : 'Active'}
+                </p>
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-[10px] text-zinc-500 font-mono uppercase">GitHub Loop</span>
+                <p className="font-mono text-purple-300">
+                  {backendStatus?.slack?.status?.features?.github_verification_loop ? 'Operational' : 'Ready'}
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {installation ? (
-              <button
-                onClick={handleDisconnect}
-                className="px-3 py-1.5 rounded-lg border border-rose-900/40 bg-rose-950/20 text-rose-300 hover:bg-rose-950/40 text-xs font-medium transition-colors"
-              >
-                Disconnect
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsConnectModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors shadow-sm"
-              >
-                <Plus className="h-4 w-4" /> Connect Slack App
-              </button>
+          {/* 1.5 Diagnostic Sandbox for Slack Claims */}
+          <div className="p-6 rounded-2xl border border-indigo-900/40 bg-indigo-950/10 backdrop-blur-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <Terminal className="h-4 w-4 text-indigo-400" />
+                <h3 className="text-xs font-bold text-zinc-200 uppercase tracking-wider font-mono">
+                  Live Slack Claim &amp; Verification Diagnostic Simulator
+                </h3>
+              </div>
+              <span className="text-[10px] font-mono text-zinc-500">Internal Backend Tool</span>
+            </div>
+            <p className="text-xs text-zinc-400">
+              Test conversational Slack completion claims directly against the Python backend to verify task resolution, blocker classification, and GitHub commit matching.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1 sm:col-span-1">
+                <label className="text-[11px] text-zinc-400 font-mono">Slack User ID</label>
+                <input
+                  type="text"
+                  value={diagnosticSlackUser}
+                  onChange={(e) => setDiagnosticSlackUser(e.target.value)}
+                  placeholder="e.g. U0C9NRMSXUM"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+              <div className="space-y-1 sm:col-span-2">
+                <label className="text-[11px] text-zinc-400 font-mono">Simulated Slack Message</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={diagnosticText}
+                    onChange={(e) => setDiagnosticText(e.target.value)}
+                    placeholder="e.g. CORE-14 is complete"
+                    className="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-indigo-500"
+                  />
+                  <button
+                    onClick={handleRunDiagnostic}
+                    disabled={diagnosticRunning}
+                    className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shrink-0 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    {diagnosticRunning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5" />}
+                    Test Intake
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {diagnosticError && (
+              <div className="p-3 rounded-lg border border-rose-900/50 bg-rose-950/20 text-rose-300 text-xs">
+                {diagnosticError}
+              </div>
+            )}
+
+            {diagnosticResult && (
+              <div className="p-3.5 rounded-xl border border-zinc-800 bg-zinc-950/80 space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-zinc-400 text-[11px]">
+                    Intent: <span className="text-indigo-400 font-semibold">{diagnosticResult.intent}</span>
+                    {diagnosticResult.task_identifier && ` • Task: ${diagnosticResult.task_identifier}`}
+                  </span>
+                  <span
+                    className={`font-mono text-[10px] px-2 py-0.5 rounded ${
+                      diagnosticResult.ok
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                        : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                    }`}
+                  >
+                    Status: {diagnosticResult.verification_status || diagnosticResult.new_task_status || 'Processed'}
+                  </span>
+                </div>
+                <div className="p-2.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-[11px] leading-relaxed">
+                  {diagnosticResult.reply_message}
+                </div>
+              </div>
             )}
           </div>
-        </div>
-
-        {installation && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-zinc-800/80 text-xs">
-            <div className="space-y-0.5">
-              <span className="text-[10px] text-zinc-500 font-mono uppercase">Connected Date</span>
-              <p className="font-mono text-zinc-200">
-                {new Date(installation.connected_at).toLocaleDateString()}
-              </p>
-            </div>
-            <div className="space-y-0.5">
-              <span className="text-[10px] text-zinc-500 font-mono uppercase">Default Channel</span>
-              <p className="font-mono text-zinc-200">{installation.default_channel_id || '(All Channels)'}</p>
-            </div>
-            <div className="space-y-0.5">
-              <span className="text-[10px] text-zinc-500 font-mono uppercase">Follow-up Frequency</span>
-              <p className="font-mono text-zinc-200">{installation.followup_frequency_hours} hours</p>
-            </div>
-            <div className="space-y-0.5">
-              <span className="text-[10px] text-zinc-500 font-mono uppercase">Automated Reminders</span>
-              <p className="font-mono text-emerald-400">
-                {installation.auto_followup_enabled ? 'Enabled' : 'Disabled'}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* 2. Setup Guide Accordion */}
       <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden">
@@ -608,7 +781,7 @@ export default function AdminIntegrationsPage({
                 className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-zinc-900/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                  <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
                     {member.displayName[0]?.toUpperCase()}
                   </div>
                   <div>
@@ -658,8 +831,7 @@ export default function AdminIntegrationsPage({
                       <span className="text-[10px] font-mono text-zinc-500 italic">Not mapped</span>
                       <button
                         onClick={() => openMappingModal(member)}
-                        disabled={!installation}
-                        className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-colors disabled:opacity-50"
+                        className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-colors cursor-pointer"
                       >
                         Map Slack ID
                       </button>
@@ -912,7 +1084,16 @@ export default function AdminIntegrationsPage({
               <div>
                 <span className="text-zinc-400">Mapping member:</span>
                 <p className="font-bold text-zinc-100 text-sm mt-0.5">{selectedMember.displayName}</p>
+                {selectedMember.email && (
+                  <p className="text-zinc-500 text-[11px] font-mono">{selectedMember.email}</p>
+                )}
               </div>
+
+              {!installation && (
+                <div className="p-2.5 rounded-lg border border-amber-900/50 bg-amber-950/20 text-amber-300 text-[11px]">
+                  No active Slack installation is registered for this workspace yet. Saving this mapping will automatically link this workspace to your verified Slack bot credentials.
+                </div>
+              )}
 
               <div className="space-y-1">
                 <label className="font-medium text-zinc-300">Slack User ID</label>
@@ -959,6 +1140,8 @@ export default function AdminIntegrationsPage({
             </form>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );
