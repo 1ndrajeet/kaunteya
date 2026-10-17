@@ -15,12 +15,16 @@ export async function POST(req: NextRequest) {
     const cronSecret = process.env.CRON_SECRET;
     const workspaceId = body?.workspaceId;
 
-    // Validate authorization: Either CRON_SECRET or an authenticated admin session
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      // If no valid cron secret, check if caller provided an admin session token
-      const token = authHeader?.replace('Bearer ', '');
+    let isAuthorized = false;
+
+    // 1. Check if cron authorized
+    if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
+      isAuthorized = true;
+    } else {
+      // 2. Fall back to user session token
+      const token = authHeader?.startsWith('Bearer ') ? authHeader.slice('Bearer '.length).trim() : null;
       if (!token) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        return NextResponse.json({ error: 'Unauthorized: Missing credentials' }, { status: 401 });
       }
 
       const supabase = createServiceClient();
@@ -39,15 +43,30 @@ export async function POST(req: NextRequest) {
           .select('role')
           .eq('workspace_id', workspaceId)
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (member?.role !== 'admin' && member?.role !== 'lead') {
           return NextResponse.json(
-            { error: 'Only Administrators and Team Leads can trigger follow-ups' },
+            { error: 'Forbidden: Only Administrators and Team Leads can trigger follow-ups' },
+            { status: 403 }
+          );
+        }
+      } else {
+        const { data: adminMemberships } = await supabase
+          .from('workspace_members')
+          .select('role')
+          .eq('user_id', user.id)
+          .in('role', ['admin', 'lead'])
+          .limit(1);
+
+        if (!adminMemberships || adminMemberships.length === 0) {
+          return NextResponse.json(
+            { error: 'Forbidden: Administrator or Lead access required' },
             { status: 403 }
           );
         }
       }
+      isAuthorized = true;
     }
 
     const summaries = await evaluateAndDispatchFollowups(workspaceId);

@@ -9,7 +9,6 @@ import {
   Users,
   GitPullRequest,
   MessageSquare,
-  Sparkles,
   CheckCircle2,
   Clock,
   Layers,
@@ -17,7 +16,7 @@ import {
   ChevronRight,
   AlertCircle,
   Terminal,
-} from 'lucide-react';
+} from '@/components/ui/pica-icons';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
@@ -74,7 +73,7 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+            <div className="h-9 w-9 rounded-lg bg-indigo-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <Compass className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col">
@@ -133,19 +132,16 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="relative pt-20 pb-16 overflow-hidden">
-        {/* Subtle grid pattern background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40 pointer-events-none" />
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center max-w-3xl mx-auto space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-xs font-medium text-indigo-300">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Phase 1 Live: Workspace Governance & Core Project Management</span>
+              <Compass className="h-3.5 w-3.5" />
+              <span>Phase 1 Live: Workspace Governance &amp; Core Project Management</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-zinc-100 leading-[1.1]">
               Work moves in conversations.{' '}
-              <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-indigo-200 bg-clip-text text-transparent">
+              <span className="text-indigo-400 font-extrabold">
                 TaskPilot turns it into verified execution.
               </span>
             </h1>
@@ -578,7 +574,7 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 border-t border-zinc-800/60 bg-gradient-to-b from-transparent to-indigo-950/20">
+      <section className="py-20 border-t border-zinc-800/60 bg-zinc-950">
         <div className="max-w-4xl mx-auto px-4 text-center space-y-6">
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-100">
             Ready to experience structured, verifiable teamwork?

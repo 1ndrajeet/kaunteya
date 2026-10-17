@@ -16,7 +16,7 @@ import {
   ArrowUpDown,
   Tag,
   Loader2,
-} from 'lucide-react';
+} from '@/components/ui/pica-icons';
 import { createClient } from '@/lib/supabase/client';
 import { useWorkspace } from '@/features/workspace/workspace-context';
 import { TaskDetailDrawer, TaskDetailData } from '@/features/tasks/task-detail-drawer';
@@ -77,6 +77,11 @@ export default function WorkspaceTasksPage({
         created_by,
         due_date,
         source,
+        assignment_type,
+        team_id,
+        status_reason,
+        status_changed_by,
+        status_changed_at,
         created_at,
         updated_at,
         project:projects (

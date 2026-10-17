@@ -14,7 +14,7 @@ import {
   Layers,
   ShieldAlert,
   Loader2,
-} from 'lucide-react';
+} from '@/components/ui/pica-icons';
 import { createClient } from '@/lib/supabase/client';
 import { useWorkspace } from '@/features/workspace/workspace-context';
 import type { TaskDetailData } from '@/features/tasks/task-detail-drawer';

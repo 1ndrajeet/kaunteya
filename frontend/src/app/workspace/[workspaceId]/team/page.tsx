@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { Users, CheckSquare, Clock, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { Users, CheckSquare, Clock, CheckCircle2, AlertCircle, Loader2 } from '@/components/ui/pica-icons';
 import { createClient } from '@/lib/supabase/client';
 import { useWorkspace } from '@/features/workspace/workspace-context';
 
@@ -114,7 +114,7 @@ export default function TeamWorkloadPage({
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                  <div className="h-9 w-9 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
                     {member.avatar_url ? (
                       <img src={member.avatar_url} alt="Avatar" className="h-9 w-9 rounded-full object-cover" />
                     ) : (

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Compass, AlertCircle, CheckCircle2, ArrowRight, LogOut, Terminal, ExternalLink } from 'lucide-react';
+import { Compass, AlertCircle, CheckCircle2, ArrowRight, LogOut, Terminal, ExternalLink } from '@/components/ui/pica-icons';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
@@ -47,11 +47,12 @@ function LoginContent() {
     setAuthError(null);
     try {
       const supabase = createClient();
-      const redirectUrl = `${window.location.origin}/auth/callback?next=/onboarding`;
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
+      const redirectUrl = `${siteUrl}/auth/callback?next=/onboarding`;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) {
@@ -60,6 +61,30 @@ function LoginContent() {
       }
     } catch (err) {
       setAuthError(err instanceof Error ? err.message : 'Failed to initialize GitHub sign-in');
+      setLoading(false);
+    }
+  };
+
+  const handleSlackSignIn = async () => {
+    setLoading(true);
+    setAuthError(null);
+    try {
+      const supabase = createClient();
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+      const redirectUrl = `${siteUrl}/auth/callback?next=/onboarding`;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'slack_oidc',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          scopes: 'openid profile email',
+        },
+      });
+      if (error) {
+        setAuthError(error.message);
+        setLoading(false);
+      }
+    } catch (err) {
+      setAuthError(err instanceof Error ? err.message : 'Failed to initialize Slack sign-in');
       setLoading(false);
     }
   };
@@ -91,7 +116,7 @@ function LoginContent() {
       <main className="w-full max-w-md mx-auto my-auto space-y-6">
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 sm:p-8 backdrop-blur-xl shadow-2xl space-y-6">
           <div className="text-center space-y-2">
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center mx-auto text-white shadow-lg shadow-indigo-500/20">
+            <div className="h-12 w-12 rounded-xl bg-indigo-600 flex items-center justify-center mx-auto text-white shadow-md">
               <Compass className="h-6 w-6" />
             </div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-100">
@@ -157,6 +182,7 @@ function LoginContent() {
             </div>
           ) : (
             <div className="space-y-4">
+              {/* GitHub Button */}
               <button
                 type="button"
                 onClick={handleGitHubSignIn}
@@ -174,8 +200,24 @@ function LoginContent() {
                 <span>{loading ? 'Connecting...' : 'Sign in with GitHub'}</span>
               </button>
 
+              {/* Slack Button (OIDC Auth Only) */}
+              <button
+                type="button"
+                onClick={handleSlackSignIn}
+                disabled={loading}
+                className="w-full inline-flex items-center justify-center gap-3 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-100 border border-zinc-700/80 px-4 py-2.5 text-sm font-semibold transition-all shadow-md hover:scale-[1.01] disabled:opacity-50 disabled:pointer-events-none"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 122.8 122.8">
+                  <path d="M25.8 77.6c0 7.1-5.8 12.9-12.9 12.9S0 84.7 0 77.6s5.8-12.9 12.9-12.9h12.9v12.9zm6.5 0c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9v32.3c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V77.6z" fill="#e01e5a" />
+                  <path d="M45.2 25.8c-7.1 0-12.9-5.8-12.9-12.9S38.1 0 45.2 0s12.9 5.8 12.9 12.9v12.9H45.2zm0 6.5c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H12.9C5.8 58.1 0 52.3 0 45.2s5.8-12.9 12.9-12.9h32.3z" fill="#36c5f0" />
+                  <path d="M97 45.2c0-7.1 5.8-12.9 12.9-12.9s12.9 5.8 12.9 12.9-5.8 12.9-12.9 12.9H97V45.2zm-6.5 0c0 7.1-5.8 12.9-12.9 12.9s-12.9-5.8-12.9-12.9V12.9C64.7 5.8 70.5 0 77.6 0s12.9 5.8 12.9 12.9v32.3z" fill="#2eb67d" />
+                  <path d="M77.6 97c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9-12.9-5.8-12.9-12.9V97h12.9zm0-6.5c-7.1 0-12.9-5.8-12.9-12.9s5.8-12.9 12.9-12.9h32.3c7.1 0 12.9 5.8 12.9 12.9s-5.8 12.9-12.9 12.9H77.6z" fill="#ecb22e" />
+                </svg>
+                <span>{loading ? 'Connecting...' : 'Sign in with Slack'}</span>
+              </button>
+
               <p className="text-[11px] text-zinc-500 text-center leading-relaxed">
-                By continuing, you authenticate through Supabase Auth using your GitHub OAuth identity.
+                By continuing, you authenticate through Supabase Auth using your GitHub or Slack OpenID Connect identity.
               </p>
             </div>
           )}

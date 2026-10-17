@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Loader2, Plus, Calendar, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { X, Loader2, Plus, Calendar, AlertCircle, CheckCircle2 } from '@/components/ui/pica-icons';
 import { createClient } from '@/lib/supabase/client';
 import type { TaskPriority, TaskStatus } from '@/types/database';
 
@@ -39,6 +39,9 @@ export function CreateTaskModal({
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [members, setMembers] = useState<MemberOption[]>([]);
   const [projectId, setProjectId] = useState<string>(defaultProjectId || '');
+  const [assignmentType, setAssignmentType] = useState<'individual' | 'team'>('individual');
+  const [teamId, setTeamId] = useState<string>('');
+  const [projectTeams, setProjectTeams] = useState<{ id: string; name: string }[]>([]);
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [status, setStatus] = useState<TaskStatus>(defaultStatus);
@@ -94,6 +97,29 @@ export function CreateTaskModal({
     loadData();
   }, [isOpen, workspaceId, defaultProjectId, projectId]);
 
+  // Load project teams when project changes
+  useEffect(() => {
+    if (!projectId) {
+      setProjectTeams([]);
+      return;
+    }
+    const loadTeams = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('teams')
+        .select('id, name')
+        .eq('project_id', projectId)
+        .order('name');
+      if (data) {
+        setProjectTeams(data);
+        if (data.length > 0 && !teamId) {
+          setTeamId(data[0].id);
+        }
+      }
+    };
+    loadTeams();
+  }, [projectId]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -135,7 +161,9 @@ export function CreateTaskModal({
           description: description.trim() || null,
           status,
           priority,
-          assignee_id: assigneeId || null,
+          assignment_type: assignmentType,
+          team_id: assignmentType === 'team' ? teamId || null : null,
+          assignee_id: assignmentType === 'individual' ? assigneeId || null : null,
           created_by: session.user.id,
           due_date: dueDate || null,
           source: 'manual',
@@ -286,21 +314,61 @@ export function CreateTaskModal({
               </select>
             </div>
 
-            {/* Assignee */}
+            {/* Assignee / Team Scope */}
             <div className="space-y-1 col-span-2 sm:col-span-1">
-              <label className="text-[11px] font-medium text-zinc-400">Assignee</label>
-              <select
-                value={assigneeId}
-                onChange={(e) => setAssigneeId(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
-              >
-                <option value="">(Unassigned / Triage)</option>
-                {members.map((m) => (
-                  <option key={m.user_id} value={m.user_id}>
-                    {m.display_name} ({m.role})
-                  </option>
-                ))}
-              </select>
+              <label className="text-[11px] font-medium text-zinc-400">Assignment Scope</label>
+              <div className="flex rounded-lg bg-zinc-950 border border-zinc-800 p-0.5 text-[10px] font-medium mb-1">
+                <button
+                  type="button"
+                  onClick={() => setAssignmentType('individual')}
+                  className={`flex-1 py-1 rounded transition-colors ${
+                    assignmentType === 'individual'
+                      ? 'bg-zinc-800 text-zinc-100 font-semibold'
+                      : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  Member
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAssignmentType('team')}
+                  className={`flex-1 py-1 rounded transition-colors ${
+                    assignmentType === 'team'
+                      ? 'bg-zinc-800 text-zinc-100 font-semibold'
+                      : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  Team
+                </button>
+              </div>
+
+              {assignmentType === 'individual' ? (
+                <select
+                  value={assigneeId}
+                  onChange={(e) => setAssigneeId(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="">(Unassigned / Triage)</option>
+                  {members.map((m) => (
+                    <option key={m.user_id} value={m.user_id}>
+                      {m.display_name} ({m.role})
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <select
+                  value={teamId}
+                  onChange={(e) => setTeamId(e.target.value)}
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                >
+                  <option value="">(No specific team)</option>
+                  {projectTeams.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
           </div>
 
