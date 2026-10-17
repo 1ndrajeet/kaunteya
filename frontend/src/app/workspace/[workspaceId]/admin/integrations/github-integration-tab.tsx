@@ -32,8 +32,7 @@ import type {
   GithubUserMapping,
   GithubEvent,
 } from '@/types/database';
-
-
+import type { GitHubHealthResponse } from '@/types';
 
 interface MemberWithGithub {
   userId: string;
@@ -43,7 +42,13 @@ interface MemberWithGithub {
   mapping?: GithubUserMapping | null;
 }
 
-export function GithubIntegrationTab({ workspaceId }: { workspaceId: string }) {
+export function GithubIntegrationTab({
+  workspaceId,
+  backendStatus,
+}: {
+  workspaceId: string;
+  backendStatus?: GitHubHealthResponse | null;
+}) {
   const { user } = useWorkspace();
 
   const [installation, setInstallation] = useState<GithubInstallation | null>(null);
@@ -471,15 +476,22 @@ export function GithubIntegrationTab({ workspaceId }: { workspaceId: string }) {
                 <h3 className="text-sm font-bold text-zinc-100">GitHub App Integration</h3>
                 <span
                   className={`text-[10px] font-mono uppercase font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 ${
-                    isConnected
+                    isConnected || backendStatus?.status === 'ok'
                       ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800'
+                      : backendStatus?.status === 'degraded'
+                      ? 'bg-amber-950/80 text-amber-300 border border-amber-800'
                       : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
                   }`}
                 >
-                  {isConnected ? (
+                  {isConnected || backendStatus?.status === 'ok' ? (
                     <>
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       Active Connection
+                    </>
+                  ) : backendStatus?.status === 'degraded' ? (
+                    <>
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                      Degraded
                     </>
                   ) : (
                     'Not Connected'
@@ -582,6 +594,42 @@ export function GithubIntegrationTab({ workspaceId }: { workspaceId: string }) {
               <span className="text-zinc-400">
                 {installation.last_sync_at ? new Date(installation.last_sync_at).toLocaleString() : 'Never'}
               </span>
+            </div>
+          </div>
+        )}
+
+        {backendStatus && (
+          <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-950/60 font-mono text-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                <span className="text-zinc-200 font-semibold">Python Verification Engine (Phase 3 Backend)</span>
+              </div>
+              <span className={`text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full border ${
+                backendStatus.status === 'ok'
+                  ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800'
+                  : 'bg-amber-950/80 text-amber-300 border-amber-800'
+              }`}>
+                {backendStatus.status === 'ok' ? 'Online • Authenticated' : backendStatus.status}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-[11px] text-zinc-400">
+              <div>
+                <span className="text-zinc-500 block text-[10px] uppercase font-sans">GitHub App Auth</span>
+                <span className="text-zinc-200">{backendStatus.app_configured ? 'Active (Private Key & App ID)' : 'Not Configured'}</span>
+              </div>
+              <div>
+                <span className="text-zinc-500 block text-[10px] uppercase font-sans">Installation Status</span>
+                <span className="text-zinc-200">{backendStatus.installation_found ? 'Verified Linked' : backendStatus.token_configured ? 'Personal Token' : 'Pending'}</span>
+              </div>
+              <div>
+                <span className="text-zinc-500 block text-[10px] uppercase font-sans">Accessible Repositories</span>
+                <span className="text-zinc-200 truncate block">
+                  {backendStatus.accessible_repositories && backendStatus.accessible_repositories.length > 0
+                    ? backendStatus.accessible_repositories.join(', ')
+                    : 'None detected'}
+                </span>
+              </div>
             </div>
           </div>
         )}

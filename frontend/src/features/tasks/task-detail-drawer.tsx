@@ -20,8 +20,11 @@ import {
   CheckCircle,
   AlertTriangle,
   Users,
+  RefreshCw,
 } from '@/components/ui/pica-icons';
 import { createClient } from '@/lib/supabase/client';
+import { triggerTaskVerification, getTaskDignityScore } from '@/lib/api';
+import type { VerifyClaimResponse, CalculateScoreResponse } from '@/types';
 import type {
   TaskPriority,
   TaskStatus,
@@ -128,6 +131,13 @@ export function TaskDetailDrawer({
   const [routingDecision, setRoutingDecision] = useState<RoutingDecisionRecord | null>(null);
   const [loadingEvidence, setLoadingEvidence] = useState<boolean>(false);
 
+  // Backend Phase 3/4 Verification & Dignity state
+  const [verificationData, setVerificationData] = useState<VerifyClaimResponse | null>(null);
+  const [verifying, setVerifying] = useState<boolean>(false);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
+  const [taskDignity, setTaskDignity] = useState<CalculateScoreResponse | null>(null);
+  const [loadingDignity, setLoadingDignity] = useState<boolean>(false);
+
   // Submit claim modal state
   const [isClaimModalOpen, setIsClaimModalOpen] = useState<boolean>(false);
   const [claimText, setClaimText] = useState<string>('');
@@ -188,11 +198,51 @@ export function TaskDetailDrawer({
     setDescription(task.description || '');
     setTitle(task.title);
 
+    setVerificationData(null);
+    setVerificationError(null);
+
     // Load comments
     loadComments(task.id);
     // Load evidence and claims
     loadEvidenceAndClaims(task.id);
+    // Load dignity score
+    loadTaskDignity(task.id);
   }, [task]);
+
+  const loadTaskDignity = async (taskId: string) => {
+    setLoadingDignity(true);
+    try {
+      const res = await getTaskDignityScore(taskId, workspaceId);
+      setTaskDignity(res);
+    } catch (err) {
+      console.warn('Failed to load task dignity score:', err);
+    } finally {
+      setLoadingDignity(false);
+    }
+  };
+
+  const handleTriggerVerification = async () => {
+    if (!task) return;
+    setVerifying(true);
+    setVerificationError(null);
+    try {
+      const latestClaim = claims[0];
+      const res = await triggerTaskVerification({
+        taskId: task.id,
+        workspaceId,
+        claimId: latestClaim?.id,
+        claimText: latestClaim?.claim_text || task.title,
+      });
+      setVerificationData(res);
+      await loadEvidenceAndClaims(task.id);
+      await loadTaskDignity(task.id);
+      onTaskUpdated();
+    } catch (err: unknown) {
+      setVerificationError(err instanceof Error ? err.message : 'Verification failed');
+    } finally {
+      setVerifying(false);
+    }
+  };
 
   const loadEvidenceAndClaims = async (taskId: string) => {
     setLoadingEvidence(true);
@@ -654,6 +704,207 @@ export function TaskDetailDrawer({
               >
                 <Plus className="h-3.5 w-3.5" /> Submit Work Claim
               </button>
+            </div>
+
+            {/* Verification & Real-Time Evidence (Phase 3 Backend Integration) */}
+            <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-950/70 space-y-3.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                  <span className="text-xs font-semibold text-zinc-100">Live Verification Engine</span>
+                </div>
+                <button
+                  onClick={handleTriggerVerification}
+                  disabled={verifying}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800 text-emerald-300 text-xs font-medium transition-all shadow-sm disabled:opacity-50"
+                >
+                  {verifying ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" /> Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="h-3.5 w-3.5" /> Verify via GitHub
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Status semantics badge */}
+              {(() => {
+                const rawStatus =
+                  verificationData?.verification_status ||
+                  (claims.length > 0
+                    ? claims[0].review_state === 'supported'
+                      ? 'verified'
+                      : claims[0].review_state === 'partially_supported'
+                      ? 'partial_evidence'
+                      : claims[0].review_state === 'pending'
+                      ? 'needs_review'
+                      : 'awaiting_evidence'
+                    : 'awaiting_evidence');
+
+                const statusMap: Record<
+                  string,
+                  { label: string; badgeCls: string; dotCls: string }
+                > = {
+                  verified: {
+                    label: 'Verified Completion',
+                    badgeCls: 'bg-emerald-950/80 text-emerald-300 border-emerald-800',
+                    dotCls: 'bg-emerald-400',
+                  },
+                  partial_evidence: {
+                    label: 'Partial Evidence',
+                    badgeCls: 'bg-amber-950/80 text-amber-300 border-amber-800',
+                    dotCls: 'bg-amber-400',
+                  },
+                  awaiting_evidence: {
+                    label: 'Awaiting Evidence',
+                    badgeCls: 'bg-zinc-900 text-zinc-300 border-zinc-700',
+                    dotCls: 'bg-zinc-400',
+                  },
+                  no_evidence: {
+                    label: 'Awaiting Evidence',
+                    badgeCls: 'bg-zinc-900 text-zinc-300 border-zinc-700',
+                    dotCls: 'bg-zinc-400',
+                  },
+                  blocked: {
+                    label: 'Blocked by Dependency',
+                    badgeCls: 'bg-rose-950/80 text-rose-300 border-rose-800',
+                    dotCls: 'bg-rose-400',
+                  },
+                  identity_mismatch: {
+                    label: 'Identity Mismatch',
+                    badgeCls: 'bg-rose-950/80 text-rose-300 border-rose-800',
+                    dotCls: 'bg-rose-400',
+                  },
+                  repository_mismatch: {
+                    label: 'Repository Mismatch',
+                    badgeCls: 'bg-amber-950/80 text-amber-300 border-amber-800',
+                    dotCls: 'bg-amber-400',
+                  },
+                  human_review: {
+                    label: 'Human Review Required',
+                    badgeCls: 'bg-purple-950/80 text-purple-300 border-purple-800',
+                    dotCls: 'bg-purple-400',
+                  },
+                  needs_review: {
+                    label: 'Human Review Required',
+                    badgeCls: 'bg-purple-950/80 text-purple-300 border-purple-800',
+                    dotCls: 'bg-purple-400',
+                  },
+                  unavailable: {
+                    label: 'Verification Unavailable',
+                    badgeCls: 'bg-zinc-900 text-zinc-400 border-zinc-800',
+                    dotCls: 'bg-zinc-500',
+                  },
+                };
+
+                const cfg = statusMap[rawStatus] || statusMap['awaiting_evidence'];
+
+                return (
+                  <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-lg bg-zinc-900/60 border border-zinc-800">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-zinc-400 font-mono">Verification State:</span>
+                      <span
+                        className={`text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-full border flex items-center gap-1.5 ${cfg.badgeCls}`}
+                      >
+                        <span className={`h-1.5 w-1.5 rounded-full ${cfg.dotCls}`} />
+                        {cfg.label}
+                      </span>
+                    </div>
+                    {verificationData?.next_action && (
+                      <span className="text-[10px] font-mono text-zinc-400">
+                        Next Action:{' '}
+                        <strong className="text-zinc-200">
+                          {verificationData.next_action.replace('_', ' ')}
+                        </strong>
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* Latest Contributor Claim details */}
+              {claims.length > 0 ? (
+                <div className="p-3 rounded-lg bg-zinc-900/40 border border-zinc-800/80 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-400">
+                      Latest Claim by{' '}
+                      <strong className="text-zinc-200">
+                        {claims[0].profiles?.display_name || 'Member'}
+                      </strong>
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-500">
+                      {new Date(claims[0].created_at).toLocaleString()} • via {claims[0].claim_source}
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-300 italic">&ldquo;{claims[0].claim_text}&rdquo;</p>
+                </div>
+              ) : (
+                <div className="text-[11px] text-zinc-500 italic p-2 bg-zinc-900/30 rounded border border-zinc-800/50">
+                  No contributor completion claim recorded yet.
+                </div>
+              )}
+
+              {/* Backend Evidence & Reasons */}
+              {verificationData?.reasons && verificationData.reasons.length > 0 && (
+                <div className="p-3 rounded-lg bg-zinc-900/40 border border-zinc-800/80 space-y-1">
+                  <span className="text-[10px] font-mono uppercase text-zinc-400 font-semibold block">
+                    Backend Evidence &amp; Evaluation Reasons:
+                  </span>
+                  <ul className="list-disc list-inside space-y-0.5 text-[11px] text-zinc-300 font-mono">
+                    {verificationData.reasons.map((r, idx) => (
+                      <li key={idx}>{r}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Verification Error Notice */}
+              {verificationError && (
+                <div className="p-2.5 rounded-lg bg-rose-950/30 border border-rose-900/60 text-rose-300 text-xs flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+                  <span>{verificationError}</span>
+                </div>
+              )}
+
+              {/* Dignity & Contribution Potential */}
+              {taskDignity && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 rounded-lg bg-zinc-900/30 border border-zinc-800/60 text-xs font-mono">
+                  <div>
+                    <span className="text-zinc-500 block text-[10px] uppercase font-sans">Task Scope / Value (Vt)</span>
+                    <span className="text-zinc-200 font-bold">
+                      {taskDignity.accepted_contribution_points.toFixed(1)} pts
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-zinc-500 block text-[10px] uppercase font-sans">Reliability State</span>
+                    <span className="text-zinc-300">
+                      {taskDignity.claim_reliability.status === 'insufficient_data'
+                        ? 'Insufficient data (<3)'
+                        : `${taskDignity.claim_reliability.score ?? '—'}`}
+                    </span>
+                  </div>
+                  <div className="col-span-2 sm:col-span-1">
+                    <span className="text-zinc-500 block text-[10px] uppercase font-sans">Audit Model</span>
+                    <span className="text-zinc-400 text-[10px]">Formula v1 (Phase 3)</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Last Status Transition */}
+              <div className="pt-2 border-t border-zinc-800/60 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+                <span>
+                  Current Status: <strong className="text-zinc-300 uppercase">{task.status.replace('_', ' ')}</strong>
+                </span>
+                {task.status_changed_at && (
+                  <span>
+                    Updated {new Date(task.status_changed_at).toLocaleDateString()}
+                    {task.status_reason ? ` • "${task.status_reason}"` : ''}
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Claims List */}

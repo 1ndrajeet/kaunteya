@@ -1,1120 +1,1505 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+/**
+ * TaskPilot landing page: single file, replaces frontend/src/app/page.tsx
+ *
+ * - Theme: light / system / dark, persisted under "taskpilot-theme", synced across tabs,
+ *   follows the OS while on "system". Also toggles the `dark` class on <html> so the rest
+ *   of the app (shadcn / Tailwind `dark:`) stays in step.
+ * - All demonstration content is fictional, deterministic and runs locally. Nothing on this
+ *   page calls Slack, GitHub, Supabase or any AI provider.
+ * - Metadata cannot be exported from a client component. Keep title / description / Open Graph
+ *   in app/layout.tsx.
+ */
+
+import Link from "next/link";
 import {
-  Compass,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
+import { Inter, Instrument_Serif } from "next/font/google";
+import {
   ArrowRight,
-  ShieldCheck,
-  Users,
-  GitPullRequest,
-  GitCommit,
-  GitBranch,
-  MessageSquare,
-  CheckCircle2,
-  Clock,
-  Layers,
-  ExternalLink,
-  ChevronRight,
-  AlertCircle,
-  AlertTriangle,
-  Terminal,
-  Play,
-  RefreshCw,
-  Zap,
-  Github,
-  Slack,
   Check,
-  X,
+  ChevronDown,
+  ChevronRight,
+  ClipboardList,
+  GitBranch,
+  GitPullRequest,
+  Info,
+  LayoutList,
   Menu,
-  Bot,
-  Filter,
-} from '@/components/ui/pica-icons';
-import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
-import type { User } from '@supabase/supabase-js';
+  MessageSquare,
+  Monitor,
+  Moon,
+  Pause,
+  Play,
+  RotateCcw,
+  Scale,
+  ShieldCheck,
+  SkipBack,
+  SkipForward,
+  Sun,
+  TriangleAlert,
+  UserCheck,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 
-export default function LandingPage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [configured, setConfigured] = useState<boolean>(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+/* ------------------------------------------------------------------ */
+/* Fonts                                                              */
+/* ------------------------------------------------------------------ */
 
-  // Interactive Demo State
-  const [demoStep, setDemoStep] = useState<'initial' | 'processing' | 'resolved'>('initial');
-  const [activeTab, setActiveTab] = useState<'board' | 'incoming' | 'evidence'>('board');
+const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const serif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+  display: "swap",
+});
+
+/* ------------------------------------------------------------------ */
+/* Theme store (no setState-in-effect; works with SSR)                */
+/* ------------------------------------------------------------------ */
+
+type ThemePref = "light" | "dark" | "system";
+const THEME_KEY = "taskpilot-theme";
+const THEME_EVENT = "tp-theme-change";
+const DARK_QUERY = "(prefers-color-scheme: dark)";
+const MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+function readPref(): ThemePref {
+  try {
+    const v = localStorage.getItem(THEME_KEY);
+    return v === "light" || v === "dark" ? v : "system";
+  } catch {
+    return "system";
+  }
+}
+function subscribeTheme(cb: () => void) {
+  const mq = window.matchMedia(DARK_QUERY);
+  window.addEventListener("storage", cb);
+  window.addEventListener(THEME_EVENT, cb);
+  mq.addEventListener("change", cb);
+  return () => {
+    window.removeEventListener("storage", cb);
+    window.removeEventListener(THEME_EVENT, cb);
+    mq.removeEventListener("change", cb);
+  };
+}
+const readSystemDark = () => window.matchMedia(DARK_QUERY).matches;
+function subscribeMotion(cb: () => void) {
+  const mq = window.matchMedia(MOTION_QUERY);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+}
+const readReducedMotion = () => window.matchMedia(MOTION_QUERY).matches;
+
+/* ------------------------------------------------------------------ */
+/* Styles (scoped under .tp, theme driven by the `dark` class on <html>) */
+/* ------------------------------------------------------------------ */
+
+const CSS = `
+.tp{
+  --bg:#100f0d; --surface:#181612; --surface-2:#211e19; --border:#322e27;
+  --fg:#f4efe6; --muted:#a9a193; --accent:#f2a93b; --accent-fg:#17110a;
+  --ok:#7fd49a; --warn:#f2a93b; --bad:#f29484; --info:#8fbbf2;
+  color-scheme:dark;
+  background:var(--bg); color:var(--fg);
+  font-family:var(--font-sans),system-ui,-apple-system,"Segoe UI",sans-serif;
+  line-height:1.6; min-height:100vh; -webkit-font-smoothing:antialiased;
+}
+html:not(.dark) .tp{
+  --bg:#f8f7f4; --surface:#ffffff; --surface-2:#f0eee9; --border:#ddd8ce;
+  --fg:#1c1a16; --muted:#5f584b; --accent:#9a4a07; --accent-fg:#ffffff;
+  --ok:#1d6b3a; --warn:#8a4206; --bad:#a3341f; --info:#1f4f8f;
+  color-scheme:light;
+}
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+html.tp-switching, html.tp-switching *{
+  transition:background-color .2s ease,border-color .2s ease,color .2s ease !important;
+}
+@media (prefers-reduced-motion:reduce){ html.tp-switching, html.tp-switching *{transition:none !important} }
+
+.tp :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.tp a{color:inherit;text-decoration:none}
+.tp ::selection{background:var(--accent);color:var(--accent-fg)}
+
+.tp .display,.tp .h2,.tp .h3{font-family:var(--font-serif),Georgia,"Times New Roman",serif;font-weight:400;letter-spacing:-.012em}
+.tp .display{font-size:clamp(2.5rem,5.6vw,4.5rem);line-height:1.03}
+.tp .h2{font-size:clamp(2rem,4vw,3.1rem);line-height:1.08}
+.tp .h3{font-size:1.6rem;line-height:1.15}
+.tp .lead{color:var(--muted);font-size:1.075rem;max-width:62ch}
+.tp .muted{color:var(--muted)}
+.tp .accent{color:var(--accent)}
+.tp .small{font-size:.875rem}
+
+.tp .nav{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+.tp .sec{padding:5.5rem 0;border-top:1px solid var(--border);scroll-margin-top:4rem}
+.tp .sec-hero{padding:4.5rem 0 5.5rem}
+.tp .panel{background:var(--surface);border:1px solid var(--border);border-radius:14px}
+.tp .panel-2{background:var(--surface-2);border:1px solid var(--border);border-radius:10px}
+.tp .rule-t{border-top:1px solid var(--border)}
+
+.tp .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:10px;padding:.7rem 1.15rem;font-weight:500;font-size:.95rem;line-height:1.2;cursor:pointer;border:1px solid transparent;transition:background-color .15s,filter .15s,border-color .15s}
+.tp .btn-primary{background:var(--accent);color:var(--accent-fg)}
+.tp .btn-primary:hover{filter:brightness(1.08)}
+.tp .btn-ghost{border-color:var(--border);color:var(--fg);background:transparent}
+.tp .btn-ghost:hover{background:var(--surface-2)}
+.tp .btn-sm{padding:.45rem .8rem;font-size:.85rem}
+.tp .btn[disabled]{opacity:.45;cursor:not-allowed}
+.tp .navlink{color:var(--muted);font-size:.92rem;padding:.35rem .6rem;border-radius:8px;transition:color .15s}
+.tp .navlink:hover{color:var(--fg)}
+
+.tp .chip{display:inline-flex;align-items:center;gap:.3rem;border:1px solid currentColor;border-radius:999px;padding:.1rem .55rem;font-size:.76rem;font-weight:500;line-height:1.5;white-space:nowrap}
+.tp .chip-ok{color:var(--ok)} .tp .chip-warn{color:var(--warn)} .tp .chip-bad{color:var(--bad)} .tp .chip-info{color:var(--info)}
+.tp .chip-neutral{color:var(--muted)}
+
+.tp .seg{display:inline-flex;gap:2px;padding:2px;border:1px solid var(--border);border-radius:999px;background:var(--surface)}
+.tp .seg button{display:grid;place-items:center;width:1.75rem;height:1.75rem;border-radius:999px;color:var(--muted);cursor:pointer;transition:color .15s,background-color .15s}
+.tp .seg button:hover{color:var(--fg)}
+.tp .seg button[aria-checked="true"]{background:var(--accent);color:var(--accent-fg)}
+
+.tp .hr{display:grid;grid-template-columns:2rem 1fr;gap:.9rem;padding:1rem 0;border-top:1px solid var(--border);opacity:.35;transform:translateY(4px);transition:opacity .45s ease,transform .45s ease}
+.tp .hr:first-child{border-top:0}
+.tp .hr[data-on="true"]{opacity:1;transform:none}
+.tp .node{display:grid;place-items:center;width:2rem;height:2rem;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);color:var(--muted)}
+.tp .hr[data-on="true"] .node{border-color:var(--accent);color:var(--accent)}
+@media (prefers-reduced-motion:reduce){ .tp .hr{transition:none;transform:none} }
+
+.tp .acc{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease}
+.tp .acc[data-open="true"]{grid-template-rows:1fr}
+.tp .acc>div{overflow:hidden;min-height:0}
+@media (prefers-reduced-motion:reduce){ .tp .acc{transition:none} }
+
+.tp .tab{display:grid;grid-template-columns:1.75rem 1fr auto;align-items:center;gap:.75rem;width:100%;text-align:left;padding:.8rem .9rem;border-radius:10px;border:1px solid transparent;cursor:pointer;color:var(--muted);transition:background-color .15s,color .15s,border-color .15s}
+.tp .tab:hover{background:var(--surface-2);color:var(--fg)}
+.tp .tab[aria-selected="true"]{background:var(--surface);border-color:var(--border);color:var(--fg)}
+.tp .tab .idx{font-variant-numeric:tabular-nums;font-size:.85rem;color:var(--muted)}
+.tp .tab[aria-selected="true"] .idx{color:var(--accent)}
+
+.tp .band{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.tp .band>div{padding:.55rem .75rem;border:1px solid var(--border);border-radius:10px;font-size:.85rem;color:var(--muted)}
+.tp .band>div[data-on="true"]{border-color:var(--accent);color:var(--fg);background:var(--surface-2)}
+
+.tp .log{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.8rem;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.tp .log li{padding:.1rem 0}
+
+.tp .kv{display:grid;grid-template-columns:minmax(0,9rem) 1fr auto;gap:.5rem 1rem;padding:.7rem 0;border-top:1px solid var(--border);align-items:start}
+.tp .kv:first-child{border-top:0}
+@media (max-width:640px){ .tp .kv{grid-template-columns:1fr auto} .tp .kv>.k{grid-column:1/-1} }
+
+.tp .layer{display:grid;grid-template-columns:9.5rem 1.5rem 1fr;gap:1rem;align-items:start}
+.tp .layer .spine{position:relative;align-self:stretch;display:flex;justify-content:center}
+.tp .layer .spine::before{content:"";position:absolute;top:0;bottom:-1.25rem;width:1px;background:var(--border)}
+.tp .layer:last-child .spine::before{bottom:auto;height:.9rem}
+.tp .layer .dot{position:relative;margin-top:.45rem;width:.7rem;height:.7rem;border-radius:999px;background:var(--surface-2);border:2px solid var(--muted)}
+.tp .layer[data-key="ai"] .dot{border-color:var(--accent);background:var(--accent)}
+.tp .layer[data-key="rules"] .dot{border-color:var(--ok);background:var(--ok)}
+.tp .layer[data-key="human"] .dot{border-color:var(--info);background:var(--info)}
+@media (max-width:640px){ .tp .layer{grid-template-columns:1.5rem 1fr} .tp .layer .zone{grid-column:2;order:3} }
+
+.tp table{border-collapse:collapse;width:100%;min-width:640px}
+.tp th,.tp td{padding:.95rem 1rem;text-align:left;vertical-align:top;border-top:1px solid var(--border);font-size:.95rem}
+.tp thead th{border-top:0;color:var(--muted);font-weight:500;font-size:.85rem}
+.tp tbody th{font-weight:500}
+.tp td.col-tp{background:var(--surface-2)}
+
+.tp .skip{position:absolute;left:-999px;top:0;background:var(--accent);color:var(--accent-fg);padding:.6rem 1rem;border-radius:0 0 10px 0;z-index:60}
+.tp .skip:focus{left:0}
+`;
+
+/* ------------------------------------------------------------------ */
+/* Small shared helpers                                               */
+/* ------------------------------------------------------------------ */
+
+type Tone = "ok" | "warn" | "bad" | "info";
+const TONE_ICON: Record<Tone, LucideIcon> = {
+  ok: Check,
+  warn: TriangleAlert,
+  bad: X,
+  info: Info,
+};
+
+function Chip({ tone, children }: { tone: Tone; children: ReactNode }) {
+  const Icon = TONE_ICON[tone];
+  return (
+    <span className={`chip chip-${tone}`}>
+      <Icon size={12} aria-hidden="true" />
+      {children}
+    </span>
+  );
+}
+
+type KV = { k: string; v: string; tone?: Tone; label?: string };
+
+/* ------------------------------------------------------------------ */
+/* Content                                                            */
+/* ------------------------------------------------------------------ */
+
+const NAV = [
+  { href: "#product", label: "Product" },
+  { href: "#how", label: "How it works" },
+  { href: "#dignity", label: "Dignity Score" },
+  { href: "#security", label: "Security" },
+  { href: "#integrations", label: "Integrations" },
+];
+
+const HERO_ROWS: {
+  icon: LucideIcon;
+  title: string;
+  detail: string;
+  tone: Tone;
+  label: string;
+}[] = [
+  {
+    icon: MessageSquare,
+    title: "Claim received from Slack",
+    detail: "“Finished the API validation task.” Maya R. in #backend.",
+    tone: "info",
+    label: "Received",
+  },
+  {
+    icon: UserCheck,
+    title: "Task and person matched",
+    detail: "VAL-12, API request validation, is assigned to Maya R. Her Slack account is linked to her workspace profile.",
+    tone: "ok",
+    label: "Verified",
+  },
+  {
+    icon: GitBranch,
+    title: "Repository checked",
+    detail: "acme/orders-api is authorized for this project.",
+    tone: "ok",
+    label: "Authorized",
+  },
+  {
+    icon: GitPullRequest,
+    title: "Evidence found",
+    detail: "PR #48, “Add request schema validation”: merged, one approving review, checks passed, authored by the linked account.",
+    tone: "ok",
+    label: "Consistent",
+  },
+  {
+    icon: Scale,
+    title: "Policy evaluated",
+    detail: "Completion needs linked evidence from the assignee and a reviewed merge. Both are present.",
+    tone: "ok",
+    label: "Rule met",
+  },
+  {
+    icon: ClipboardList,
+    title: "Outcome prepared",
+    detail: "Completion proposed with the evidence attached. A lead can confirm it or reopen the task.",
+    tone: "info",
+    label: "Awaiting lead",
+  },
+];
+
+type Group = "input" | "ai" | "rules" | "human";
+const STAGES: {
+  id: string;
+  name: string;
+  group: Group;
+  who: string;
+  body: string;
+  does: string[];
+  cannot: string[];
+}[] = [
+  {
+    id: "capture",
+    name: "Capture",
+    group: "input",
+    who: "Integration",
+    body: "A progress report arrives from an authorized Slack channel or from inside the app.",
+    does: ["Verify the request signature", "Drop duplicate events", "Keep only authorized channels and threads"],
+    cannot: ["Treat a message as proof of completion", "Read channels the bot was not added to"],
+  },
+  {
+    id: "understand",
+    name: "Understand",
+    group: "ai",
+    who: "AI",
+    body: "A model reads the text and proposes which task it refers to and what is being claimed.",
+    does: ["Extract task, status, blocker and progress", "Say when a message is unclear or covers several tasks"],
+    cannot: ["Write to the database", "Choose its own permissions", "Follow instructions hidden in the message it reads"],
+  },
+  {
+    id: "validate",
+    name: "Validate",
+    group: "rules",
+    who: "Rules",
+    body: "Fixed checks decide whether the proposal may go any further.",
+    does: [
+      "Match the sender to a workspace member",
+      "Confirm the task belongs to this workspace",
+      "Check the status change is allowed",
+      "Refuse changes that would overwrite newer state",
+    ],
+    cannot: ["Be overridden by model confidence"],
+  },
+  {
+    id: "verify",
+    name: "Verify",
+    group: "rules",
+    who: "Rules",
+    body: "Where the project links a repository, available GitHub activity is retrieved and compared with the claim.",
+    does: [
+      "Read pull requests, commits, reviews and checks the app is authorized to see",
+      "Compare the author with the linked account",
+      "Keep a source reference for each item",
+    ],
+    cannot: ["Treat a commit as proof of delivery", "Treat missing activity as proof that nothing was done"],
+  },
+  {
+    id: "evaluate",
+    name: "Evaluate",
+    group: "rules",
+    who: "Rules",
+    body: "The project’s policy is applied to the claim and the evidence it found.",
+    does: ["Accept, hold for review or ask for clarification", "Say which rule led to the outcome", "Mark missing evidence as uncertainty"],
+    cannot: ["Invent evidence", "Penalize anyone automatically", "Rank people"],
+  },
+  {
+    id: "review",
+    name: "Review",
+    group: "human",
+    who: "Human",
+    body: "A lead or administrator looks at disputed, ambiguous or consequential cases.",
+    does: ["Open the claim, evidence and reasoning together", "Accept, reject or ask for more", "Leave a reason that is recorded"],
+    cannot: ["Approve their own disputed claim", "Edit audit history"],
+  },
+  {
+    id: "record",
+    name: "Record",
+    group: "rules",
+    who: "Rules",
+    body: "Approved changes and the reasons behind them are saved.",
+    does: ["Persist the task change", "Write an activity entry linking source, checks and rule", "Show the new state in the workspace"],
+    cannot: ["Rewrite earlier entries"],
+  },
+];
+
+const DIGNITY_PRINCIPLES = [
+  "Evidence supports a claim. It does not replace context.",
+  "Commit counts and message volume are not contribution.",
+  "Missing evidence is uncertainty, not misconduct.",
+  "Models read and summarize. Rules decide what can change.",
+  "Every conclusion shows its sources and can be challenged.",
+  "People review disputed outcomes, and their decisions are recorded.",
+];
+
+const DIGNITY_PANELS: { title: string; tone: Tone; label: string; body: string }[] = [
+  {
+    title: "Reported contribution",
+    tone: "info",
+    label: "Claimed",
+    body: "Maya R. wrote in #backend: “Finished the report export.” The agent extracted task REP-7, status complete, and no blocker.",
+  },
+  {
+    title: "Supporting evidence",
+    tone: "ok",
+    label: "Found",
+    body: "PR #61, “Add CSV export for reports,” was merged two days before the claim with one approving review. A Slack thread shows the design discussion that shaped the work.",
+  },
+  {
+    title: "Identity and repository",
+    tone: "warn",
+    label: "Needs confirmation",
+    body: "acme/reports-api is authorized. The PR author’s GitHub account is not linked to Maya’s workspace profile, and the commit uses a personal email. That is common when people commit from a second account.",
+  },
+  {
+    title: "Criteria applied",
+    tone: "info",
+    label: "Project rules",
+    body: "The project’s completion policy asks for evidence from the linked repository, credited to the assignee, with a reviewed merge. Checks are reported when the repository has them. This page publishes no weights or formula.",
+  },
+  {
+    title: "Missing or conflicting evidence",
+    tone: "warn",
+    label: "Unresolved",
+    body: "No CI checks are configured for this repository, so none are reported. Missing checks are not counted against anyone. The author mismatch is unresolved.",
+  },
+  {
+    title: "Outcome and explanation",
+    tone: "warn",
+    label: "Held for human review",
+    body: "The evidence supports the claim, but authorship cannot be confirmed automatically. Nothing here suggests misconduct. A lead can confirm the account link, ask Maya, or reopen the task, and either decision is recorded with a reason.",
+  },
+];
+
+const DEMO: { title: string; blurb: string; log: string[]; card: { title: string; rows: KV[] } }[] = [
+  {
+    title: "Claim arrives",
+    blurb: "A message lands in an authorized channel and its signature is verified.",
+    log: ["+0.0s  slack.event   message in #payments (signature verified)", "+0.0s  dedupe        event id not seen before"],
+    card: {
+      title: "Slack message",
+      rows: [
+        { k: "From", v: "Leo K." },
+        { k: "Channel", v: "#payments" },
+        { k: "Text", v: "“The API is connected, but I’m waiting for test credentials.”" },
+      ],
+    },
+  },
+  {
+    title: "Agent reads the claim",
+    blurb: "A model proposes structured fields. Nothing is applied yet.",
+    log: [
+      "+0.4s  ai.interpret  candidate tasks: 1",
+      "+0.9s  proposal      status=blocked blocker=\"Waiting for test credentials\"",
+      "+0.9s  schema        proposal is valid",
+    ],
+    card: {
+      title: "Structured proposal (not yet applied)",
+      rows: [
+        { k: "status", v: "blocked", tone: "info", label: "Proposed" },
+        { k: "blocker", v: "Waiting for test credentials" },
+        { k: "progress", v: "Payment API connected; testing is pending" },
+        { k: "needs_clarification", v: "false" },
+      ],
+    },
+  },
+  {
+    title: "Task and permissions checked",
+    blurb: "Fixed checks decide whether the proposal may proceed.",
+    log: [
+      "+1.0s  identity      Slack user maps to workspace member Leo K.",
+      "+1.1s  task          PAY-4 belongs to this workspace",
+      "+1.1s  transition    in_progress to blocked is allowed",
+      "+1.1s  freshness     no newer change since the follow-up was sent",
+    ],
+    card: {
+      title: "Validation",
+      rows: [
+        { k: "Identity", v: "Slack account is linked to Leo K.", tone: "ok", label: "Verified" },
+        { k: "Workspace", v: "PAY-4 belongs to this workspace", tone: "ok", label: "Verified" },
+        { k: "Transition", v: "In progress to Blocked", tone: "ok", label: "Allowed" },
+        { k: "Freshness", v: "No newer change on the task", tone: "ok", label: "Current" },
+      ],
+    },
+  },
+  {
+    title: "GitHub evidence retrieved",
+    blurb: "Activity is read from the linked, authorized repository.",
+    log: [
+      "+1.6s  github        acme/checkout is authorized for this project",
+      "+2.0s  github        PR #52 “Integrate payment API client” (open, 2 commits)",
+      "+2.0s  github        checks: 1 pending",
+    ],
+    card: {
+      title: "Evidence",
+      rows: [
+        { k: "Repository", v: "acme/checkout", tone: "ok", label: "Authorized" },
+        { k: "PR #52", v: "“Integrate payment API client,” open, 2 commits", tone: "info", label: "Open" },
+        { k: "Author", v: "Matches Leo K.’s linked account", tone: "ok", label: "Matches" },
+        { k: "Checks", v: "1 pending", tone: "warn", label: "Pending" },
+      ],
+    },
+  },
+  {
+    title: "Evidence compared with the claim",
+    blurb: "Each part of the message is compared with what was found.",
+    log: [
+      "+2.1s  compare       “API is connected” and client code in PR #52: consistent",
+      "+2.1s  compare       “cannot test yet” and no passing test run: consistent",
+      "+2.1s  compare       completion was not claimed",
+    ],
+    card: {
+      title: "Claim and evidence",
+      rows: [
+        { k: "“API is connected”", v: "Client code is present in PR #52", tone: "ok", label: "Consistent" },
+        { k: "“Waiting for credentials”", v: "No passing test run exists yet", tone: "ok", label: "Consistent" },
+        { k: "Completion", v: "Not claimed", tone: "info", label: "None proposed" },
+      ],
+    },
+  },
+  {
+    title: "Outcome decided by rules",
+    blurb: "Policy, not model confidence, accepts or refuses the proposal.",
+    log: [
+      "+2.2s  policy        blocker reported by assignee, consistent with evidence: apply",
+      "+2.2s  policy        completion needs a merged PR and passing checks: not met",
+      "+2.2s  outcome       apply status=blocked",
+    ],
+    card: {
+      title: "Policy result",
+      rows: [
+        { k: "Blocker rule", v: "Reported by the assignee, consistent with evidence", tone: "ok", label: "Met" },
+        { k: "Completion rule", v: "Needs a merged PR and passing checks", tone: "warn", label: "Not met" },
+        { k: "Decision", v: "Set Blocked. Do not mark complete.", tone: "info", label: "By rules" },
+      ],
+    },
+  },
+  {
+    title: "Result recorded",
+    blurb: "The change is saved with its reasons and shown in the workspace.",
+    log: [
+      "+2.3s  db            PAY-4 status=blocked blocker=\"Waiting for test credentials\"",
+      "+2.3s  activity      entry saved with source message, checks and rule",
+      "+2.4s  slack.reply   “Thanks. I’ve marked this blocked on credentials. Tell me when they arrive.”",
+    ],
+    card: {
+      title: "Task PAY-4, Connect payment API",
+      rows: [
+        { k: "Status", v: "Blocked", tone: "warn", label: "Updated" },
+        { k: "Blocker", v: "Waiting for test credentials" },
+        { k: "Audit", v: "Message, checks and rule saved with the change", tone: "ok", label: "Recorded" },
+      ],
+    },
+  },
+];
+
+const LAYERS: { key: "src" | "srv" | "gate" | "ai" | "rules" | "human" | "rec"; name: string; zone: string; body: string }[] = [
+  {
+    key: "src",
+    name: "Authorized Slack and GitHub",
+    zone: "Untrusted content",
+    body: "Messages, commit text and PR descriptions are data. They cannot grant permissions or change instructions.",
+  },
+  {
+    key: "srv",
+    name: "Server-side integration layer",
+    zone: "Secrets stay here",
+    body: "Signature checks, tokens and service keys belong on the server and never reach the browser.",
+  },
+  {
+    key: "gate",
+    name: "Task, identity and permission validation",
+    zone: "Gate",
+    body: "Workspace, member, role and allowed status change are checked before anything is read or written.",
+  },
+  {
+    key: "ai",
+    name: "AI interpretation",
+    zone: "Proposes only",
+    body: "Reads text and returns a structured proposal. It has no write access and no say over permissions.",
+  },
+  {
+    key: "rules",
+    name: "Deterministic verification",
+    zone: "Decides",
+    body: "Fixed rules accept, refuse or escalate the proposal. Model confidence alone never decides an outcome.",
+  },
+  {
+    key: "human",
+    name: "Human review",
+    zone: "Accountable",
+    body: "Uncertain or consequential cases go to a lead or administrator, who record a reason.",
+  },
+  {
+    key: "rec",
+    name: "Auditable outcome",
+    zone: "Traceable",
+    body: "The change is saved with its source, the checks that ran and the rule that applied.",
+  },
+];
+
+const CONTROLS: { text: string; kind: "code" | "principle" }[] = [
+  { text: "Signature verification for Slack and GitHub webhooks", kind: "code" },
+  { text: "Row Level Security on workspace data in Supabase", kind: "code" },
+  { text: "Bot tokens, signing secrets and service keys kept out of browser code", kind: "principle" },
+  { text: "Idempotent webhook processing", kind: "principle" },
+  { text: "Least-privilege access to Slack channels and GitHub repositories", kind: "principle" },
+  { text: "Treating retrieved text as untrusted, including attempts at prompt injection", kind: "principle" },
+  { text: "A human review path for uncertain or consequential decisions", kind: "principle" },
+];
+
+const PRODUCT_ROWS = [
+  { name: "Projects and repositories", text: "Organize work by project and link the repositories that supply evidence." },
+  { name: "Tasks and assignments", text: "Priorities, deadlines, comments and a detail drawer, in list or Kanban view." },
+  { name: "Incoming triage", text: "Requests without a clear owner wait in a queue instead of being guessed at." },
+  { name: "Claims and evidence review", text: "Disputed or incomplete claims reach a person with the evidence beside them." },
+  { name: "Activity and audit history", text: "A workspace-wide record of changes, who or what made them, and why." },
+  { name: "Roles and permissions", text: "Administrators govern the workspace, leads coordinate, members report progress." },
+];
+
+const BOARD = [
+  { col: "To do", tone: "info" as Tone, task: "DOC-3", title: "Write onboarding notes", who: "Asha P." },
+  { col: "In progress", tone: "info" as Tone, task: "VAL-12", title: "API request validation", who: "Maya R." },
+  { col: "Blocked", tone: "warn" as Tone, task: "PAY-4", title: "Connect payment API", who: "Leo K." },
+  { col: "Complete", tone: "ok" as Tone, task: "UI-9", title: "Settings page layout", who: "Dev S." },
+];
+
+const COMPARE = [
+  { q: "Who says the work is done?", a: "The status update, taken as given", b: "The update, then checked against linked evidence" },
+  { q: "What does the model do?", a: "Decides and writes", b: "Proposes. Rules and people decide" },
+  { q: "When evidence is missing", a: "Silence, or a penalty", b: "Marked uncertain and sent for review" },
+  { q: "Can a conclusion be challenged?", a: "Rarely", b: "Every outcome shows its sources and can be reviewed" },
+  { q: "What is recorded?", a: "The new status", b: "The status, the source message, the checks and the rule applied" },
+];
+
+/* ------------------------------------------------------------------ */
+/* Page                                                               */
+/* ------------------------------------------------------------------ */
+
+export default function Page() {
+  /* ---- theme ---- */
+  const pref = useSyncExternalStore<ThemePref>(subscribeTheme, readPref, () => "system");
+  const systemDark = useSyncExternalStore(subscribeTheme, readSystemDark, () => true);
+  const resolved: "light" | "dark" = pref === "system" ? (systemDark ? "dark" : "light") : pref;
+  const userChanged = useRef(false);
 
   useEffect(() => {
-    setConfigured(isSupabaseConfigured());
-    const supabase = createClient();
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
+    const root = document.documentElement;
+    let t: number | undefined;
+    if (userChanged.current) {
+      root.classList.add("tp-switching");
+      t = window.setTimeout(() => root.classList.remove("tp-switching"), 260);
+      userChanged.current = false;
+    }
+    root.classList.toggle("dark", resolved === "dark");
+    root.style.colorScheme = resolved;
     return () => {
-      subscription.unsubscribe();
+      if (t) window.clearTimeout(t);
     };
-  }, []);
+  }, [resolved]);
 
-  const handleSimulateAgent = () => {
-    if (demoStep === 'processing') return;
-    setDemoStep('processing');
-    setTimeout(() => {
-      setDemoStep('resolved');
-    }, 700);
-  };
+  function choose(next: ThemePref) {
+    userChanged.current = true;
+    try {
+      if (next === "system") localStorage.removeItem(THEME_KEY);
+      else localStorage.setItem(THEME_KEY, next);
+    } catch {
+      /* storage unavailable: the choice still applies for this visit */
+    }
+    window.dispatchEvent(new Event(THEME_EVENT));
+  }
 
-  const handleResetDemo = () => {
-    setDemoStep('initial');
-  };
+  const THEME_OPTIONS: { value: ThemePref; label: string; Icon: LucideIcon }[] = [
+    { value: "light", label: "Light theme", Icon: Sun },
+    { value: "system", label: "Match system theme", Icon: Monitor },
+    { value: "dark", label: "Dark theme", Icon: Moon },
+  ];
+  const themeToggle = (
+    <div className="seg" role="radiogroup" aria-label="Colour theme">
+      {THEME_OPTIONS.map(({ value, label, Icon }) => (
+        <button
+          key={value}
+          type="button"
+          role="radio"
+          aria-checked={pref === value}
+          aria-label={label}
+          title={label}
+          onClick={() => choose(value)}
+        >
+          <Icon size={14} aria-hidden="true" />
+        </button>
+      ))}
+    </div>
+  );
 
-  const currentYear = 2026;
+  /* ---- mobile menu ---- */
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
+  /* ---- hero sequence ---- */
+  const reduceMotion = useSyncExternalStore(subscribeMotion, readReducedMotion, () => false);
+  const [heroTick, setHeroTick] = useState(0);
+  const [heroRun, setHeroRun] = useState(0);
+  const heroStep = reduceMotion ? HERO_ROWS.length - 1 : heroTick;
+  useEffect(() => {
+    if (reduceMotion) return;
+    let i = 0;
+    const id = window.setInterval(() => {
+      i += 1;
+      setHeroTick(i);
+      if (i >= HERO_ROWS.length - 1) window.clearInterval(id);
+    }, 1300);
+    return () => window.clearInterval(id);
+  }, [reduceMotion, heroRun]);
+
+  /* ---- how it works (tabs) ---- */
+  const [stage, setStage] = useState(0);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  function onTabKey(e: KeyboardEvent<HTMLButtonElement>, i: number) {
+    const last = STAGES.length - 1;
+    let n = i;
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") n = i === last ? 0 : i + 1;
+    else if (e.key === "ArrowUp" || e.key === "ArrowLeft") n = i === 0 ? last : i - 1;
+    else if (e.key === "Home") n = 0;
+    else if (e.key === "End") n = last;
+    else return;
+    e.preventDefault();
+    setStage(n);
+    tabRefs.current[n]?.focus();
+  }
+  const current = STAGES[stage];
+
+  /* ---- Dignity Score accordion ---- */
+  const [open, setOpen] = useState<boolean[]>([true, false, false, false, false, true]);
+  const allOpen = open.every(Boolean);
+
+  /* ---- agent demo ---- */
+  const LAST = DEMO.length - 1;
+  const [demoStep, setDemoStep] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const logRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!playing) return;
+    const t = window.setTimeout(() => {
+      const n = demoStep + 1;
+      setDemoStep(n);
+      if (n >= LAST) setPlaying(false);
+    }, 1700);
+    return () => window.clearTimeout(t);
+  }, [playing, demoStep, LAST]);
+  useEffect(() => {
+    const el = logRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight });
+  }, [demoStep]);
+  function play() {
+    if (demoStep >= LAST) setDemoStep(0);
+    setPlaying(true);
+  }
+  const demo = DEMO[demoStep];
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#f4f4f5] selection:bg-amber-500/20 selection:text-amber-200 antialiased font-sans">
-      {/* Background subtle texture */}
-      <div
-        className="fixed inset-0 pointer-events-none opacity-[0.035]"
-        style={{
-          backgroundImage: `radial-gradient(circle, #ffffff 1px, transparent 1px)`,
-          backgroundSize: '24px 24px',
-        }}
-        aria-hidden="true"
-      />
+    <div className={`tp ${sans.variable} ${serif.variable}`}>
+      <style>{CSS}</style>
+      <a href="#main" className="skip">
+        Skip to content
+      </a>
 
-      {/* Configuration Alert Banner if Supabase keys not set */}
-      {!configured && (
-        <div className="relative z-50 bg-amber-950/60 border-b border-amber-900/60 px-4 py-2.5 text-xs text-amber-200 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0 text-amber-400" />
-              <span>
-                <strong>Supabase credentials required:</strong> Configure{' '}
-                <code className="bg-amber-900/50 px-1 py-0.5 rounded font-mono text-amber-300">
-                  NEXT_PUBLIC_SUPABASE_URL
-                </code>{' '}
-                and anon key in <code className="font-mono">.env.local</code> to activate live authentication.
-              </span>
-            </div>
-            <Link
-              href="/login"
-              className="underline hover:text-white font-medium shrink-0 flex items-center gap-1"
-            >
-              Setup Guide <ChevronRight className="h-3 w-3" />
-            </Link>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* SECTION A: NAVIGATION                                                     */}
-      {/* ========================================================================= */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#09090b]/85 border-b border-zinc-800/80 transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Brand */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/80 flex items-center justify-center shadow-inner group-hover:border-amber-500/50 transition-colors">
-              <Compass className="h-5 w-5 text-amber-400 group-hover:rotate-45 transition-transform duration-300" />
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="font-bold tracking-tight text-base text-zinc-100 flex items-center gap-1.5">
-                TaskPilot
-              </span>
-              <span className="text-[10px] font-mono tracking-wider uppercase text-zinc-500 hidden sm:inline">
-                Agentic Coordination
-              </span>
-            </div>
+      {/* ================= Navigation ================= */}
+      <header className="nav">
+        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
+          <Link href="/" className="flex items-center gap-2" aria-label="TaskPilot home">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="accent">
+              <path d="M3.5 18.5 20.5 4.5l-4 15-4.3-5.2-8.7 4.2Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+              <path d="m12.2 14.3 8.3-9.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+            <span className="h3" style={{ fontSize: "1.45rem" }}>
+              TaskPilot
+            </span>
           </Link>
 
-          {/* Nav links */}
-          <nav className="hidden md:flex items-center gap-7 text-xs font-medium text-zinc-400">
-            <a href="#how-it-works" className="hover:text-zinc-100 transition-colors">
-              How it works
-            </a>
-            <a href="#demo" className="hover:text-zinc-100 transition-colors flex items-center gap-1">
-              <span>Interactive Demo</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
-            </a>
-            <a href="#features" className="hover:text-zinc-100 transition-colors">
-              Modules
-            </a>
-            <a href="#integrations" className="hover:text-zinc-100 transition-colors">
-              Integrations
-            </a>
-            <a href="#governance" className="hover:text-zinc-100 transition-colors">
-              Governance
-            </a>
+          <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
+            {NAV.map((n) => (
+              <a key={n.href} href={n.href} className="navlink">
+                {n.label}
+              </a>
+            ))}
           </nav>
 
-          {/* Action CTAs */}
           <div className="flex items-center gap-3">
-            {user ? (
-              <Link
-                href="/onboarding"
-                className="inline-flex items-center gap-2 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 px-4 py-2 text-xs font-semibold tracking-wide transition-all shadow-sm shadow-zinc-100/10 hover:shadow-zinc-100/20"
-              >
-                Go to Workspace <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="hidden sm:inline-flex text-xs font-medium text-zinc-400 hover:text-zinc-100 px-3 py-1.5 transition-colors"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href="/login"
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2 text-xs font-bold tracking-wide transition-all shadow-sm shadow-amber-500/20 hover:scale-[1.02]"
-                >
-                  Open TaskPilot <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </>
-            )}
-
-            {/* Mobile Hamburger Button */}
+            <div className="hidden md:block">{themeToggle}</div>
+            <Link href="/login" className="btn btn-primary btn-sm hidden sm:inline-flex">
+              Get started
+            </Link>
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors"
-              aria-label="Toggle navigation menu"
+              type="button"
+              className="btn btn-ghost btn-sm md:hidden"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              onClick={() => setMenuOpen((v) => !v)}
             >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {menuOpen ? <X size={16} aria-hidden="true" /> : <Menu size={16} aria-hidden="true" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-b border-zinc-800 bg-[#09090b]/95 backdrop-blur-xl px-4 py-4 space-y-3 text-xs">
-            <a
-              href="#how-it-works"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-zinc-300 hover:text-white"
-            >
-              How it works
-            </a>
-            <a
-              href="#demo"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-zinc-300 hover:text-white"
-            >
-              Interactive Demo
-            </a>
-            <a
-              href="#features"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-zinc-300 hover:text-white"
-            >
-              Product Modules
-            </a>
-            <a
-              href="#integrations"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-zinc-300 hover:text-white"
-            >
-              Integrations (Slack &amp; GitHub)
-            </a>
-            <a
-              href="#governance"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1.5 text-zinc-300 hover:text-white"
-            >
-              Governance &amp; Trust
-            </a>
-            <div className="pt-3 border-t border-zinc-800/80 flex flex-col gap-2">
-              <Link
-                href="/login"
-                className="w-full text-center py-2 rounded-lg border border-zinc-800 text-zinc-300 font-medium hover:bg-zinc-900"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/login"
-                className="w-full text-center py-2 rounded-lg bg-amber-500 font-bold text-zinc-950"
-              >
-                Open TaskPilot
-              </Link>
-            </div>
+        {menuOpen && (
+          <div id="mobile-menu" className="rule-t md:hidden" style={{ background: "var(--bg)" }}>
+            <nav aria-label="Mobile" className="mx-auto flex max-w-6xl flex-col gap-1 px-5 py-4 sm:px-8">
+              {NAV.map((n) => (
+                <a key={n.href} href={n.href} className="navlink" style={{ padding: ".7rem .6rem" }} onClick={() => setMenuOpen(false)}>
+                  {n.label}
+                </a>
+              ))}
+              <div className="mt-3 flex items-center justify-between gap-4">
+                {themeToggle}
+                <Link href="/login" className="btn btn-primary btn-sm" onClick={() => setMenuOpen(false)}>
+                  Get started
+                </Link>
+              </div>
+            </nav>
           </div>
         )}
       </header>
 
-      {/* ========================================================================= */}
-      {/* SECTION B: HERO — IMMEDIATE VALUE & PRODUCT INTERFACE                     */}
-      {/* ========================================================================= */}
-      <section className="relative pt-16 sm:pt-24 pb-20 border-b border-zinc-800/70 overflow-hidden">
-        {/* Subtle grid accent glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[340px] bg-amber-500/5 blur-[120px] rounded-full pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Left Column: Editorial Value Proposition */}
-            <div className="lg:col-span-5 space-y-6 text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-[11px] font-mono text-amber-300 font-medium">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping" />
-                <span>PROJECT COORDINATION, WITHOUT THE CHASING</span>
-              </div>
-
-              <h1 className="text-3xl sm:text-5xl lg:text-[46px] font-bold tracking-tight text-[#fafaf9] leading-[1.12]">
-                Your projects don&apos;t need more updates.{' '}
-                <span className="font-serif italic font-normal text-amber-300 underline decoration-amber-500/40 decoration-wavy decoration-1 underline-offset-4">
-                  They need fewer blockers.
-                </span>
+      <main id="main">
+        {/* ================= Hero ================= */}
+        <section className="sec-hero" aria-labelledby="hero-title">
+          <div className="mx-auto grid w-full max-w-7xl items-start gap-12 px-5 sm:px-8 lg:grid-cols-[1.05fr_1fr]">
+            <div>
+              <h1 id="hero-title" className="display">
+                Every contribution deserves evidence. Every evaluation deserves context.
               </h1>
-
-              <p className="text-sm sm:text-base text-zinc-400 leading-relaxed font-normal max-w-xl">
-                TaskPilot brings tasks, team communication, and development evidence into one coordinated
-                workflow—so your team can see what&apos;s moving, what&apos;s stuck, and what needs attention.
+              <p className="lead mt-6">
+                TaskPilot connects team coordination, verified engineering activity and explainable contribution evaluation, the Dignity Score,
+                so teams can understand the work behind the outcome.
               </p>
-
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-                <Link
-                  href="/login"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-6 py-3 text-xs tracking-wider uppercase transition-all shadow-lg shadow-amber-500/15 hover:translate-y-[-1px]"
-                >
-                  <span>Explore TaskPilot</span>
-                  <ArrowRight className="h-4 w-4" />
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link href="/login" className="btn btn-primary">
+                  Get started <ArrowRight size={16} aria-hidden="true" />
                 </Link>
-                <a
-                  href="#how-it-works"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-300 font-medium px-5 py-3 text-xs transition-colors"
-                >
-                  <span>See the workflow</span>
-                  <ChevronRight className="h-3.5 w-3.5 text-zinc-500" />
+                <a href="#demo" className="btn btn-ghost">
+                  See how it works
                 </a>
               </div>
-
-              <div className="pt-3 border-t border-zinc-800/60">
-                <p className="text-[11px] font-mono text-zinc-500 flex items-center gap-2">
-                  <ShieldCheck className="h-3.5 w-3.5 text-zinc-400" />
-                  <span>Built for real projects, real teams, and work that actually needs to ship.</span>
-                </p>
-              </div>
+              <ol className="muted small mt-10 flex flex-wrap items-center gap-x-2 gap-y-1" aria-label="Flow of a claim through TaskPilot">
+                {["Slack", "TaskPilot agent", "GitHub", "Evidence", "Dignity Score"].map((s, i, arr) => (
+                  <li key={s} className="flex items-center gap-2">
+                    <span>{s}</span>
+                    {i < arr.length - 1 && <ChevronRight size={14} aria-hidden="true" />}
+                  </li>
+                ))}
+              </ol>
+              <p className="muted small mt-4 max-w-md">
+                The Dignity Score is an explanation you can inspect, not a verdict. It never reduces a person to a number.
+              </p>
             </div>
 
-            {/* Right Column: Reconstructed Live Product UI */}
-            <div className="lg:col-span-7">
-              <div className="relative rounded-2xl border border-zinc-800 bg-[#0c0c0e] p-2.5 sm:p-3 shadow-2xl shadow-black/80">
-                {/* Window Chrome */}
-                <div className="rounded-xl border border-zinc-800/90 bg-[#121215] overflow-hidden">
-                  <div className="h-10 border-b border-zinc-800 px-4 flex items-center justify-between bg-zinc-950/70">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
-                      <span className="ml-3 font-mono text-[11px] text-zinc-400 truncate">
-                        taskpilot.app/workspace/eng-core/tasks
+            <figure className="panel" style={{ padding: "1.25rem 1.4rem" }} aria-label="Illustrative contribution record">
+              <figcaption className="flex items-center justify-between gap-3 pb-3">
+                <span className="small" style={{ fontWeight: 500 }}>
+                  Contribution record
+                </span>
+                <span className="flex items-center gap-2">
+                  <span className="chip chip-neutral">Demonstration data</span>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm"
+                    onClick={() => {
+                      setHeroTick(0);
+                      setHeroRun((r) => r + 1);
+                    }}
+                    aria-label="Replay the illustrative run"
+                    title="Replay"
+                  >
+                    <RotateCcw size={14} aria-hidden="true" />
+                  </button>
+                </span>
+              </figcaption>
+              <ol>
+                {HERO_ROWS.map((r, i) => {
+                  const Icon = r.icon;
+                  return (
+                    <li key={r.title} className="hr" data-on={i <= heroStep}>
+                      <span className="node">
+                        <Icon size={15} aria-hidden="true" />
                       </span>
-                    </div>
-                    <div className="flex items-center gap-2 font-mono text-[10px] text-zinc-400">
-                      <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-amber-400">
-                        Project CORE
-                      </span>
-                    </div>
+                      <div>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <p style={{ fontWeight: 500 }}>{r.title}</p>
+                          <Chip tone={r.tone}>{r.label}</Chip>
+                        </div>
+                        <p className="muted small mt-1">{r.detail}</p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+              <p className="muted small rule-t pt-3">
+                An illustrative run with fictional people and repositories. It is not a live execution.
+              </p>
+            </figure>
+          </div>
+        </section>
+
+        {/* ================= Problem ================= */}
+        <section className="sec" aria-labelledby="problem-title">
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+            <h2 id="problem-title" className="h2 max-w-3xl">
+              Activity is visible. Contribution is harder to understand.
+            </h2>
+            <p className="lead mt-5">
+              Task boards record status, but not the evidence behind a claim. Commit counts miss most of what engineering is. Slack holds the
+              context a status field loses. Automated productivity scores ignore permissions and uncertainty. Managers need explanations they can
+              inspect, not another dashboard.
+            </p>
+
+            <div className="mt-12 grid gap-6 lg:grid-cols-[1fr_auto_1fr] lg:items-stretch">
+              <div className="panel p-6">
+                <p className="muted small">What a task board shows</p>
+                <p className="h3 mt-2">Connect payment API</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Chip tone="info">In progress</Chip>
+                  <span className="chip chip-neutral">Project 80% complete</span>
+                </div>
+                <p className="muted small mt-4">Looks healthy. Nothing says the task is stuck.</p>
+              </div>
+              <div className="muted hidden items-center lg:flex" aria-hidden="true">
+                <ChevronRight size={28} />
+              </div>
+              <div className="panel p-6">
+                <p className="muted small">What is actually happening</p>
+                <ul className="mt-3 space-y-3">
+                  <li className="flex gap-3">
+                    <MessageSquare size={16} className="muted mt-1 shrink-0" aria-hidden="true" />
+                    <span className="small">In Slack: “The API is connected, but I’m waiting for test credentials.”</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <GitPullRequest size={16} className="muted mt-1 shrink-0" aria-hidden="true" />
+                    <span className="small">In GitHub: a pull request is open and one check is still pending.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <TriangleAlert size={16} className="mt-1 shrink-0" style={{ color: "var(--warn)" }} aria-hidden="true" />
+                    <span className="small">In the project: the task should read Blocked, and say why.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <p className="muted mt-6 max-w-3xl">
+              TaskPilot connects these pieces into one contribution record: the claim, the evidence, the rule that applied and the outcome.
+            </p>
+          </div>
+        </section>
+
+        {/* ================= How it works ================= */}
+        <section id="how" className="sec" aria-labelledby="how-title">
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+            <h2 id="how-title" className="h2 max-w-3xl">
+              A claim goes through seven stages. Only one of them is the model.
+            </h2>
+            <p className="lead mt-5">
+              Select a stage to see who is responsible for it and what they are not allowed to do.
+            </p>
+
+            <div className="mt-10 grid gap-8 lg:grid-cols-[22rem_1fr]">
+              <div role="tablist" aria-label="Stages" aria-orientation="vertical" className="flex flex-col gap-1">
+                {STAGES.map((s, i) => (
+                  <button
+                    key={s.id}
+                    ref={(el) => {
+                      tabRefs.current[i] = el;
+                    }}
+                    role="tab"
+                    type="button"
+                    id={`tab-${s.id}`}
+                    aria-selected={stage === i}
+                    aria-controls={`panel-${s.id}`}
+                    tabIndex={stage === i ? 0 : -1}
+                    className="tab"
+                    onClick={() => setStage(i)}
+                    onKeyDown={(e) => onTabKey(e, i)}
+                  >
+                    <span className="idx">{i + 1}</span>
+                    <span style={{ fontWeight: 500 }}>{s.name}</span>
+                    <span className="small">{s.who}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div
+                role="tabpanel"
+                id={`panel-${current.id}`}
+                aria-labelledby={`tab-${current.id}`}
+                tabIndex={0}
+                className="panel p-6 sm:p-8"
+              >
+                <div className="band" aria-label="Who is responsible">
+                  <div data-on={current.group === "ai"}>AI interprets</div>
+                  <div data-on={current.group === "rules"}>Rules verify</div>
+                  <div data-on={current.group === "human"}>People decide</div>
+                </div>
+                {current.group === "input" && (
+                  <p className="muted small mt-2">Inputs are untrusted until the stages after this one have checked them.</p>
+                )}
+                <h3 className="h3 mt-6">
+                  {stage + 1}. {current.name}
+                </h3>
+                <p className="lead mt-2">{current.body}</p>
+                <div className="mt-6 grid gap-6 sm:grid-cols-2">
+                  <div>
+                    <p className="small" style={{ fontWeight: 500 }}>
+                      It does
+                    </p>
+                    <ul className="mt-2 space-y-2">
+                      {current.does.map((d) => (
+                        <li key={d} className="small flex gap-2">
+                          <Check size={15} className="mt-0.5 shrink-0" style={{ color: "var(--ok)" }} aria-hidden="true" />
+                          <span>{d}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-
-                  {/* Product Workspace Mockup Content */}
-                  <div className="p-4 sm:p-5 space-y-4">
-                    {/* Workspace Header */}
-                    <div className="flex items-center justify-between pb-3 border-b border-zinc-800/60">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold font-mono text-xs">
-                          C
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h2 className="text-xs font-bold text-zinc-200">Core Engine &amp; Platform</h2>
-                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                              Active
-                            </span>
-                          </div>
-                          <span className="text-[11px] text-zinc-500 font-mono">Lead: Alex Rivera</span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono px-2 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">
-                          3 open tasks
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Task Cards with Surfaced Blocker */}
-                    <div className="space-y-2.5">
-                      {/* 1. Surfaced Blocked Task */}
-                      <div className="p-3.5 rounded-xl border border-amber-600/40 bg-amber-950/20 relative group transition-all">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-[11px] text-amber-400 font-bold">CORE-14</span>
-                              <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30">
-                                Blocked
-                              </span>
-                              <span className="text-[10px] font-mono text-zinc-500">Priority: High</span>
-                            </div>
-                            <h3 className="text-xs font-semibold text-zinc-100">
-                              Connect payment API &amp; webhook ingestion
-                            </h3>
-                          </div>
-                          <div className="text-right shrink-0">
-                            <span className="text-[11px] font-mono text-zinc-400">Omkar K.</span>
-                          </div>
-                        </div>
-
-                        {/* Agent Discovered Blocker Callout */}
-                        <div className="mt-3 p-2.5 rounded-lg bg-black/50 border border-amber-500/30 text-[11px] space-y-1">
-                          <div className="flex items-center gap-1.5 text-amber-400 font-semibold font-mono text-[10px] uppercase">
-                            <AlertTriangle className="h-3 w-3" />
-                            <span>Surfaced Blocker Dependency</span>
-                          </div>
-                          <p className="text-zinc-300 text-[11px] leading-relaxed">
-                            Implementation code is written, but developer is blocked waiting on test sandbox
-                            credentials.
-                          </p>
-                          <div className="pt-1 flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                            <span>Source: Slack DM reply</span>
-                            <span className="text-amber-400 font-medium">Triage Inbox Alert &rarr;</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 2. In Progress Task with GitHub commit linked */}
-                      <div className="p-3.5 rounded-xl border border-zinc-800 bg-zinc-900/60 flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono text-[11px] text-zinc-400 font-semibold">CORE-15</span>
-                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                              In Progress
-                            </span>
-                          </div>
-                          <h3 className="text-xs font-medium text-zinc-200">
-                            Fix OAuth callback error redirect loop
-                          </h3>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-mono text-zinc-400 bg-zinc-950 px-2 py-1 rounded border border-zinc-800">
-                            <GitCommit className="h-3 w-3 text-purple-400" />
-                            <span>commit 7a8f21e</span>
-                          </div>
-                          <span className="text-[11px] font-mono text-zinc-400">Sophia M.</span>
-                        </div>
-                      </div>
-
-                      {/* 3. Verified Complete Task */}
-                      <div className="p-3.5 rounded-xl border border-zinc-800/80 bg-zinc-950/40 opacity-70 flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono text-[11px] text-zinc-500 line-through">CORE-12</span>
-                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                              Done
-                            </span>
-                          </div>
-                          <h3 className="text-xs text-zinc-400 line-through">
-                            PostgreSQL RLS 1-lead workspace governance constraint
-                          </h3>
-                        </div>
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                      </div>
-                    </div>
-
-                    {/* Footer Info */}
-                    <div className="pt-2 flex items-center justify-between text-[10px] font-mono text-zinc-500 border-t border-zinc-800/60">
-                      <span className="flex items-center gap-1.5">
-                        <Bot className="h-3.5 w-3.5 text-amber-400" />
-                        <span>TaskPilot Agent active &bull; Monitoring contributor threads</span>
-                      </span>
-                      <span>Synced 2m ago</span>
-                    </div>
+                  <div>
+                    <p className="small" style={{ fontWeight: 500 }}>
+                      It cannot
+                    </p>
+                    <ul className="mt-2 space-y-2">
+                      {current.cannot.map((d) => (
+                        <li key={d} className="small flex gap-2">
+                          <X size={15} className="mt-0.5 shrink-0" style={{ color: "var(--bad)" }} aria-hidden="true" />
+                          <span>{d}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ========================================================================= */}
-      {/* SECTION C: PROBLEM — THE HIDDEN COORDINATION TAX                           */}
-      {/* ========================================================================= */}
-      <section className="py-20 sm:py-28 border-b border-zinc-800/70 bg-[#0b0b0e] relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl space-y-3 mb-14 text-left">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-amber-400 font-semibold">
-              The Problem We Solve
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-zinc-100">
-              The task board says green.{' '}
-              <span className="font-serif italic font-normal text-zinc-400">The project says otherwise.</span>
+        {/* ================= Dignity Score ================= */}
+        <section id="dignity" className="sec" aria-labelledby="dignity-title" style={{ background: "var(--surface)" }}>
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+            <h2 id="dignity-title" className="display max-w-4xl" style={{ fontSize: "clamp(2.2rem,5vw,4rem)" }}>
+              Measure contributions without reducing people to numbers.
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-              Every software team has experienced this: work gets fragmented across Slack chats, GitHub PRs, and
-              unmaintained boards. Real delivery status stays locked in people&apos;s heads.
+            <p className="lead mt-5">
+              The Dignity Score is TaskPilot’s approach to evidence-based contribution evaluation. It lays out what was claimed, what supports it,
+              what is missing and what happens next, so a person can read the reasoning and disagree with it.
             </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Failure Mode 1 */}
-            <div className="p-5 rounded-2xl border border-dashed border-zinc-800 bg-zinc-950/60 space-y-3 relative">
-              <div className="h-8 w-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-xs font-bold text-zinc-400">
-                01
-              </div>
-              <h3 className="text-sm font-semibold text-zinc-200">Scattered Status in DMs</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                Updates happen in Slack direct messages, threads, and standup notes. The task board stays frozen and
-                unreflective of real progress.
-              </p>
-              <div className="pt-2 font-mono text-[10px] text-rose-400/90 border-t border-zinc-900 flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                <span>Result: Invisible context gaps</span>
-              </div>
-            </div>
-
-            {/* Failure Mode 2 */}
-            <div className="p-5 rounded-2xl border border-dashed border-amber-900/40 bg-amber-950/10 space-y-3 relative">
-              <div className="h-8 w-8 rounded-lg bg-amber-950/40 border border-amber-800/40 flex items-center justify-center font-mono text-xs font-bold text-amber-400">
-                02
-              </div>
-              <h3 className="text-sm font-semibold text-zinc-200">Blockers Discovered Too Late</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                A developer stops because they are waiting on an API key or schema clarification. Nobody notices until
-                the sprint deadline slips.
-              </p>
-              <div className="pt-2 font-mono text-[10px] text-amber-400 border-t border-zinc-900 flex items-center gap-1">
-                <AlertTriangle className="h-3 w-3" />
-                <span>Result: Unnecessary delivery delays</span>
-              </div>
-            </div>
-
-            {/* Failure Mode 3 */}
-            <div className="p-5 rounded-2xl border border-dashed border-zinc-800 bg-zinc-950/60 space-y-3 relative">
-              <div className="h-8 w-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-xs font-bold text-zinc-400">
-                03
-              </div>
-              <h3 className="text-sm font-semibold text-zinc-200">The Constant Chasing Tax</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                Project leads spend hours manually pinging contributors: &ldquo;Are you done with this?&rdquo;
-                &ldquo;Who owns the deployment bug?&rdquo;
-              </p>
-              <div className="pt-2 font-mono text-[10px] text-zinc-500 border-t border-zinc-900 flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                <span>Result: High lead coordination fatigue</span>
-              </div>
-            </div>
-
-            {/* Failure Mode 4 */}
-            <div className="p-5 rounded-2xl border border-dashed border-zinc-800 bg-zinc-950/60 space-y-3 relative">
-              <div className="h-8 w-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center font-mono text-xs font-bold text-zinc-400">
-                04
-              </div>
-              <h3 className="text-sm font-semibold text-zinc-200">Uncorroborated Completion</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                Tasks marked &ldquo;Done&rdquo; without any linked PR, commit, or artifact review. Unfinished edge
-                cases surface during product integration.
-              </p>
-              <div className="pt-2 font-mono text-[10px] text-zinc-500 border-t border-zinc-900 flex items-center gap-1">
-                <GitPullRequest className="h-3 w-3" />
-                <span>Result: False sense of delivery</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================================= */}
-      {/* SECTION D: HOW IT WORKS — THE 4-STAGE COORDINATION LIFECYCLE              */}
-      {/* ========================================================================= */}
-      <section id="how-it-works" className="py-20 sm:py-28 border-b border-zinc-800/70 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-amber-400 font-semibold">
-              The Architecture
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-100">
-              From scattered updates to coordinated execution.
-            </h2>
-            <p className="text-xs sm:text-sm text-zinc-400">
-              TaskPilot connects project context, contributor communication, and verifiable development evidence into
-              one continuous loop.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
-            {/* Step 1 */}
-            <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950/80 space-y-3 flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="text-xs font-mono font-bold text-amber-400">01 / CONTEXT</div>
-                <h3 className="text-base font-semibold text-zinc-100">Understand the Work</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  TaskPilot anchors on canonical project context, persistent task records, priorities, and deadlines
-                  enforced in PostgreSQL.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-zinc-900 font-mono text-[10px] text-zinc-500">
-                &bull; Scoped to project boundaries
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950/80 space-y-3 flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="text-xs font-mono font-bold text-amber-400">02 / COORDINATION</div>
-                <h3 className="text-base font-semibold text-zinc-100">Prompt Contributors</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Intended agent workflows route incoming tasks to owners, conduct follow-up sweeps, and prompt
-                  contributors where they already communicate.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-zinc-900 font-mono text-[10px] text-zinc-500">
-                &bull; Slack thread intake &amp; reminders
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="p-6 rounded-2xl border border-amber-900/50 bg-amber-950/20 space-y-3 flex flex-col justify-between shadow-lg shadow-amber-950/20">
-              <div className="space-y-3">
-                <div className="text-xs font-mono font-bold text-amber-400">03 / INTERPRETATION</div>
-                <h3 className="text-base font-semibold text-zinc-100">Distinguish Blockers</h3>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  Interprets contributor messages: distinguishes partial progress from completion, extracts blocked
-                  reasons, and flags dependencies.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-amber-900/40 font-mono text-[10px] text-amber-400 font-semibold">
-                &bull; Catches invisible dependencies
-              </div>
-            </div>
-
-            {/* Step 4 */}
-            <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950/80 space-y-3 flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="text-xs font-mono font-bold text-emerald-400">04 / VERIFICATION</div>
-                <h3 className="text-base font-semibold text-zinc-100">Update with Evidence</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Validated changes update the task board. Available GitHub PRs and commits are linked as supporting
-                  evidence for human review.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-zinc-900 font-mono text-[10px] text-zinc-500">
-                &bull; Traceable immutable audit trail
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================================= */}
-      {/* SECTION F: SIGNATURE INTERACTION — THE BLOCKED-TASK DEMONSTRATION         */}
-      {/* ========================================================================= */}
-      <section id="demo" className="py-20 sm:py-28 border-b border-zinc-800/70 bg-[#09090b] relative">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-amber-400 font-semibold flex items-center justify-center gap-1.5">
-              <Zap className="h-3.5 w-3.5" />
-              <span>Interactive Demonstration</span>
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-zinc-100">
-              A status update should reveal the blocker, not hide it.
-            </h2>
-            <p className="text-xs sm:text-sm text-zinc-400">
-              Try this interactive simulation showing how TaskPilot interprets conversational ambiguity and turns it
-              into actionable task state.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-zinc-800 bg-[#0f0f13] p-5 sm:p-8 space-y-6 shadow-2xl">
-            {/* Interactive Simulation Container */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-              {/* Left Side: Incoming Message */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-xs font-mono text-zinc-400 pb-2 border-b border-zinc-800">
-                  <span className="flex items-center gap-1.5">
-                    <Slack className="h-3.5 w-3.5 text-indigo-400" />
-                    <span>Contributor Response in Slack</span>
-                  </span>
-                  <span>10:42 AM</span>
+            <div className="mt-12 grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+              <div>
+                <ul className="space-y-4">
+                  {DIGNITY_PRINCIPLES.map((p) => (
+                    <li key={p} className="flex gap-3">
+                      <ShieldCheck size={18} className="accent mt-1 shrink-0" aria-hidden="true" />
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="panel-2 mt-8 p-4">
+                  <p className="small" style={{ fontWeight: 500 }}>
+                    What it will not do
+                  </p>
+                  <p className="muted small mt-1">
+                    Rank people, apply penalties automatically, or claim a scientific measure of worth. This page shows no numeric score and
+                    publishes no formula or weights.
+                  </p>
                 </div>
+              </div>
 
-                <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-950 space-y-2">
+              <div>
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
-                    <div className="h-6 w-6 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white font-mono">
-                      O
-                    </div>
-                    <span className="text-xs font-semibold text-zinc-200">Omkar Kulkarni</span>
-                    <span className="text-[10px] font-mono text-zinc-500">Developer</span>
+                    <span style={{ fontWeight: 500 }}>Evaluation record</span>
+                    <span className="chip chip-neutral">Fictional example</span>
                   </div>
-                  <p className="text-xs text-zinc-200 pl-8 leading-relaxed font-mono">
-                    &ldquo;The payment API is connected, but I&apos;m waiting for test credentials.&rdquo;
-                  </p>
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => setOpen(open.map(() => !allOpen))}>
+                    {allOpen ? "Collapse all" : "Expand all"}
+                  </button>
                 </div>
-
-                <div className="text-[11px] text-zinc-400 space-y-1 leading-relaxed">
-                  <p className="font-semibold text-zinc-300">The Problem with Traditional Boards:</p>
-                  <p className="text-zinc-500">
-                    Traditional boards leave this task marked <span className="text-zinc-300">In Progress</span> or{' '}
-                    <span className="text-zinc-300">Done</span>. Nobody realizes work is halted until days later.
-                  </p>
-                </div>
-
-                <div className="pt-2">
-                  {demoStep === 'initial' && (
-                    <button
-                      onClick={handleSimulateAgent}
-                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-amber-500/20 cursor-pointer"
-                    >
-                      <Play className="h-3.5 w-3.5" />
-                      <span>Process Update with TaskPilot</span>
-                    </button>
-                  )}
-
-                  {demoStep === 'processing' && (
-                    <div className="w-full py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-amber-400 flex items-center justify-center gap-2 text-xs font-mono">
-                      <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                      <span>Parsing dependencies &amp; application rules...</span>
+                <div className="panel" style={{ padding: "0 1.25rem" }}>
+                  {DIGNITY_PANELS.map((p, i) => (
+                    <div key={p.title} className={i === 0 ? "" : "rule-t"}>
+                      <h3>
+                        <button
+                          type="button"
+                          id={`acc-btn-${i}`}
+                          aria-expanded={open[i]}
+                          aria-controls={`acc-${i}`}
+                          onClick={() => setOpen(open.map((v, j) => (j === i ? !v : v)))}
+                          className="flex w-full items-center justify-between gap-3 py-4 text-left"
+                          style={{ cursor: "pointer" }}
+                        >
+                          <span style={{ fontWeight: 500 }}>{p.title}</span>
+                          <span className="flex items-center gap-3">
+                            <Chip tone={p.tone}>{p.label}</Chip>
+                            <ChevronDown
+                              size={16}
+                              aria-hidden="true"
+                              className="muted"
+                              style={{ transform: open[i] ? "rotate(180deg)" : "none", transition: reduceMotion ? "none" : "transform .2s" }}
+                            />
+                          </span>
+                        </button>
+                      </h3>
+                      <div id={`acc`.concat("-", String(i))} role="region" aria-labelledby={`acc-btn-${i}`} className="acc" data-open={open[i]} inert={!open[i]}>
+                        <div>
+                          <p className="muted pb-4">{p.body}</p>
+                        </div>
+                      </div>
                     </div>
-                  )}
+                  ))}
+                </div>
+                <p className="muted small mt-3">
+                  Evidence states always carry a word and an icon, never colour alone. Fictional people, repositories and results illustrate the
+                  interface and describe no real evaluation.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-                  {demoStep === 'resolved' && (
+        {/* ================= Agent demo ================= */}
+        <section id="demo" className="sec" aria-labelledby="demo-title">
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+            <h2 id="demo-title" className="h2 max-w-3xl">
+              Step through a real kind of run.
+            </h2>
+            <p className="lead mt-5">
+              A blocker report moves through the agent. This demonstration is deterministic and runs in your browser. It sends nothing to Slack or
+              GitHub and changes no tasks.
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-2" role="group" aria-label="Demonstration controls">
+              {playing ? (
+                <button type="button" className="btn btn-primary btn-sm" onClick={() => setPlaying(false)}>
+                  <Pause size={14} aria-hidden="true" /> Pause
+                </button>
+              ) : (
+                <button type="button" className="btn btn-primary btn-sm" onClick={play}>
+                  <Play size={14} aria-hidden="true" /> {demoStep >= LAST ? "Play again" : "Play"}
+                </button>
+              )}
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                disabled={demoStep === 0}
+                onClick={() => {
+                  setPlaying(false);
+                  setDemoStep((s) => Math.max(0, s - 1));
+                }}
+              >
+                <SkipBack size={14} aria-hidden="true" /> Previous
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                disabled={demoStep >= LAST}
+                onClick={() => {
+                  setPlaying(false);
+                  setDemoStep((s) => Math.min(LAST, s + 1));
+                }}
+              >
+                Next <SkipForward size={14} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => {
+                  setPlaying(false);
+                  setDemoStep(0);
+                }}
+              >
+                <RotateCcw size={14} aria-hidden="true" /> Reset
+              </button>
+              <span className="chip chip-neutral ml-auto">Demonstration</span>
+            </div>
+
+            <div className="mt-6 grid gap-6 lg:grid-cols-[18rem_1fr]">
+              <ol className="flex flex-col gap-1" aria-label="Steps">
+                {DEMO.map((d, i) => (
+                  <li key={d.title}>
                     <button
-                      onClick={handleResetDemo}
-                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-mono transition-colors cursor-pointer"
+                      type="button"
+                      className="tab"
+                      aria-current={demoStep === i ? "step" : undefined}
+                      aria-selected={demoStep === i}
+                      onClick={() => {
+                        setPlaying(false);
+                        setDemoStep(i);
+                      }}
                     >
-                      <RefreshCw className="h-3 w-3" />
-                      <span>Reset Interactive Demo</span>
+                      <span className="idx">{i < demoStep ? <Check size={14} aria-hidden="true" /> : i + 1}</span>
+                      <span style={{ fontWeight: 500 }}>{d.title}</span>
+                      <span />
                     </button>
-                  )}
+                  </li>
+                ))}
+              </ol>
+
+              <div className="grid gap-4">
+                <div aria-live="polite" className="panel p-5">
+                  <p className="h3">
+                    {demoStep + 1}. {demo.title}
+                  </p>
+                  <p className="muted mt-1">{demo.blurb}</p>
+                  <p className="small mt-5" style={{ fontWeight: 500 }}>
+                    {demo.card.title}
+                  </p>
+                  <div className="mt-2">
+                    {demo.card.rows.map((r) => (
+                      <div key={r.k} className="kv">
+                        <span className="k muted small">{r.k}</span>
+                        <span className="small">{r.v}</span>
+                        <span>{r.tone && r.label ? <Chip tone={r.tone}>{r.label}</Chip> : null}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="panel-2 p-4">
+                  <p className="muted small mb-2">Execution log</p>
+                  <div ref={logRef} className="log" style={{ maxHeight: "13rem", overflowY: "auto" }} tabIndex={0} role="log" aria-label="Execution log">
+                    <ul>
+                      {DEMO.slice(0, demoStep + 1).flatMap((d, i) =>
+                        d.log.map((line, j) => (
+                          <li key={`${i}-${j}`} className={i === demoStep ? "" : "muted"}>
+                            {line}
+                          </li>
+                        )),
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= Integrations ================= */}
+        <section id="integrations" className="sec" aria-labelledby="int-title">
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+            <h2 id="int-title" className="h2 max-w-3xl">
+              Slack is where work is discussed. GitHub is where it leaves evidence.
+            </h2>
+            <p className="lead mt-5">
+              Both panels below use fictional data. After you sign in, Admin, then Integrations, shows the real connection state for your workspace.
+            </p>
+
+            <div className="mt-10 grid gap-6 lg:grid-cols-2">
+              <div className="panel p-6">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="h3 flex items-center gap-2">
+                    <MessageSquare size={20} className="accent" aria-hidden="true" /> Slack
+                  </h3>
+                  <span className="chip chip-neutral">Demonstration</span>
+                </div>
+                <ul className="muted small mt-4 space-y-1">
+                  <li>Connect an authorized workspace and limit it to the channels you choose.</li>
+                  <li>Link each Slack account to a workspace member.</li>
+                  <li>Claims are extracted, validated, then applied to the task.</li>
+                </ul>
+                <div className="panel-2 mt-5 p-4">
+                  <p className="small">
+                    <span style={{ fontWeight: 500 }}>TaskPilot</span>{" "}
+                    <span className="muted">to Leo K.</span>
+                  </p>
+                  <p className="small mt-1">What’s the status of the payment API integration? Anything blocking you?</p>
+                  <p className="small mt-4">
+                    <span style={{ fontWeight: 500 }}>Leo K.</span>
+                  </p>
+                  <p className="small mt-1">The API is connected, but I’m waiting for test credentials.</p>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 px-1">
+                  <p className="small">
+                    PAY-4: <span style={{ fontWeight: 500 }}>In progress to Blocked</span>, “Waiting for test credentials”
+                  </p>
+                  <Chip tone="ok">Validated, then applied</Chip>
                 </div>
               </div>
 
-              {/* Right Side: Interpreted Structured Task Record */}
-              <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-950/80 space-y-4">
-                <div className="flex items-center justify-between text-xs font-mono text-zinc-400 pb-2 border-b border-zinc-800">
-                  <span className="flex items-center gap-1.5">
-                    <Compass className="h-3.5 w-3.5 text-amber-400" />
-                    <span>Canonical Task Record (PostgreSQL)</span>
-                  </span>
-                  <span className="text-[10px] text-zinc-500">CORE-14</span>
+              <div className="panel p-6">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="h3 flex items-center gap-2">
+                    <GitPullRequest size={20} className="accent" aria-hidden="true" /> GitHub
+                  </h3>
+                  <span className="chip chip-neutral">Demonstration</span>
                 </div>
-
-                {demoStep === 'initial' && (
-                  <div className="space-y-3 opacity-90 transition-opacity">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-zinc-400">Board Status:</span>
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
-                        In Progress
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-zinc-400">Surfaced Blocker:</span>
-                      <span className="text-[11px] font-mono text-zinc-500">None detected</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-zinc-400">Lead Action:</span>
-                      <span className="text-[11px] font-mono text-zinc-500">None required</span>
-                    </div>
-                    <div className="p-3 rounded-lg bg-zinc-900/50 border border-zinc-800/80 text-[11px] text-zinc-500 font-mono text-center">
-                      Click &ldquo;Process Update&rdquo; to simulate TaskPilot interpretation.
-                    </div>
+                <ul className="muted small mt-4 space-y-1">
+                  <li>Link repositories to projects through the GitHub App.</li>
+                  <li>Read pull requests, commits, reviews and checks the app is permitted to see.</li>
+                  <li>Compare the author with the linked account and keep a source for every item.</li>
+                </ul>
+                <div className="panel-2 mt-5 p-4">
+                  <p className="small flex items-center gap-2" style={{ fontWeight: 500 }}>
+                    <GitBranch size={14} aria-hidden="true" /> acme/checkout
+                  </p>
+                  <div className="mt-2">
+                    {[
+                      { k: "PR #52", v: "Integrate payment API client", tone: "info" as Tone, label: "Open" },
+                      { k: "Commits", v: "2 by Leo K.", tone: "ok" as Tone, label: "Author matches" },
+                      { k: "Review", v: "None yet", tone: "info" as Tone, label: "Not requested" },
+                      { k: "Checks", v: "1 pending", tone: "warn" as Tone, label: "Pending" },
+                    ].map((r) => (
+                      <div key={r.k} className="kv">
+                        <span className="k muted small">{r.k}</span>
+                        <span className="small">{r.v}</span>
+                        <Chip tone={r.tone}>{r.label}</Chip>
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
+                <p className="muted small mt-3 px-1">
+                  A commit does not prove delivery, and a missing commit does not prove nothing happened. Evidence informs the review. It does not
+                  replace it.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-                {demoStep === 'processing' && (
-                  <div className="py-8 flex flex-col items-center justify-center space-y-3 text-center">
-                    <RefreshCw className="h-6 w-6 text-amber-400 animate-spin" />
-                    <p className="text-xs font-mono text-zinc-400">Correlating task ID with channel message...</p>
+        {/* ================= Security ================= */}
+        <section id="security" className="sec" aria-labelledby="sec-title" style={{ background: "var(--surface)" }}>
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+            <h2 id="sec-title" className="h2 max-w-3xl">
+              An agent should be powerful. Its permissions should be precise.
+            </h2>
+            <p className="lead mt-5">
+              Content flows down this stack and only gets more trusted as it passes each layer. The model sits near the top, where it can propose
+              and nothing else.
+            </p>
+
+            <div className="mt-12 grid gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+              <ol className="space-y-5" aria-label="Trust boundary, from external input to auditable outcome">
+                {LAYERS.map((l) => {
+                  const key = l.key === "ai" ? "ai" : l.key === "rules" ? "rules" : l.key === "human" ? "human" : "other";
+                  return (
+                    <li key={l.key} className="layer" data-key={key}>
+                      <span className="zone small" style={{ fontWeight: 500, color: key === "ai" ? "var(--accent)" : undefined }}>
+                        {l.zone}
+                      </span>
+                      <span className="spine" aria-hidden="true">
+                        <span className="dot" />
+                      </span>
+                      <div>
+                        <p style={{ fontWeight: 500 }}>{l.name}</p>
+                        <p className="muted small mt-1">{l.body}</p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+
+              <div>
+                <p style={{ fontWeight: 500 }}>Controls and principles</p>
+                <ul className="mt-4">
+                  {CONTROLS.map((c, i) => (
+                    <li key={c.text} className={`flex items-start justify-between gap-4 py-3 ${i === 0 ? "" : "rule-t"}`}>
+                      <span className="small">{c.text}</span>
+                      <span className={`chip ${c.kind === "code" ? "chip-ok" : "chip-neutral"}`}>
+                        {c.kind === "code" ? "In the codebase" : "Design principle"}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="muted small mt-4">
+                  TaskPilot makes no compliance, certification or encryption claims on this page. Review the repository before relying on any
+                  control with production data.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= Product / project management ================= */}
+        <section id="product" className="sec" aria-labelledby="product-title">
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+            <h2 id="product-title" className="h2 max-w-3xl">
+              Still a project manager, from assignment to verified outcome.
+            </h2>
+            <p className="lead mt-5">
+              The contribution record sits on top of ordinary project management, so the work and its evidence live in one workspace.
+            </p>
+
+            <div className="mt-10 grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+              <dl>
+                {PRODUCT_ROWS.map((r, i) => (
+                  <div key={r.name} className={`py-4 ${i === 0 ? "" : "rule-t"}`}>
+                    <dt className="flex items-center gap-2" style={{ fontWeight: 500 }}>
+                      <LayoutList size={15} className="accent" aria-hidden="true" /> {r.name}
+                    </dt>
+                    <dd className="muted small mt-1">{r.text}</dd>
                   </div>
-                )}
+                ))}
+              </dl>
 
-                {demoStep === 'resolved' && (
-                  <div className="space-y-3 animate-in fade-in duration-300">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-zinc-400">Board Status:</span>
-                      <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                        Blocked
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col gap-1 p-2.5 rounded-lg bg-amber-950/20 border border-amber-900/50">
-                      <span className="text-[10px] font-mono uppercase text-amber-400 font-bold flex items-center gap-1">
-                        <AlertTriangle className="h-3 w-3" /> Extracted Blocker Reason:
-                      </span>
-                      <p className="text-xs text-zinc-200 font-medium">Test credentials required</p>
-                    </div>
-
-                    <div className="flex flex-col gap-1 p-2.5 rounded-lg bg-zinc-900 border border-zinc-800">
-                      <span className="text-[10px] font-mono uppercase text-zinc-400 font-bold">
-                        Next Action Generated:
-                      </span>
-                      <p className="text-xs text-zinc-300">
-                        Request credentials from administrator &amp; resume sandbox testing
+              <div className="panel p-5" aria-label="Illustrative task board">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <span style={{ fontWeight: 500 }}>Tasks</span>
+                  <span className="chip chip-neutral">Demonstration data</span>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {BOARD.map((b) => (
+                    <div key={b.task} className="panel-2 p-4">
+                      <Chip tone={b.tone}>{b.col}</Chip>
+                      <p className="mt-3" style={{ fontWeight: 500 }}>
+                        {b.title}
+                      </p>
+                      <p className="muted small mt-1">
+                        {b.task}, {b.who}
                       </p>
                     </div>
-
-                    <div className="pt-2 text-[10px] font-mono text-emerald-400 flex items-center gap-1.5">
-                      <Check className="h-3.5 w-3.5" />
-                      <span>Task state validated &bull; Logged in immutable activity audit trail</span>
-                    </div>
-                  </div>
-                )}
+                  ))}
+                </div>
+                <p className="muted small mt-4">Feature availability depends on how your workspace is configured.</p>
               </div>
             </div>
-
-            <p className="text-center text-[10px] font-mono text-zinc-500">
-              * Frontend demonstration modeled on TaskPilot&apos;s deterministic intent parser and workspace state
-              machine.
-            </p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ========================================================================= */}
-      {/* SECTION E: FEATURE SHOWCASE — REAL PRODUCT MODULES                        */}
-      {/* ========================================================================= */}
-      <section id="features" className="py-20 sm:py-28 border-b border-zinc-800/70 bg-[#0b0b0e]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-amber-400 font-semibold">
-              Comprehensive Platform
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-100">
-              Structured modules. One cohesive workspace.
+        {/* ================= Why it is different ================= */}
+        <section id="impact" className="sec" aria-labelledby="impact-title" style={{ background: "var(--surface)" }}>
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+            <h2 id="impact-title" className="h2 max-w-3xl">
+              Not another AI task manager.
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400">
-              TaskPilot isn&apos;t a conceptual prototype. It contains actual, working application surfaces designed
-              for software engineering delivery.
+            <p className="lead mt-5">
+              TaskPilot treats AI as a reader, rules as the decision-maker and people as the final word on anything uncertain. It makes no claims
+              about users, time saved or accuracy.
             </p>
-          </div>
-
-          {/* Asymmetrical Grid of Verified Application Modules */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* 1. Task Management (Large Card - Spans 2 cols) */}
-            <div className="md:col-span-2 p-6 rounded-2xl border border-zinc-800 bg-zinc-950/70 space-y-4 hover:border-zinc-700/80 transition-colors">
-              <div className="flex items-center justify-between">
-                <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                  <Layers className="h-5 w-5" />
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">
-                  Dual Kanban &amp; Table
-                </span>
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-zinc-100">Persistent Task Management</h3>
-                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                  Full task records with numeric identifiers (e.g. CORE-14), priorities, assignees, deadlines, and
-                  discussion notes. Switch seamlessly between Kanban columns and filterable tabular views without state
-                  drift.
-                </p>
-              </div>
-              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-900 text-center font-mono text-[11px]">
-                <div className="p-2 rounded bg-zinc-900/60 border border-zinc-800/60">
-                  <div className="text-zinc-500 text-[10px]">Backlog &rarr; Done</div>
-                  <div className="font-bold text-zinc-200 mt-0.5">7 Task States</div>
-                </div>
-                <div className="p-2 rounded bg-zinc-900/60 border border-zinc-800/60">
-                  <div className="text-zinc-500 text-[10px]">Urgent &rarr; Low</div>
-                  <div className="font-bold text-zinc-200 mt-0.5">4 Priorities</div>
-                </div>
-                <div className="p-2 rounded bg-zinc-900/60 border border-zinc-800/60">
-                  <div className="text-zinc-500 text-[10px]">Database Guard</div>
-                  <div className="font-bold text-emerald-400 mt-0.5">PostgreSQL RLS</div>
-                </div>
-              </div>
-            </div>
-
-            {/* 2. Incoming Triage Inbox */}
-            <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950/70 space-y-4 hover:border-zinc-700/80 transition-colors">
-              <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-                <Clock className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-zinc-100">Incoming Triage Inbox</h3>
-                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                  A dedicated inbox for unassigned work arriving from team discussions or intake forms. The Team Lead
-                  inspects priority and delegates with a single click.
-                </p>
-              </div>
-              <ul className="text-[11px] text-zinc-400 space-y-1.5 pt-2 border-t border-zinc-900">
-                <li className="flex items-center gap-1.5">
-                  <Check className="h-3 w-3 text-indigo-400" />
-                  <span>Prevents orphaned tasks</span>
-                </li>
-                <li className="flex items-center gap-1.5">
-                  <Check className="h-3 w-3 text-indigo-400" />
-                  <span>Enforces lead triage queue</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* 3. Project Workspaces & AI Repository Context */}
-            <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950/70 space-y-4 hover:border-zinc-700/80 transition-colors">
-              <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
-                <GitBranch className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-zinc-100">Project Workspaces</h3>
-                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                  Isolate projects with unique key prefixes (CORE, API, WEB). Connects repository architecture context
-                  generated via Gemini Foundation models.
-                </p>
-              </div>
-              <div className="pt-2 border-t border-zinc-900 font-mono text-[10px] text-purple-400">
-                &bull; Architecture characteristics &amp; tools
-              </div>
-            </div>
-
-            {/* 4. GitHub Evidence & Corroboration */}
-            <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950/70 space-y-4 hover:border-zinc-700/80 transition-colors">
-              <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                <GitPullRequest className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-zinc-100">Development Evidence</h3>
-                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                  Tracks GitHub pull requests, commits, and contributor activity. Evidence is used as supporting proof
-                  rather than unquestioned truth.
-                </p>
-              </div>
-              <div className="pt-2 border-t border-zinc-900 font-mono text-[10px] text-emerald-400">
-                &bull; Pull request &amp; commit linkages
-              </div>
-            </div>
-
-            {/* 5. Immutable Audit Trail & Billing */}
-            <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950/70 space-y-4 hover:border-zinc-700/80 transition-colors">
-              <div className="h-10 w-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-300">
-                <Terminal className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-zinc-100">Immutable Audit Trail</h3>
-                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                  Every state transition, member assignment, and configuration modification is preserved in an
-                  append-only activity log for complete accountability.
-                </p>
-              </div>
-              <div className="pt-2 border-t border-zinc-900 font-mono text-[10px] text-zinc-500">
-                &bull; Traceable team compliance history
-              </div>
+            <div className="panel mt-10 overflow-x-auto">
+              <table>
+                <caption className="sr-only">How TaskPilot differs from a typical AI task manager</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Question</th>
+                    <th scope="col">A typical AI task manager</th>
+                    <th scope="col" className="col-tp">
+                      TaskPilot
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARE.map((r) => (
+                    <tr key={r.q}>
+                      <th scope="row">{r.q}</th>
+                      <td className="muted">{r.a}</td>
+                      <td className="col-tp">{r.b}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ========================================================================= */}
-      {/* SECTION G: INTEGRATIONS — SLACK, GITHUB, AND TASKPILOT                     */}
-      {/* ========================================================================= */}
-      <section id="integrations" className="py-20 sm:py-28 border-b border-zinc-800/70 bg-[#09090b]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-amber-400 font-semibold">
-              Ecosystem
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-100">
-              Your tools stay yours. Your project gets the context.
+        {/* ================= Final CTA ================= */}
+        <section className="sec" aria-labelledby="cta-title">
+          <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
+            <h2 id="cta-title" className="display max-w-4xl" style={{ fontSize: "clamp(2.2rem,5vw,4rem)" }}>
+              Make project progress visible. Make contribution understandable.
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-400">
-              TaskPilot operates as a persistent coordination layer connecting conversation, execution, and code.
-            </p>
-          </div>
-
-          {/* Triangular Integration Architecture Visual */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-            {/* Slack Box */}
-            <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950/60 space-y-4 flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="h-10 w-10 rounded-xl bg-[#4A154B]/20 border border-[#4A154B]/40 flex items-center justify-center text-pink-400">
-                  <Slack className="h-5 w-5" />
-                </div>
-                <h3 className="text-base font-bold text-zinc-100">Slack</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  The conversational surface where work is discussed. Handles conversational task intake, follow-up
-                  prompts, and member progress replies directly in channel threads.
-                </p>
-              </div>
-              <div className="pt-3 border-t border-zinc-900 font-mono text-[11px] text-zinc-400">
-                Role: Conversational Intake &amp; Updates
-              </div>
-            </div>
-
-            {/* TaskPilot Core Box (Elevated) */}
-            <div className="p-6 rounded-2xl border border-amber-500/40 bg-zinc-900/70 space-y-4 flex flex-col justify-between shadow-xl shadow-amber-500/5 relative">
-              <div className="space-y-3">
-                <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                  <Compass className="h-5 w-5" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-zinc-100">TaskPilot Platform</h3>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">
-                    Core Layer
-                  </span>
-                </div>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  The canonical coordination engine. Resolves workspace identity, validates application permissions,
-                  detects dependencies, and persists truth in PostgreSQL.
-                </p>
-              </div>
-              <div className="pt-3 border-t border-zinc-800 font-mono text-[11px] text-amber-400 font-semibold">
-                Role: Persistent State &amp; Governance
-              </div>
-            </div>
-
-            {/* GitHub Box */}
-            <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-950/60 space-y-4 flex flex-col justify-between">
-              <div className="space-y-3">
-                <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
-                  <Github className="h-5 w-5" />
-                </div>
-                <h3 className="text-base font-bold text-zinc-100">GitHub</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  The development repository. Synchronizes commits, pull requests, and contributor activity to provide
-                  verifiable supporting evidence for completed work.
-                </p>
-              </div>
-              <div className="pt-3 border-t border-zinc-900 font-mono text-[11px] text-zinc-400">
-                Role: Verifiable Development Evidence
-              </div>
+            <p className="lead mt-5">Evidence, context and a person in the loop, in one workspace.</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/login" className="btn btn-primary">
+                Get started <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+              <a href="#demo" className="btn btn-ghost">
+                See how the agent works
+              </a>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* ========================================================================= */}
-      {/* SECTION H: GOVERNANCE & TRUST — USEFUL AUTONOMY, CLEAR CONTROL            */}
-      {/* ========================================================================= */}
-      <section id="governance" className="py-20 sm:py-28 border-b border-zinc-800/70 bg-[#0b0b0e]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-amber-400 font-semibold">
-              Integrity by Design
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-100">
-              Useful autonomy. Clear accountability.
-            </h2>
-            <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-              AI coordinates the work. Application rules control the actions. People stay in control of consequential
-              decisions.
-            </p>
+      {/* ================= Footer ================= */}
+      <footer className="rule-t">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 py-10 sm:px-8 md:flex-row md:justify-between">
+          <div>
+            <p className="h3">TaskPilot</p>
+            <p className="muted small mt-1 max-w-xs">An AI teammate that catches invisible blockers and keeps contribution explainable.</p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-950/60 space-y-3">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                <h3 className="text-sm font-semibold text-zinc-200">1-Lead Workspace Governance</h3>
-              </div>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                TaskPilot rejects arbitrary role escalation. Every workspace has exactly one designated Team Lead
-                responsible for unassigned triage and direction.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-950/60 space-y-3">
-              <div className="flex items-center gap-2">
-                <Terminal className="h-4 w-4 text-indigo-400" />
-                <h3 className="text-sm font-semibold text-zinc-200">Strict PostgreSQL RLS</h3>
-              </div>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                Cross-workspace isolation is enforced at the database layer. Members cannot view or mutate tasks outside
-                their authorized workspace.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-xl border border-zinc-800 bg-zinc-950/60 space-y-3">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-amber-400" />
-                <h3 className="text-sm font-semibold text-zinc-200">Human Review for Uncertainty</h3>
-              </div>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                When an update is ambiguous or lacks supporting evidence, TaskPilot routes the decision to the Team Lead
-                rather than making unverified guesses.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================================= */}
-      {/* SECTION I: FINAL CTA                                                      */}
-      {/* ========================================================================= */}
-      <section className="py-24 sm:py-32 relative overflow-hidden bg-[#09090b]">
-        <div className="absolute inset-0 bg-radial-gradient from-amber-500/10 via-transparent to-transparent pointer-events-none opacity-40" />
-
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/60 text-[11px] font-mono text-zinc-400">
-            <span>START COORDINATING SMARTER</span>
-          </div>
-
-          <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#fafaf9] max-w-2xl mx-auto leading-tight">
-            Spend less time chasing work.{' '}
-            <span className="font-serif italic font-normal text-amber-300">More time moving it forward.</span>
-          </h2>
-
-          <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
-            Bring your projects, tasks, and team coordination into one verified workspace.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-            <Link
-              href={user ? '/onboarding' : '/login'}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-7 py-3.5 text-xs uppercase tracking-wider transition-all shadow-lg shadow-amber-500/20 hover:scale-[1.02]"
-            >
-              <span>{user ? 'Open Workspace' : 'Open TaskPilot'}</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <a
-              href="#how-it-works"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-300 font-medium px-6 py-3.5 text-xs transition-colors"
-            >
-              Explore how it works
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================================= */}
-      {/* SECTION J: FOOTER                                                         */}
-      {/* ========================================================================= */}
-      <footer className="border-t border-zinc-800/80 bg-[#070709] py-12 text-xs text-zinc-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <div className="h-7 w-7 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-400">
-              <Compass className="h-4 w-4" />
-            </div>
-            <div>
-              <span className="text-zinc-200 font-bold tracking-tight">TaskPilot</span>
-              <p className="text-[11px] text-zinc-500 font-mono mt-0.5">
-                The AI teammate that catches invisible blockers.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-6 text-xs text-zinc-400 font-medium">
-            <a href="#how-it-works" className="hover:text-zinc-200 transition-colors">
-              How it works
-            </a>
-            <a href="#demo" className="hover:text-zinc-200 transition-colors">
-              Interactive Demo
-            </a>
-            <a href="#features" className="hover:text-zinc-200 transition-colors">
-              Modules
-            </a>
-            <a href="#governance" className="hover:text-zinc-200 transition-colors">
-              Governance
-            </a>
-            <Link href="/login" className="hover:text-zinc-200 transition-colors">
-              Sign In
-            </Link>
-            <Link href="/onboarding" className="hover:text-zinc-200 transition-colors">
-              Workspace
-            </Link>
-          </div>
-
-          <div className="font-mono text-[11px] text-zinc-600">
-            &copy; {currentYear} TaskPilot. All rights reserved.
-          </div>
+          <nav aria-label="Footer" className="grid grid-cols-2 gap-x-12 gap-y-2 small sm:grid-cols-3">
+            <a href="#product" className="muted">Product</a>
+            <a href="#how" className="muted">How it works</a>
+            <a href="#dignity" className="muted">Dignity Score</a>
+            <a href="#integrations" className="muted">Integrations</a>
+            <a href="#security" className="muted">Security</a>
+            <Link href="/login" className="muted">Sign in</Link>
+            <Link href="/onboarding" className="muted">Onboarding</Link>
+          </nav>
         </div>
       </footer>
     </div>
