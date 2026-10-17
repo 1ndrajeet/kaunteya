@@ -9,14 +9,14 @@ import {
   ArrowRight,
   ShieldCheck,
   Calendar,
-  Bot,
+  Sparkles,
   Loader2,
   Plus,
   MessageSquare,
-} from '@/components/ui/pica-icons';
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useWorkspace } from '@/features/workspace/workspace-context';
-import type { TaskPriority, TaskStatus, RoutingDecisionRecord } from '@/types/database';
+import type { TaskPriority, TaskStatus } from '@/types/database';
 
 interface UnassignedTask {
   id: string;
@@ -54,7 +54,6 @@ export default function IncomingTriagePage({
 
   const [tasks, setTasks] = useState<UnassignedTask[]>([]);
   const [members, setMembers] = useState<MemberOption[]>([]);
-  const [routingMap, setRoutingMap] = useState<Record<string, RoutingDecisionRecord>>({});
   const [sourceFilter, setSourceFilter] = useState<'all' | 'slack' | 'manual'>('all');
   const [loading, setLoading] = useState<boolean>(true);
   const [assigningId, setAssigningId] = useState<string | null>(null);
@@ -112,22 +111,6 @@ export default function IncomingTriagePage({
         display_name: m.profiles?.display_name || m.user_id.slice(0, 8),
       }));
       setMembers(formatted);
-    }
-
-    // 3. Fetch routing decisions for workspace
-    const { data: routingData } = await supabase
-      .from('routing_decisions')
-      .select('*')
-      .eq('workspace_id', workspaceId);
-
-    if (routingData) {
-      const map: Record<string, RoutingDecisionRecord> = {};
-      routingData.forEach((rd: any) => {
-        if (!map[rd.task_id] || new Date(rd.created_at) > new Date(map[rd.task_id].created_at)) {
-          map[rd.task_id] = rd as RoutingDecisionRecord;
-        }
-      });
-      setRoutingMap(map);
     }
 
     setLoading(false);
@@ -316,67 +299,6 @@ export default function IncomingTriagePage({
                   {task.description}
                 </p>
               )}
-
-              {/* Agent Routing Recommendation / Lead Flag */}
-              {(() => {
-                const decision = routingMap[task.id];
-                if (!decision) return null;
-
-                const recommendedMember = decision.proposed_assignee_id
-                  ? members.find((m) => m.user_id === decision.proposed_assignee_id)
-                  : null;
-
-                if (recommendedMember) {
-                  return (
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/25 text-xs">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="h-8 w-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
-                          <Bot className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0 space-y-0.5">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-semibold text-zinc-100">
-                              Agent Recommends: <span className="text-indigo-300 font-bold">{recommendedMember.display_name}</span> ({recommendedMember.role})
-                            </span>
-                            <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300">
-                              {decision.decision_method.replace(/_/g, ' ')}
-                            </span>
-                          </div>
-                          {decision.rationale && (
-                            <p className="text-[11px] text-zinc-300 truncate max-w-xl font-sans">
-                              {decision.rationale}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {isTriageAuthorized && (
-                        <button
-                          onClick={() => handleAssignTask(task.id, recommendedMember.user_id)}
-                          disabled={assigningId === task.id}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs whitespace-nowrap shadow-sm shrink-0 transition-colors"
-                        >
-                          <CheckCircle2 className="h-3 w-3" />
-                          Accept &amp; Assign
-                        </button>
-                      )}
-                    </div>
-                  );
-                }
-
-                if (decision.human_intervention_needed) {
-                  return (
-                    <div className="flex items-center gap-2 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
-                      <AlertCircle className="h-4 w-4 text-amber-400 shrink-0" />
-                      <span>
-                        <strong className="text-amber-200">Routing Agent Flag:</strong> {decision.rationale || 'Ambiguous destination; requires team lead triage.'}
-                      </span>
-                    </div>
-                  );
-                }
-
-                return null;
-              })()}
 
               {/* Triage Action Row */}
               <div className="pt-3 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">

@@ -13,15 +13,11 @@ import {
   ArrowRight,
   Plus,
   Loader2,
-  ShieldCheck,
-  Info,
-} from '@/components/ui/pica-icons';
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useWorkspace } from '@/features/workspace/workspace-context';
 import { TaskDetailDrawer, TaskDetailData } from '@/features/tasks/task-detail-drawer';
-import { getMemberDignityScore } from '@/lib/api';
 import type { TaskStatus } from '@/types/database';
-import type { CalculateScoreResponse } from '@/types';
 
 export default function MemberPortalPage({
   params,
@@ -34,7 +30,6 @@ export default function MemberPortalPage({
 
   const [myTasks, setMyTasks] = useState<TaskDetailData[]>([]);
   const [members, setMembers] = useState<{ user_id: string; role: string; display_name: string }[]>([]);
-  const [dignityScore, setDignityScore] = useState<CalculateScoreResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeFilter, setActiveFilter] = useState<'all' | 'in_progress' | 'due_soon' | 'done'>('in_progress');
 
@@ -63,11 +58,6 @@ export default function MemberPortalPage({
         created_by,
         due_date,
         source,
-        assignment_type,
-        team_id,
-        status_reason,
-        status_changed_by,
-        status_changed_at,
         created_at,
         updated_at,
         project:projects (
@@ -107,15 +97,6 @@ export default function MemberPortalPage({
           display_name: m.profiles?.display_name || m.user_id.slice(0, 8),
         }))
       );
-    }
-
-    if (user) {
-      try {
-        const score = await getMemberDignityScore(user.id, workspaceId);
-        setDignityScore(score);
-      } catch (err) {
-        console.warn('Member dignity score fetch error:', err);
-      }
     }
 
     setLoading(false);
@@ -186,62 +167,6 @@ export default function MemberPortalPage({
           <Plus className="h-4 w-4" /> New Task
         </button>
       </div>
-
-      {/* Phase 4: Personal Contribution Intelligence Card */}
-      {dignityScore && (
-        <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/40 space-y-3 font-mono text-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800/80 pb-2.5">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span className="font-semibold text-zinc-100 font-sans text-sm">
-                Personal Contribution Intelligence
-              </span>
-              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-800">
-                Formula {dignityScore.formula_version}
-              </span>
-            </div>
-            <span className="text-[10px] text-zinc-500">
-              Evidence-Backed Attribution &bull; Verified Git Commits &amp; PRs
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-            <div className="p-3 rounded-lg bg-zinc-950/60 border border-zinc-800/80">
-              <span className="text-zinc-500 block text-[10px] uppercase font-sans">Accepted Points</span>
-              <span className="text-base font-bold text-emerald-400">
-                {dignityScore.accepted_contribution_points.toFixed(1)} pts
-              </span>
-            </div>
-            <div className="p-3 rounded-lg bg-zinc-950/60 border border-zinc-800/80">
-              <span className="text-zinc-500 block text-[10px] uppercase font-sans">Claim Reliability</span>
-              <span className="text-zinc-200 text-xs block font-bold mt-0.5">
-                {dignityScore.claim_reliability.status === 'insufficient_data'
-                  ? 'Insufficient data (<3)'
-                  : `${(dignityScore.claim_reliability.score! * 100).toFixed(0)}% (${dignityScore.claim_reliability.reviewed_claims} rev)`}
-              </span>
-            </div>
-            <div className="p-3 rounded-lg bg-zinc-950/60 border border-zinc-800/80">
-              <span className="text-zinc-500 block text-[10px] uppercase font-sans">Progress Rate</span>
-              <span className="text-base font-bold text-indigo-400">
-                {(dignityScore.accepted_progress * 100).toFixed(0)}%
-              </span>
-            </div>
-            <div className="p-3 rounded-lg bg-zinc-950/60 border border-zinc-800/80">
-              <span className="text-zinc-500 block text-[10px] uppercase font-sans">Active Blockers</span>
-              <span className="text-base font-bold text-zinc-300">
-                {dignityScore.blocked_tasks} excluded
-              </span>
-            </div>
-          </div>
-
-          <div className="p-2.5 rounded-lg bg-zinc-950/80 border border-zinc-800 text-[11px] text-zinc-400 flex items-start gap-2 font-sans leading-relaxed">
-            <Info className="h-4 w-4 text-zinc-500 shrink-0 mt-0.5" />
-            <span>
-              This explainable contribution score reflects verified task completions and milestone progress backed by GitHub commits and PRs. It is not an objective measure of productivity or individual worth.
-            </span>
-          </div>
-        </div>
-      )}
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

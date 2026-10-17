@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from '@supabase/supabase-js';
 import type { WorkspaceRole } from '@/types/database';
 

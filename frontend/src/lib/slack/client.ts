@@ -268,19 +268,3 @@ export async function sendUnlinkedUserNotice(
     };
   }
 }
-
-/**
- * Resolves the canonical Slack OAuth callback URL.
- * Protects against misconfigured environment variables pointing to Supabase OIDC callback.
- */
-export function resolveSlackRedirectUri(reqUrl?: string): string {
-  const envUri = process.env.SLACK_REDIRECT_URI;
-  if (envUri && envUri.includes('/api/slack/callback')) {
-    return envUri;
-  }
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    (reqUrl ? new URL(reqUrl).origin : 'https://kaunteya.vercel.app');
-  return `${siteUrl.replace(/\/$/, '')}/api/slack/callback`;
-}
-

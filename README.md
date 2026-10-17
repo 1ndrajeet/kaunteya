@@ -1,66 +1,51 @@
 # TaskPilot — AI-Assisted Project Management & Contribution Intelligence Platform
 
-> **Status:** Handoff 1.5 Complete (Multi-User Hierarchy, Project-Scoped Teams, Context-Aware Navigation, Atomic Limits & Production Billing Foundation)  
-> **Architecture:** Next.js App Router (TypeScript, Tailwind CSS v4, shadcn/ui) + Supabase (PostgreSQL, Row Level Security, Auth with GitHub OAuth) + Official Slack Web API (`@slack/web-api`) + GitHub App Integration (`@octokit/rest`, `@octokit/auth-app`)
+> **Status:** Phase 2 Complete (Slack Integration, Conversational Task Intake & Follow-up Automation)  
+> **Architecture:** Next.js App Router (TypeScript, Tailwind CSS v4, shadcn/ui) + Supabase (PostgreSQL, Row Level Security, Auth with GitHub OAuth) + Official Slack Web API (`@slack/web-api`)
 
 ---
 
 ## 1. Product Vision
 
-**TaskPilot** coordinates work between administrators, team leads, members, and autonomous agents across multiple projects and teams. Traditional project management software records tasks, but the actual coordination, updates, and blockers get lost in Slack channels and GitHub repositories.
+**TaskPilot** coordinates work between administrators, team leads, members, and autonomous agents. Traditional project management software records tasks, but the actual coordination, updates, and blockers get lost in Slack channels.
 
 TaskPilot bridges this gap through:
-1. **Multi-User & Project-Centric Architecture** with isolated project membership and project-scoped teams.
-2. **Dual-Context Vercel-Inspired Navigation** seamlessly switching between workspace-level governance and project execution.
-3. **Structured Project & Task Management** with dual Kanban board and tabular list views, plus mandatory status-transition reason audits.
-4. **Project Lifecycle & Derived Deadline Intelligence** distinguishing planning, active, at-risk, completed, paused, and archived states.
-5. **Configurable Server Limits & Anti-Bypass Protection** with atomic database-level enforcement and upgrade dialogs.
-6. **Production-Minded Billing Foundation** supporting commercial plans, integer minor units, and auditable promotional codes.
-7. **Conversational Intake** (Phase 2 Implemented) via verified Slack mentions, deterministic routing, and thread replies.
-8. **Follow-up Automation** (Phase 2 Implemented) pro-actively chasing task progress without manual lead intervention.
-9. **Intelligent Routing Agent** (Phase 3 Implemented) evaluating workspace context, candidate eligibility, and open workloads.
-10. **GitHub Evidence Intelligence** (Phase 3 Implemented) correlating explicit work claims against real commits, PRs, reviews, and CI runs.
-11. **Human Claim Review Workflow** (Phase 3 Implemented) with anti-self-approval enforcement and tamper-evident audit trails.
-12. **Contribution Reliability Intelligence** (Phase 4 Roadmap) with human-reviewed audit trails.
+1. **Structured Project & Task Management** with dual Kanban board and tabular list views.
+2. **Explicit Workspace Hierarchy** with enforced Administrator, Team Lead, and Member roles.
+3. **Conversational Intake** (Phase 2 Implemented) via verified Slack mentions, deterministic routing, and thread replies.
+4. **Follow-up Automation** (Phase 2 Implemented) pro-actively chasing task progress without manual lead intervention.
+5. **Intelligent Routing Agent** (Phase 3 Roadmap) evaluating workload and project context.
+6. **GitHub Evidence Retrieval** (Phase 3 Roadmap) linking commits, PRs, and review checks.
+7. **Contribution Reliability Intelligence** (Phase 4 Roadmap) with human-reviewed audit trails.
 
 ---
 
-## 2. Multi-Phase Roadmap & Architecture
+## 2. Four-Phase Roadmap
 
-| Phase / Milestone | Scope & Status |
-| :--- | :--- |
-| **Phase 1: Foundation & Auth** | **LIVE / IMPLEMENTED**<br>&bull; GitHub OAuth & persistent session handling<br>&bull; Non-recursive PostgreSQL Row Level Security (RLS)<br>&bull; Task CRUD, unassigned triage inbox, dual Kanban board & List views<br>&bull; Tamper-evident audit trail (`activity_events`) |
-| **Phase 2: Slack Integration** | **LIVE / IMPLEMENTED**<br>&bull; Slack workspace connection & identity mapping<br>&bull; Secure Events API receiver (`/api/slack/events`) with URL verification & HMAC-SHA256 signature checks<br>&bull; Idempotent event ingestion preventing duplicate tasks on Slack retries<br>&bull; Deterministic Task Routing Engine (Rules A through G) & automated follow-ups (`/api/slack/followup`) |
-| **Phase 3: Intelligent Routing & Evidence** | **LIVE / IMPLEMENTED**<br>&bull; Agent-assisted task routing evaluating Rules 1-7 with candidate validation & fallback<br>&bull; GitHub App integration via `@octokit/rest` with HMAC-SHA256 webhooks (`/api/github/webhooks`)<br>&bull; Delivery ID idempotency & bounded repository synchronization (`/api/github/sync`)<br>&bull; Explicit member work claims (`work_claims`) & GitHub artifact normalization (`evidence_artifacts`)<br>&bull; Deterministic evidence assessment engine & Admin Claim Review portal (`/admin/reviews`) |
-| **Handoff 1.5: Multi-User, Project Teams & Billing** | **LIVE / IMPLEMENTED**<br>&bull; Multi-user hierarchy: User &rarr; Workspace &rarr; Projects &rarr; Teams &rarr; Team Members<br>&bull; Project-scoped team leadership eliminating the obsolete single-lead workspace constraint<br>&bull; Dual-context Vercel-inspired sidebar with dynamic project switching<br>&bull; Visual project cards with lifecycle states & date-derived deadline indicators<br>&bull; Mandatory status change reasons (&ge; 3 chars) recorded atomically in task history & audit events<br>&bull; Atomic workspace & project limits with anti-bypass PostgreSQL transactions (`create_workspace_with_admin`, `create_project_with_limits`)<br>&bull; Polished pricing & upgrade modal on limit triggers<br>&bull; Production billing schema (`plans`, `workspace_subscriptions`, `promo_codes`, `promo_redemptions`) with minor unit amounts |
-| **Phase 4: Contribution Reliability** | **PLANNED / DEFERRED**<br>&bull; Contribution Reliability Score (CRS) based on verified evidence<br>&bull; Dispute, appeal, and correction workflows<br>&bull; Delivery analytics & audit retention |
+| Phase | Title | Scope & Status |
+| :--- | :--- | :--- |
+| **Phase 1** | **Foundation, Auth & Project Management** | **LIVE / IMPLEMENTED**<br>&bull; GitHub OAuth & persistent session handling<br>&bull; Secure initial workspace onboarding & single-lead governance<br>&bull; Non-recursive PostgreSQL Row Level Security (RLS)<br>&bull; Complete Project & Task CRUD, unassigned triage inbox<br>&bull; Dual Kanban board & List table views<br>&bull; Manual repository linking & tamper-evident audit trail |
+| **Phase 2** | **Slack Integration & Follow-up Automation** | **LIVE / IMPLEMENTED**<br>&bull; Slack workspace connection & identity mapping<br>&bull; Secure Events API receiver (`/api/slack/events`) with URL verification & HMAC-SHA256 signature checks<br>&bull; Idempotent event ingestion preventing duplicate tasks on Slack retries<br>&bull; Conversational task intake via explicit `@TaskPilot` mentions<br>&bull; Deterministic Task Routing Engine (Rules A through G)<br>&bull; Automated follow-up dispatch (`/api/slack/followup`) & thread reply parser<br>&bull; Admin Integration Portal with diagnostics, event logs, and connection lifecycle |
+| **Phase 3** | **Task-Routing Agent & GitHub Evidence** | **PLANNED**<br>&bull; Lead-vs-member task-routing heuristics & LLM triage<br>&bull; Real GitHub API integration for PRs, commits, and checks<br>&bull; Automated evidence summaries & human dispute queue |
+| **Phase 4** | **Contribution Reliability & Hardening** | **PLANNED**<br>&bull; Contribution Reliability Score (CRS) based on verified evidence<br>&bull; Dispute, appeal, and correction workflows<br>&bull; Delivery analytics & audit retention |
 
-*Note: In accordance with product honesty principles, live payment transactions via Razorpay and Phase 4 contribution scoring remain strictly deferred to subsequent releases and are not simulated or faked.*
+*Note: In accordance with product honesty principles, Phases 3 and 4 remain deferred and are not simulated or faked.*
 
 ---
 
-## 3. Hierarchy & Permission Matrix (Handoff 1.5)
+## 3. Architecture & Strict Constraints
 
-TaskPilot enforces an explicit 4-level organizational hierarchy:
-```
-Workspace (Owner / Admin, Members)
-  └── Projects (Project Members: Lead, Member, Viewer)
-        └── Teams (Team Leader, Team Members)
-              └── Tasks (Assigned to Individual or Project Team)
-```
-
-### Permission Matrix
-
-| Capability | Workspace Admin | Project Lead | Team Leader | Member |
-| :--- | :---: | :---: | :---: | :---: |
-| Create & Archive Projects | Yes | No | No | No |
-| Invite Users to Workspace | Yes | No | No | No |
-| Create Project Teams | Yes | Yes | No | No |
-| Assign / Transfer Team Members | Yes | Yes | Own Team Only | No |
-| Create Tasks & Assign Scope | Yes | Yes | Yes | Yes |
-| Transition Task Status | Yes (with reason) | Yes (with reason) | Yes (with reason) | Assigned (with reason) |
-| Connect Integrations & Review Claims | Yes | No | No | No |
-| View Billing & Enter Promo Codes | Yes | No | No | No |
+Phase 1 strictly complies with the following architecture:
+- **No Custom REST API / No `/api/*` Routes:** Application CRUD operations are executed directly against Supabase PostgreSQL via `@supabase/supabase-js` and `@supabase/ssr`.
+- **No Server Actions or `actions.ts`:** Data flow is client-to-database with strict PostgreSQL Row Level Security (RLS) enforcement.
+- **No Query Abstraction Layers:** Direct, readable Supabase queries located within feature components and compact feature hooks.
+- **Database-Level Role & Provisioning Guarantees:** 
+  - Single designated lead per workspace enforced via a PostgreSQL partial unique index:  
+    `CREATE UNIQUE INDEX idx_one_lead_per_workspace ON public.workspace_members (workspace_id) WHERE role = 'lead';`
+  - Safe transactional provisioning via `SECURITY DEFINER` functions:  
+    `create_workspace_with_admin()` and `join_workspace_with_invite()`.
+  - Non-recursive RLS policy checks via `is_workspace_member()` and `get_workspace_role()`.
+- **Legacy Backend Notice:** The existing FastAPI starter files in `backend/` are preserved as legacy reference artifacts. Supabase completely replaces any custom backend for TaskPilot.
 
 ---
 
@@ -68,41 +53,39 @@ Workspace (Owner / Admin, Members)
 
 The database schema is managed via versioned PostgreSQL migrations:
 
-1. **Phase 1 Initial Schema:**  
+1. **Phase 1 Initial Schema:**
    `supabase/migrations/20261016000000_taskpilot_initial_schema.sql`
-2. **Phase 2 Slack Integration & Follow-up Schema:**  
+2. **Phase 2 Slack Integration & Follow-up Schema:**
    `supabase/migrations/20261016000001_taskpilot_phase2_slack.sql`
-3. **Phase 3 GitHub App, Evidence Intelligence & Routing Schema:**  
-   `supabase/migrations/20261016000002_taskpilot_phase3_github_evidence.sql`
-4. **RBAC & Grants Fixes:**  
-   `supabase/migrations/20261016000003_fix_workspace_rbac_and_grants.sql`
-5. **Handoff 1.5 Multi-User, Project Teams, Limits & Billing Schema:**  
-   `supabase/migrations/20261017000000_handoff_1_5_multiuser_teams_billing_limits.sql`
 
 ### Core Tables
 
-#### Application Foundation & Multi-User Governance
+#### Phase 1: Application Foundation & Project Management
 1. **`profiles`**: Application profile synced with `auth.users` via trigger (`id`, `email`, `github_username`, `display_name`, `avatar_url`, `created_at`, `updated_at`).
 2. **`workspaces`**: Organizational units (`id`, `name`, `slug`, `created_by`, `created_at`, `updated_at`).
 3. **`workspace_members`**: Membership and roles (`id`, `workspace_id`, `user_id`, `role: 'admin' | 'lead' | 'member'`, `joined_at`).
 4. **`workspace_invitations`**: Expiring, single/multi-use invitation codes (`id`, `workspace_id`, `invited_by`, `code`, `role`, `max_uses`, `uses_count`, `expires_at`, `created_at`).
-5. **`projects`**: Workspace initiatives with lifecycle states (`planning`, `active`, `at_risk`, `completed`, `paused`, `archived`) and `completed_at`.
-6. **`project_members`**: Project-level member enrollment with role scopes (`id`, `workspace_id`, `project_id`, `user_id`, `role: 'lead' | 'member' | 'viewer'`).
-7. **`teams`**: Project-scoped teams (`id`, `workspace_id`, `project_id`, `lead_id`, `name`, `description`, `status`).
-8. **`team_members`**: Team membership linking members to a project team (`id`, `workspace_id`, `project_id`, `team_id`, `user_id`).
-9. **`tasks`**: Canonical tasks with assignment type (`individual` | `team`), `team_id`, mandatory `status_reason`, `status_changed_by`, and `status_changed_at`.
-10. **`task_comments`**: Task discussion & progress updates (`id`, `task_id`, `author_id`, `body`, `created_at`, `updated_at`).
-11. **`activity_events`**: Tamper-evident audit trail (`id`, `workspace_id`, `actor_id`, `entity_type`, `entity_id`, `event_type`, `metadata`, `created_at`).
+5. **`projects`**: Workspace initiatives (`id`, `workspace_id`, `name`, `identifier`, `description`, `status`, `lead_id`, `start_date`, `target_date`, `created_by`, `created_at`, `updated_at`).
+6. **`project_repositories`**: GitHub repository URLs associated with projects (`id`, `project_id`, `repository_url`, `created_by`, `created_at`).
+7. **`tasks`**: Canonical task items (`id`, `workspace_id`, `project_id`, `task_number`, `title`, `description`, `status`, `priority`, `assignee_id`, `created_by`, `due_date`, `source`, `slack_channel_id`, `slack_message_ts`, `slack_thread_ts`, `created_at`, `updated_at`).
+8. **`task_comments`**: Task discussion & progress updates (`id`, `task_id`, `author_id`, `body`, `created_at`, `updated_at`).
+9. **`activity_events`**: Tamper-evident audit trail (`id`, `workspace_id`, `actor_id`, `entity_type`, `entity_id`, `event_type`, `metadata`, `created_at`).
 
-#### Billing Foundation & Commercial Plans
-12. **`plans`**: Commercial catalog (`id: 'free' | 'yearly' | 'onetime'`, `price_cents`, `currency`, `billing_interval`, `max_workspaces`, `max_projects_per_workspace`, `features`, `is_active`).
-13. **`workspace_subscriptions`**: Entitlement journal (`id`, `workspace_id`, `plan_id`, `status`, `current_period_start`, `current_period_end`, `payment_provider`).
-14. **`promo_codes`**: Promotional discount and full-access vouchers (`code: 'LAUNCH50' | 'FOUNDER100'`, `discount_percent`, `max_redemptions`, `redemptions_count`, `is_active`, `expires_at`).
-15. **`promo_redemptions`**: Auditable redemption log tracking user redemptions with unique `(promo_code_id, user_id)` constraint.
+#### Phase 2: Slack Integration & Follow-up Automation
+10. **`slack_installations`**: Authorized Slack workspace connections (`id`, `workspace_id`, `slack_team_id`, `slack_team_name`, `bot_user_id`, `installation_status`, `connected_by`, `connected_at`, `created_at`, `updated_at`).
+11. **`slack_installation_secrets`**: Dedicated server-side secrets vault (`installation_id`, `encrypted_bot_token`, `encrypted_signing_secret`). Locked from browser access via zero client RLS policies.
+12. **`slack_user_mappings`**: Explicit identity mapping between Slack User IDs and TaskPilot members (`id`, `installation_id`, `workspace_id`, `slack_user_id`, `taskpilot_user_id`, `link_status`, `linked_by`, `linked_at`, `created_at`). Enforces unique `(workspace_id, slack_user_id)`.
+13. **`slack_conversations`**: Explicitly configured channels (`id`, `installation_id`, `slack_conversation_id`, `conversation_type`, `purpose`, `created_at`).
+14. **`integration_events`**: External webhook delivery journal enforcing idempotency via unique `(provider, external_event_id)` index (`id`, `provider`, `installation_id`, `external_event_id`, `event_type`, `processing_status`, `error_code`, `error_summary`, `received_at`, `processed_at`).
+15. **`task_followups`**: Scheduled and dispatched follow-up tracking (`id`, `workspace_id`, `task_id`, `recipient_user_id`, `channel_type`, `scheduled_at`, `sent_at`, `responded_at`, `status`, `attempt_count`, `external_message_id`, `created_at`, `updated_at`).
+16. **`external_messages`**: Correlation index linking Slack threads to tasks (`id`, `workspace_id`, `installation_id`, `task_id`, `external_conversation_id`, `external_message_id`, `external_thread_id`, `sender_mapping_id`, `message_type`, `processed_at`, `created_at`).
 
-#### Integrations & Evidence Intelligence
-16. **`slack_installations`**, **`slack_installation_secrets`**, **`slack_user_mappings`**, **`slack_conversations`**, **`integration_events`**, **`task_followups`**, **`external_messages`**.
-17. **`github_installations`**, **`github_installation_secrets`**, **`github_repositories`**, **`github_user_mappings`**, **`github_events`**, **`evidence_artifacts`**, **`work_claims`**, **`claim_evidence_associations`**, **`routing_decisions`**.
+### Applying Migrations to Supabase
+
+1. Open your Supabase Dashboard: [https://supabase.com/dashboard](https://supabase.com/dashboard)
+2. Go to **SQL Editor** -> **New query**.
+3. Run `supabase/migrations/20261016000000_taskpilot_initial_schema.sql`.
+4. Run `supabase/migrations/20261016000001_taskpilot_phase2_slack.sql`.
 
 ---
 
@@ -113,26 +96,22 @@ The database schema is managed via versioned PostgreSQL migrations:
 | `/` | Marketing landing page | Public |
 | `/login` | GitHub OAuth sign-in & configuration guide | Public |
 | `/auth/callback` | OAuth session code exchange | Public |
-| `/onboarding` | Workspace creation & invitation redemption (Enforces limit) | Authenticated |
+| `/onboarding` | Workspace creation & invitation redemption | Authenticated |
 | `/workspace/[workspaceId]` | Role-based dashboard redirector | Workspace Member |
-| `/workspace/[workspaceId]/tasks` | Unified Task Center (Kanban & List views, Evidence Drawer, Status Reason Modal) | Workspace Member |
-| `/workspace/[workspaceId]/incoming` | Unassigned task triage inbox with Agent Recommendations | Workspace Member |
-| `/workspace/[workspaceId]/billing` | Plan overview, resource usage gauges, promo code redemption & upgrade actions | Workspace Member |
+| `/workspace/[workspaceId]/tasks` | Unified Task Center (Kanban & List views) | Workspace Member |
+| `/workspace/[workspaceId]/incoming` | Unassigned task triage inbox | Workspace Member |
 | `/workspace/[workspaceId]/admin` | Administrator governance dashboard | Admin only |
 | `/workspace/[workspaceId]/admin/team` | Team management & invite code generator | Admin only |
-| `/workspace/[workspaceId]/admin/integrations` | Slack & GitHub App connection, member identity mapping & event diagnostics | Admin only |
-| `/workspace/[workspaceId]/admin/reviews` | Claim & Evidence Review Queue (Anti-self-approval enforced) | Admin only |
 | `/workspace/[workspaceId]/lead` | Team Lead execution portal | Lead & Admin |
 | `/workspace/[workspaceId]/team` | Team workload & delivery distribution | Lead & Admin |
 | `/workspace/[workspaceId]/member` | Member portal with "My Tasks" focus | Member & All |
-| `/workspace/[workspaceId]/profile` | Developer identity & verified GitHub App linkage | Workspace Member |
-| `/workspace/[workspaceId]/projects` | Workspace projects with lifecycle badges, deadline indicators & creation limits | Workspace Member |
-| `/workspace/[workspaceId]/projects/[projectId]` | Project detail: Overview, Tasks, Project Teams & Members, GitHub, Activity, Settings | Workspace Member |
+| `/workspace/[workspaceId]/profile` | Developer identity & GitHub handle linkage | Workspace Member |
+| `/workspace/[workspaceId]/projects` | Workspace projects & completion metrics | Workspace Member |
+| `/workspace/[workspaceId]/projects/[projectId]` | Project detail, repo links & project tasks | Workspace Member |
 | `/workspace/[workspaceId]/activity` | Tamper-evident audit trail & JSON inspector | Workspace Member |
+| `/workspace/[workspaceId]/admin/integrations` | Slack workspace connection, member identity mapping & event diagnostics | Admin only |
 | `/api/slack/events` | Official Slack Events API receiver (URL verification, bot mentions, thread updates) | Slack Webhook (HMAC signed) |
 | `/api/slack/followup` | Automated follow-up dispatch sweep endpoint | Protected by `CRON_SECRET` |
-| `/api/github/webhooks` | Official GitHub App webhook receiver (timing-safe HMAC-SHA256, delivery idempotency) | GitHub Webhook (HMAC signed) |
-| `/api/github/sync` | Bounded repository artifact backfill & synchronization endpoint | Admin or internal caller |
 
 ---
 
@@ -265,50 +244,7 @@ TaskPilot automates chasing progress updates without lead intervention:
 
 ---
 
-## 7. GitHub App Integration & Evidence Intelligence Guide
-
-TaskPilot connects to GitHub using a GitHub App rather than personal account OAuth. This guarantees repository-scoped permissions, short-lived installation access tokens, and enterprise-grade security.
-
-### 1. Register a GitHub App
-
-1. In GitHub, go to **Settings -> Developer Settings -> GitHub Apps -> New GitHub App**.
-2. **App Name:** `TaskPilot Evidence Intelligence`
-3. **Homepage URL:** `http://localhost:3000` (or production domain)
-4. **Webhook URL:** `http://localhost:3000/api/github/webhooks`
-5. **Webhook Secret:** Generate a random secret (set in `GITHUB_WEBHOOK_SECRET`).
-
-### 2. Required Permissions (Read-Only)
-
-Request the minimal necessary permissions:
-- **Repository metadata:** Read-only (repository identification)
-- **Repository contents:** Read-only (commit SHAs, messages, and timestamps)
-- **Pull requests:** Read-only (PR status, author, merge state, review summaries)
-- **Commit statuses & Checks:** Read-only (check runs, test suite conclusions)
-
-### 3. Subscribe to Webhook Events
-
-- `pull_request` (opened, closed, reopened, edited, merged)
-- `pull_request_review` (submitted, edited)
-- `push` (commit additions, branch updates)
-- `check_run` / `check_suite` (completed, rerequested)
-
-### 4. Generate Private Key
-
-Under **Private keys**, click **Generate a private key** and download the `.pem` file. Save its content into `GITHUB_APP_PRIVATE_KEY`.
-
-### 5. Evidence Triage Categories
-
-When a member submits a work claim, the Evidence Assessment Engine evaluates real GitHub artifacts against the claim text:
-- **`supporting_found`**: Authorized PR is merged, checks passed, or matching commit SHA verified.
-- **`partially_supported`**: PR is open or some tests have not yet finished.
-- **`conflicting_found`**: Claim asserts completion, but PR is closed unmerged or CI checks failed.
-- **`insufficient`**: No artifacts match the explicit task identifier or author mapping.
-
-Human reviewers make the final decision in `/admin/reviews` with a recorded rationale. **Claimants cannot approve their own claims** (enforced by database constraint `chk_claim_no_self_approval`).
-
----
-
-## 8. Environment Setup & Local Development
+## 7. Environment Setup & Local Development
 
 ### Prerequisites
 - Node.js 20+ (Node 22 LTS recommended)
@@ -321,32 +257,16 @@ Copy the example environment file:
 cp frontend/.env.example frontend/.env.local
 ```
 
-Fill in your Supabase, Slack, GitHub App, and Gemini credentials in `frontend/.env.local`:
+Fill in your Supabase and Slack credentials in `frontend/.env.local`:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-publishable-key
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
-# Server-Side Privileged Key
 SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
-
-# Slack Integration Credentials
 SLACK_BOT_TOKEN=xoxb-your-slack-bot-token
 SLACK_SIGNING_SECRET=your-slack-signing-secret
 CRON_SECRET=your-cron-secret
-
-# GitHub App Integration
-GITHUB_APP_ID=123456
-GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
-GITHUB_WEBHOOK_SECRET=your-github-webhook-secret
-GITHUB_PERSONAL_ACCESS_TOKEN=ghp_your_optional_fallback_token
-
-# Intelligent Task Routing & Evidence Summarization
-GEMINI_API_KEY=your-gemini-api-key
-
-# Server-Side Plan & Resource Limits (Handoff 1.5)
-TASKPILOT_MAX_WORKSPACES_PER_USER=1
-TASKPILOT_MAX_PROJECTS_PER_WORKSPACE=5
 ```
 
 ### 2. GitHub OAuth Setup in Supabase
@@ -368,7 +288,7 @@ cd frontend
 # Install dependencies
 pnpm install
 
-# Run unit tests (verify-signature, parser, routing, matcher, agent-router)
+# Run unit tests (Parser, Signature Verification, Deterministic Routing)
 pnpm exec vitest run
 
 # Run TypeScript type check
@@ -388,7 +308,7 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 9. Verification & Acceptance Criteria Status
+## 8. Verification & Acceptance Criteria Status
 
 ### Phase 1: Core Foundation
 - [x] **Marketing Landing Page:** Polished, responsive, dark-first developer-tool aesthetic with live product preview, role breakdown, and honest roadmap.
@@ -413,32 +333,4 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 - [x] **Follow-up Automation:** Background sweep via `/api/slack/followup` chasing active assigned tasks, tracking states in `task_followups`.
 - [x] **Thread Reply Processor:** Extracts member progress updates and blockers into canonical task comments, or transitions status when clearly stated.
 - [x] **Origin Awareness:** Incoming queue and Task Detail slide-over visually distinguish Slack-originated tasks with deep-link badges.
-
-### Phase 3: Intelligent Routing, GitHub Evidence & Human Review
-- [x] **GitHub App Integration:** Full Octokit and App auth lifecycle (`@octokit/rest`, `@octokit/auth-app`) supporting repository selection, connection health, and secure token refresh.
-- [x] **Timing-Safe Webhook Security:** Timing-safe HMAC-SHA256 signature verifier (`verifyGithubSignature`) rejecting unsigned or tampered GitHub deliveries.
-- [x] **Delivery Idempotency:** Webhook journal table `github_events` with unique constraint on `delivery_id` eliminating duplicate artifact ingestion on GitHub retries.
-- [x] **Bounded Artifact Synchronization:** Rate-limit-safe synchronization engine (`syncRepositoryArtifacts`) fetching pull requests, commits, reviews, and check runs up to configured limits.
-- [x] **Member Work Claims Workflow:** Dedicated canonical table `work_claims` capturing explicit member assertions from dashboard or Slack replies.
-- [x] **Anti-Self-Approval Enforcement:** Database CHECK constraint `chk_claim_no_self_approval` and UI safeguards preventing claimants from approving their own claims.
-- [x] **Evidence Assessment Engine:** Deterministic factual matcher (`assessClaimEvidence`) comparing claims against real PR merge states, commit authors, and CI check conclusions.
-- [x] **Admin Claim Review Portal:** Full review interface (`/workspace/[workspaceId]/admin/reviews`) with filterable queues, side-by-side evidence inspection (Claim vs GitHub vs System Assessment vs Human Decision), and append-only audit trail.
-- [x] **Agent-Assisted Task Routing:** Upgraded routing engine (`evaluateAgentAssistedRouting`) evaluating Rules 1-7, candidate ID validation, transparent workload balancing, and decision persistence in `routing_decisions`.
-- [x] **Triage & Detail Transparency:** Lead Incoming Queue displays 1-click Agent Recommendations; Task Detail Drawer displays full Agent Routing Decision rationale and verifiable GitHub evidence cards.
-- [x] **Zero Mock Data in Production UI:** All views read and write directly through Supabase with Row Level Security.
-- [x] **Phase 4 Strictly Deferred:** No automated contribution reliability scoring, employee rankings, or productivity ratings.
-- [x] **Test Suite Passing:** 36 automated unit tests covering signature verification, parsers, routing engines, evidence matchers, and agent triage.
-
-### Handoff 1.5: Multi-User Architecture, Project Teams, Limits & Billing Foundation
-- [x] **Multi-User & Project-Centric Hierarchy:** Workspaces contain projects; projects contain teams; team leaders are scoped to their team; workspace-wide single-lead constraint eliminated.
-- [x] **Context-Aware Dual-Mode Navigation:** Vercel-inspired sidebar switching cleanly between Workspace context and Project context with active states, project switchers, and breadcrumbs.
-- [x] **Project Teams Management:** Dedicated project-level teams interface (`/projects/[projectId]`) allowing project lead and admin to create teams, assign leads, enroll members, and transfer members across teams via atomic `move_team_member` RPC.
-- [x] **Project Lifecycle & Derived Deadline Indicators:** Meaningful lifecycle states (`planning`, `active`, `at_risk`, `completed`, `paused`, `archived`) and date-derived indicators (`completed_on_time`, `completed_late`, `overdue`, `closing_soon`, `deadline_approaching`, `on_track`, `no_deadline`) with subtle visual cards.
-- [x] **Mandatory Status Change Reasons:** Audited status transitions requiring a minimum 3-character reason, recorded in `tasks.status_reason` and `activity_events` via `update_task_status_with_reason` RPC.
-- [x] **Server-Side Configurable Limits:** Validated environment variables (`TASKPILOT_MAX_WORKSPACES_PER_USER=1`, `TASKPILOT_MAX_PROJECTS_PER_WORKSPACE=5`) with safe fallbacks.
-- [x] **Atomic Anti-Bypass Protection:** Database-level transactional locking inside `create_workspace_with_admin` and `create_project_with_limits` eliminating concurrent limit bypass exploits.
-- [x] **Polished Pricing & Upgrade Modal:** Context-preserving upgrade dialog explaining hit limits, displaying commercial plans, validating promotional codes, and providing an honest notice regarding upcoming Razorpay integration.
-- [x] **Production Billing Foundation:** Lean, auditable PostgreSQL schema for plans, workspace subscriptions, promotional codes (`LAUNCH50`, `FOUNDER100`), redemptions log, and minor unit amounts. Zero simulated or mock payments.
-- [x] **Automated Test Suite Passing:** 52 automated unit tests passing across all suites (`deadline-status`, `limits`, `verify-signature`, `parser`, `routing`, `matcher`, `agent-router`).
-- [x] **Clean Production Build:** Zero TypeScript errors (`tsc --noEmit`), zero ESLint errors (`eslint --quiet`), and successful production compilation (`next build`).
-
+- [x] **Automated Tests:** 22 unit tests passing across signature verification, message parsing, and deterministic routing engines.

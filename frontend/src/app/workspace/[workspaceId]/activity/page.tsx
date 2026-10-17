@@ -17,9 +17,7 @@ import {
   ChevronRight,
   User,
   Info,
-  GitPullRequest,
-  Bot,
-} from '@/components/ui/pica-icons';
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useWorkspace } from '@/features/workspace/workspace-context';
 import type { ActivityEvent } from '@/types/database';
@@ -118,15 +116,6 @@ export default function WorkspaceActivityPage({
             <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/>
           </svg>
         );
-      case 'github_installation':
-      case 'github_repository':
-      case 'github_mapping':
-      case 'github':
-        return <GitPullRequest className="h-4 w-4 text-purple-400" />;
-      case 'work_claim':
-        return <ShieldCheck className="h-4 w-4 text-purple-400" />;
-      case 'routing_decision':
-        return <Bot className="h-4 w-4 text-indigo-400" />;
       default:
         return <Activity className="h-4 w-4 text-zinc-400" />;
     }
@@ -196,39 +185,6 @@ export default function WorkspaceActivityPage({
 
       case 'followup_responded':
         return `received progress update via Slack`;
-
-      case 'github_connected':
-        return `connected GitHub App (account: ${meta.github_account_login || 'organization'})`;
-
-      case 'github_disconnected':
-        return `disconnected GitHub App integration`;
-
-      case 'github_identity_linked':
-        return `linked GitHub user @${meta.github_login || ''} to TaskPilot member`;
-
-      case 'github_identity_unlinked':
-        return `unlinked GitHub identity for ${meta.member_name || 'member'}`;
-
-      case 'repository_associated':
-        return `associated GitHub repository ${meta.repository_name || ''} with project`;
-
-      case 'repository_unassociated':
-        return `unassociated GitHub repository ${meta.repository_name || ''}`;
-
-      case 'evidence_sync_completed':
-        return `synchronized GitHub evidence: ${meta.prs_synced ?? 0} PRs, ${meta.commits_synced ?? 0} commits, ${meta.checks_synced ?? 0} checks`;
-
-      case 'evidence_sync_failed':
-        return `GitHub evidence sync encountered an error: ${meta.error || 'Check logs'}`;
-
-      case 'work_claim_submitted':
-        return `submitted work claim for ${meta.task_identifier || 'task'} (${meta.claim_type?.replace(/_/g, ' ') || 'work'})`;
-
-      case 'claim_reviewed':
-        return `reviewed work claim for ${meta.task_identifier || 'task'}: outcome "${meta.new_state || meta.review_state || 'completed'}"`;
-
-      case 'routing_recommendation_generated':
-        return `generated intelligent routing recommendation (${meta.method || 'agent'})`;
 
       case 'updated':
         return `updated ${act.entity_type} properties`;

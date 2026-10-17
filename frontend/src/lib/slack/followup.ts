@@ -1,7 +1,6 @@
 import { createServiceClient } from '@/lib/supabase/service';
 import { getSlackWebClient, sendFollowupMessage, sendStatusUpdatedConfirmation } from './client';
 import { parseSlackMessage } from './parser';
-import { matchArtifactsToWorkspaceClaims } from '@/lib/evidence/matcher';
 import type { TaskStatus } from '@/types/database';
 
 export interface FollowupRunSummary {
@@ -351,55 +350,6 @@ export async function processTaskFollowupReply(params: {
         slack_user_id: params.senderSlackId,
       },
     });
-  }
-
-  // 4b. Detect and create explicit work claim if member asserts work or references PRs
-  const isWorkAssertion =
-    /#\d+/.test(replyText) ||
-    /pull\s*request/i.test(replyText) ||
-    /\b(implemented|merged|fixed|finished|pr\b)/i.test(replyText);
-
-  if (isWorkAssertion) {
-    let claimType: 'implementation' | 'bug_fix' | 'completion' | 'progress_update' = 'progress_update';
-    if (/\b(fixed|bug)\b/i.test(replyText)) claimType = 'bug_fix';
-    else if (/\b(merged|done|completed|finished)\b/i.test(replyText)) claimType = 'completion';
-    else if (/\b(implemented|built|added|created)\b/i.test(replyText)) claimType = 'implementation';
-
-    const prMatch = replyText.match(/https:\/\/github\.com\/[^\s]+\/pull\/\d+/i);
-    const prUrlHint = prMatch ? prMatch[0] : null;
-
-    const { data: claimRow } = await supabase
-      .from('work_claims')
-      .insert({
-        workspace_id: workspaceId,
-        task_id: task.id,
-        claimant_id: senderMemberId,
-        claim_source: 'slack_followup',
-        claim_text: replyText.trim(),
-        claim_type: claimType,
-        pr_url_hint: prUrlHint,
-        review_state: 'pending',
-      })
-      .select('id')
-      .single();
-
-    if (claimRow) {
-      await supabase.from('activity_events').insert({
-        workspace_id: workspaceId,
-        actor_id: senderMemberId,
-        entity_type: 'task',
-        entity_id: task.id,
-        event_type: 'work_claim_submitted',
-        metadata: {
-          claim_id: claimRow.id,
-          claim_type: claimType,
-          origin: 'slack_followup',
-        },
-      });
-
-      // Match newly created claim against synchronized evidence artifacts
-      await matchArtifactsToWorkspaceClaims(supabase, workspaceId);
-    }
   }
 
   // 5. Mark pending follow-ups as responded
