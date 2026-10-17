@@ -5,8 +5,74 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
+  --font-heading: var(--font-editorial-serif), Georgia, serif;
+  --font-serif: var(--font-editorial-serif), Georgia, serif;
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+
+  /* Remap Zinc to Warm Parchment (950/900) -> Espresso Ink (200/100) for seamless app-wide editorial styling */
+  --color-zinc-950: #FAF7F2;
+  --color-zinc-900: #F2ECE1;
+  --color-zinc-800: #E4DBC9;
+  --color-zinc-700: #CFC1AA;
+  --color-zinc-600: #93826F;
+  --color-zinc-500: #736251;
+  --color-zinc-400: #59493A;
+  --color-zinc-300: #3F3124;
+  --color-zinc-200: #2C1F14;
+  --color-zinc-100: #21150C;
+  --color-zinc-50: #160D06;
+
+  /* Remap Indigo to Heilth Signature Terracotta / Warm Amber-Orange */
+  --color-indigo-950: #FBECE1;
+  --color-indigo-900: #F3D5BE;
+  --color-indigo-800: #E8B894;
+  --color-indigo-700: #B85418;
+  --color-indigo-600: #DC6E26;
+  --color-indigo-500: #E47B32;
+  --color-indigo-400: #C05617;
+  --color-indigo-300: #9A410D;
+  --color-indigo-200: #752F07;
+  --color-indigo-100: #4A1C03;
+
+  /* Remap Violet to Warm Chestnut / Cognac Umber */
+  --color-violet-950: #F5ECE4;
+  --color-violet-900: #E6D3C3;
+  --color-violet-700: #6B3C1A;
+  --color-violet-600: #824B23;
+  --color-violet-500: #96592C;
+  --color-violet-400: #78421B;
+  --color-violet-300: #592F11;
+  --color-violet-200: #3E1F0A;
+
+  /* Remap Emerald to Botanical Leaf / Matcha Green */
+  --color-emerald-950: #ECF6E3;
+  --color-emerald-900: #D4E9C1;
+  --color-emerald-600: #4F8E27;
+  --color-emerald-500: #5E9E2E;
+  --color-emerald-400: #3D751B;
+  --color-emerald-300: #2B5910;
+
+  /* Remap Amber to Warm Honey Ochre */
+  --color-amber-950: #FCF3E3;
+  --color-amber-900: #F1DCBA;
+  --color-amber-700: #C87D12;
+  --color-amber-500: #D68B1C;
+  --color-amber-400: #A86407;
+  --color-amber-300: #824B04;
+  --color-amber-200: #633802;
+
+  /* Remap Rose to Warm Terracotta Coral / Brick */
+  --color-rose-950: #FCECE9;
+  --color-rose-900: #F4CFC8;
+  --color-rose-500: #C84B37;
+  --color-rose-400: #B33624;
+  --color-rose-300: #882315;
+
+  /* Remap Blue to Botanical Sage */
+  --color-blue-500: #4A7A62;
+  --color-blue-400: #36614C;
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -48,72 +114,38 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #FAF7F2;
+  --foreground: #23170E;
+  --card: #F3EEE5;
+  --card-foreground: #23170E;
+  --popover: #FAF7F2;
+  --popover-foreground: #23170E;
+  --primary: #DC6E26;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EFE9DF;
+  --secondary-foreground: #281A11;
+  --muted: #EFE9DF;
+  --muted-foreground: #6E5D4E;
+  --accent: #E7DFD1;
+  --accent-foreground: #23170E;
+  --destructive: #B33624;
+  --border: #E3DAC8;
+  --input: #E3DAC8;
+  --ring: #DC6E26;
+  --chart-1: #DC6E26;
+  --chart-2: #5E9E2E;
+  --chart-3: #824B23;
+  --chart-4: #D68B1C;
+  --chart-5: #4A7A62;
+  --radius: 0.75rem;
+  --sidebar: #F4EFE6;
+  --sidebar-foreground: #23170E;
+  --sidebar-primary: #DC6E26;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E9E1D3;
+  --sidebar-accent-foreground: #23170E;
+  --sidebar-border: #E2D9C6;
+  --sidebar-ring: #DC6E26;
 }
 
 @layer base {
@@ -121,9 +153,40 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: #FAF7F2;
+    color: #23170E;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   html {
-    @apply font-sans;
+    @apply font-sans scroll-smooth;
+  }
+  h1, h2 {
+    font-family: var(--font-editorial-serif), Georgia, serif;
+    letter-spacing: -0.02em;
   }
 }
+
+/* Keep group-hover:text-white readable on light warm cards while preserving white text on solid buttons */
+.group:hover .group-hover\:text-white {
+  color: #DC6E26 !important;
+}
+
+/* Pixel-dithered checkerboard transition band inspired by Heilth reference */
+.heilth-dither-band {
+  height: 28px;
+  width: 100%;
+  background-image:
+    radial-gradient(#E8E1D5 22%, transparent 23%),
+    radial-gradient(#EFEAE0 22%, transparent 23%);
+  background-size: 12px 12px;
+  background-position: 0 0, 6px 6px;
+  opacity: 0.85;
+}
+
+/* Subtle paper grain & organic card shadows */
+.heilth-card {
+  background-color: #F3EFE8;
+  border: 1px solid #E5DECFE6;
+  box-shadow: 0 2px 14px -4px rgba(40, 26, 17, 0.05);
+}
+

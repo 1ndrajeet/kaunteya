@@ -12,7 +12,6 @@ import {
   Users,
   LogOut,
   Plus,
-  Search,
   Activity,
   Menu,
   X,
@@ -20,7 +19,6 @@ import {
   ChevronDown,
   Loader2,
   AlertCircle,
-  ExternalLink,
   MessageSquare,
 } from 'lucide-react';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
@@ -132,8 +130,8 @@ export default function WorkspaceLayout({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center text-zinc-400 gap-3">
-        <Loader2 className="h-6 w-6 animate-spin text-indigo-500" />
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col items-center justify-center text-[#59493A] gap-3">
+        <Loader2 className="h-6 w-6 animate-spin text-[#DC6E26]" />
         <span className="text-xs font-mono">Loading workspace context...</span>
       </div>
     );
@@ -141,19 +139,19 @@ export default function WorkspaceLayout({
 
   if (unauthorized) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6 text-center">
-        <div className="max-w-md w-full p-8 rounded-2xl border border-zinc-800 bg-zinc-900/60 space-y-4">
-          <div className="h-12 w-12 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center mx-auto">
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col items-center justify-center p-6 text-center">
+        <div className="max-w-md w-full p-8 rounded-3xl border border-[#E2DACB] bg-[#F2EFE9] space-y-4 shadow-lg">
+          <div className="h-12 w-12 rounded-2xl bg-[#FCECE9] text-[#B33624] flex items-center justify-center mx-auto">
             <AlertCircle className="h-6 w-6" />
           </div>
-          <h2 className="text-lg font-bold text-zinc-100">Access Denied</h2>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <h2 className="font-serif text-2xl text-[#23170E]">Access Denied</h2>
+          <p className="text-xs text-[#6E5E4F] leading-relaxed">
             You do not have membership in this workspace. Access is restricted by PostgreSQL Row Level Security.
           </p>
           <div className="pt-2">
             <Link
               href="/onboarding"
-              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 text-xs font-medium transition-colors"
+              className="inline-flex items-center gap-2 rounded-full bg-[#DC6E26] hover:bg-[#C45D1B] text-white px-5 py-2 text-xs font-semibold transition-colors"
             >
               Go to Your Workspaces
             </Link>
@@ -262,25 +260,25 @@ export default function WorkspaceLayout({
         refreshWorkspace: fetchWorkspaceData,
       }}
     >
-      <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row antialiased">
+      <div className="min-h-screen bg-[#FAF7F2] text-[#23170E] flex flex-col md:flex-row antialiased border-t-4 border-[#854D27]">
         {/* Mobile Header Bar */}
-        <header className="md:hidden flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-md sticky top-0 z-40">
+        <header className="md:hidden flex items-center justify-between p-4 border-b border-[#E3DAC8] bg-[#F2EFE8]/90 backdrop-blur-md sticky top-0 z-40">
           <Link href={basePath} className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+            <div className="h-7 w-7 rounded-lg bg-[#5E9E2E] flex items-center justify-center text-white">
               <Compass className="h-4 w-4" />
             </div>
-            <span className="font-bold text-sm text-zinc-100 truncate max-w-[140px]">{workspaceName}</span>
+            <span className="font-serif text-lg text-[#23170E] truncate max-w-[140px]">{workspaceName}</span>
           </Link>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsCreateTaskOpen(true)}
-              className="p-1.5 rounded-md bg-indigo-600 text-white text-xs font-medium"
+              className="p-1.5 rounded-full bg-[#DC6E26] text-white text-xs font-medium"
             >
               <Plus className="h-4 w-4" />
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
+              className="p-1.5 rounded-md text-[#59493A] hover:text-[#23170E] hover:bg-[#E4DBC9]"
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -289,41 +287,41 @@ export default function WorkspaceLayout({
 
         {/* Sidebar Container */}
         <aside
-          className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-zinc-800/80 bg-zinc-950 flex flex-col justify-between transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-[#E3DAC8] bg-[#F2EFE8] flex flex-col justify-between transition-transform duration-200 ease-in-out md:static md:translate-x-0 ${
             mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
           {/* Top of Sidebar: Brand & Workspace Switcher */}
           <div className="p-4 space-y-4">
             <div className="flex items-center justify-between">
-              <Link href={basePath} className="flex items-center gap-2.5 group">
-                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+              <Link href={basePath} className="flex items-center gap-2.5 group overflow-hidden">
+                <div className="h-8 w-8 rounded-lg bg-[#FAF7F2] border border-[#DDD4C2] flex items-center justify-center text-[#5E9E2E] shadow-2xs group-hover:bg-[#5E9E2E] group-hover:text-white transition-colors shrink-0">
                   <Compass className="h-4 w-4" />
                 </div>
                 <div className="flex flex-col overflow-hidden">
-                  <span className="font-bold text-sm text-zinc-100 truncate">{workspaceName}</span>
-                  <span className="text-[10px] font-mono text-zinc-500 truncate">slug: {workspaceSlug}</span>
+                  <span className="font-serif text-lg leading-tight text-[#23170E] truncate">{workspaceName}</span>
+                  <span className="text-[10px] font-mono text-[#7D6E5D] truncate">slug: {workspaceSlug}</span>
                 </div>
               </Link>
               <Link
                 href="/onboarding"
                 title="Switch or create workspace"
-                className="p-1 text-zinc-500 hover:text-zinc-300 rounded hover:bg-zinc-900"
+                className="p-1.5 text-[#7D6E5D] hover:text-[#23170E] rounded-lg hover:bg-[#E6DECFE6]"
               >
                 <ChevronDown className="h-4 w-4" />
               </Link>
             </div>
 
             {/* Current Role Badge */}
-            <div className="p-2.5 rounded-lg border border-zinc-800/80 bg-zinc-900/60 flex items-center justify-between text-xs">
-              <span className="text-[11px] text-zinc-400">Your Role</span>
+            <div className="p-2.5 rounded-xl border border-[#E2D9C6] bg-[#FAF7F2] flex items-center justify-between text-xs shadow-2xs">
+              <span className="text-[11px] text-[#6E5E4F] font-medium">Your Role</span>
               <span
-                className={`text-[10px] font-mono uppercase font-semibold px-2 py-0.5 rounded flex items-center gap-1 ${
+                className={`text-[10px] font-mono uppercase font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 ${
                   role === 'admin'
-                    ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+                    ? 'bg-[#FBECE1] text-[#9A410D] border border-[#F3D5BE]'
                     : role === 'lead'
-                    ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                    : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                    ? 'bg-[#F5ECE4] text-[#592F11] border border-[#E6D3C3]'
+                    : 'bg-[#ECF6E3] text-[#2B5910] border border-[#D4E9C1]'
                 }`}
               >
                 {role === 'admin' && <ShieldCheck className="h-3 w-3" />}
@@ -339,12 +337,12 @@ export default function WorkspaceLayout({
                 setIsCreateTaskOpen(true);
                 setMobileMenuOpen(false);
               }}
-              className="w-full inline-flex items-center justify-between px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors shadow-sm shadow-indigo-600/30 group"
+              className="w-full inline-flex items-center justify-between px-4 py-2.5 rounded-full bg-[#DC6E26] hover:bg-[#C45D1B] text-white text-xs font-semibold transition-colors shadow-xs group"
             >
               <span className="flex items-center gap-2">
                 <Plus className="h-4 w-4" /> New Task
               </span>
-              <kbd className="hidden sm:inline-block px-1.5 py-0.2 rounded bg-indigo-700/60 text-[10px] font-mono text-indigo-200">
+              <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded-full bg-[#B85418] text-[10px] font-mono text-white/90">
                 C
               </kbd>
             </button>
@@ -359,14 +357,14 @@ export default function WorkspaceLayout({
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors ${
                     item.active
-                      ? 'bg-zinc-800 text-zinc-100 shadow-sm'
-                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'
+                      ? 'bg-[#FAF7F2] text-[#23170E] font-semibold border border-[#E2D9C6] shadow-2xs'
+                      : 'text-[#59493A] hover:text-[#23170E] hover:bg-[#EAE3D5]/70'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <Icon className={`h-4 w-4 ${item.active ? 'text-indigo-400' : 'text-zinc-500'}`} />
+                    <Icon className={`h-4 w-4 ${item.active ? 'text-[#DC6E26]' : 'text-[#7D6E5D]'}`} />
                     <span>{item.label}</span>
                   </div>
                 </Link>
@@ -375,14 +373,14 @@ export default function WorkspaceLayout({
           </nav>
 
           {/* Sidebar Footer: User Profile & Logout */}
-          <div className="p-3 border-t border-zinc-800/80 bg-zinc-950/80">
-            <div className="p-2 rounded-lg border border-zinc-800/60 bg-zinc-900/40 flex items-center justify-between">
+          <div className="p-3 border-t border-[#E3DAC8] bg-[#EFEBE2]">
+            <div className="p-2 rounded-xl border border-[#E2D9C6] bg-[#FAF7F2] flex items-center justify-between">
               <Link
                 href={`${basePath}/profile`}
                 className="flex items-center gap-2 overflow-hidden hover:opacity-80 transition-opacity"
                 title="View your profile"
               >
-                <div className="h-7 w-7 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                <div className="h-7 w-7 rounded-full bg-[#5E9E2E] flex items-center justify-center text-xs font-bold text-white shrink-0">
                   {user?.user_metadata?.avatar_url ? (
                     <img
                       src={user.user_metadata.avatar_url}
@@ -394,10 +392,10 @@ export default function WorkspaceLayout({
                   )}
                 </div>
                 <div className="overflow-hidden">
-                  <p className="text-xs font-medium text-zinc-200 truncate">
+                  <p className="text-xs font-semibold text-[#23170E] truncate">
                     {user?.user_metadata?.full_name || user?.email || 'Authenticated User'}
                   </p>
-                  <p className="text-[10px] text-zinc-500 truncate font-mono">
+                  <p className="text-[10px] text-[#7D6E5D] truncate font-mono">
                     {user?.user_metadata?.user_name ? `@${user.user_metadata.user_name}` : 'GitHub Auth'}
                   </p>
                 </div>
@@ -405,7 +403,7 @@ export default function WorkspaceLayout({
               <button
                 onClick={handleSignOut}
                 title="Sign out"
-                className="p-1.5 rounded text-zinc-500 hover:text-rose-400 hover:bg-zinc-800 transition-colors"
+                className="p-1.5 rounded-lg text-[#7D6E5D] hover:text-[#B33624] hover:bg-[#FCECE9] transition-colors"
               >
                 <LogOut className="h-4 w-4" />
               </button>
@@ -417,12 +415,12 @@ export default function WorkspaceLayout({
         {mobileMenuOpen && (
           <div
             onClick={() => setMobileMenuOpen(false)}
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+            className="fixed inset-0 z-40 bg-[#23170E]/40 backdrop-blur-xs md:hidden"
           />
         )}
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <div className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-[#FAF7F2]">
           {children}
         </div>
 
