@@ -81,12 +81,12 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
       onClick={toggleTheme}
       aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
       title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-      className={`inline-flex items-center justify-center p-1.5 rounded-lg border border-zinc-700/60 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors ${className}`}
+      className={`inline-flex items-center justify-center p-1.5 rounded-lg border border-[#E3DAC8] bg-[#FAF7F2] text-[#23170E] hover:bg-[#F2ECE1] transition-colors ${className}`}
     >
       {theme === 'dark' ? (
-        <Sun className="h-4 w-4 text-amber-400" />
+        <Sun className="h-4 w-4 text-[#DC6E26]" />
       ) : (
-        <Moon className="h-4 w-4 text-indigo-600" />
+        <Moon className="h-4 w-4 text-[#DC6E26]" />
       )}
     </button>
   );

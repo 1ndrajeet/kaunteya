@@ -185,28 +185,28 @@ export default function WorkspaceTasksPage({
   const getPriorityBadgeClass = (p: TaskPriority) => {
     switch (p) {
       case 'Urgent':
-        return 'text-rose-400 bg-rose-500/10 border-rose-500/30';
+        return 'text-[#B33624] bg-[#FCECE9] border-[#F4CFC8]';
       case 'High':
-        return 'text-amber-400 bg-amber-500/10 border-amber-500/30';
+        return 'text-[#D68B1C] bg-[#FCF3E3] border-[#F1DCBA]';
       case 'Medium':
-        return 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30';
+        return 'text-[#DC6E26] bg-[#FBECE1] border-[#E8B894]';
       case 'Low':
-        return 'text-zinc-400 bg-zinc-800 border-zinc-700';
+        return 'text-[#736251] bg-[#EFE9DF] border-[#E3DAC8]';
     }
   };
 
   const getStatusBadgeClass = (s: TaskStatus) => {
     switch (s) {
       case 'Done':
-        return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30';
+        return 'text-[#4F8E27] bg-[#ECF6E3] border-[#D4E9C1]';
       case 'In Progress':
-        return 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30';
+        return 'text-[#DC6E26] bg-[#FBECE1] border-[#E8B894]';
       case 'In Review':
-        return 'text-violet-400 bg-violet-500/10 border-violet-500/30';
+        return 'text-[#824B23] bg-[#F5ECE4] border-[#E6D3C3]';
       case 'Blocked':
-        return 'text-rose-400 bg-rose-500/10 border-rose-500/30';
+        return 'text-[#B33624] bg-[#FCECE9] border-[#F4CFC8]';
       default:
-        return 'text-zinc-400 bg-zinc-800 border-zinc-700';
+        return 'text-[#736251] bg-[#EFE9DF] border-[#E3DAC8]';
     }
   };
 
@@ -215,29 +215,33 @@ export default function WorkspaceTasksPage({
       {/* Top Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-100 flex items-center gap-2.5">
-            <CheckSquare className="h-6 w-6 text-indigo-400" /> Tasks
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#23170E] flex items-center gap-2.5">
+            <CheckSquare className="h-7 w-7 text-[#DC6E26]" /> Tasks
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-[#6E5D4E] mt-1">
             Canonical task center &bull; Persistent across Kanban board and table views.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {/* View mode toggle */}
-          <div className="flex items-center p-0.5 rounded-lg border border-zinc-800 bg-zinc-900 text-xs font-medium">
+          <div className="flex items-center p-0.5 rounded-full border border-[#E3DAC8] bg-[#F2ECE1] text-xs font-medium">
             <button
               onClick={() => setViewMode('board')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ${
-                viewMode === 'board' ? 'bg-zinc-800 text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors ${
+                viewMode === 'board'
+                  ? 'bg-[#FAF7F2] text-[#23170E] shadow-2xs font-semibold'
+                  : 'text-[#736251] hover:text-[#23170E]'
               }`}
             >
               <Columns3 className="h-3.5 w-3.5" /> Board
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ${
-                viewMode === 'list' ? 'bg-zinc-800 text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors ${
+                viewMode === 'list'
+                  ? 'bg-[#FAF7F2] text-[#23170E] shadow-2xs font-semibold'
+                  : 'text-[#736251] hover:text-[#23170E]'
               }`}
             >
               <List className="h-3.5 w-3.5" /> List
@@ -247,7 +251,7 @@ export default function WorkspaceTasksPage({
           {/* New Task Action */}
           <button
             onClick={() => setIsCreateTaskOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors shadow-sm shadow-indigo-600/30"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold transition-colors shadow-xs"
           >
             <Plus className="h-4 w-4" /> New Task
           </button>
@@ -255,16 +259,16 @@ export default function WorkspaceTasksPage({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-3.5 rounded-xl border border-zinc-800 bg-zinc-900/60 backdrop-blur-md flex flex-wrap items-center gap-3">
+      <div className="p-3.5 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] shadow-2xs flex flex-wrap items-center gap-3">
         {/* Search Input */}
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-zinc-500" />
+          <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#736251]" />
           <input
             type="text"
             placeholder="Search tasks by identifier (WEB-1) or title..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-zinc-950 border border-zinc-800/80 rounded-lg pl-9 pr-3 py-1.5 text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500"
+            className="w-full bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl pl-9 pr-3 py-1.5 text-xs text-[#23170E] placeholder:text-[#93826F] focus:outline-none focus:border-[#DC6E26] focus:ring-1 focus:ring-[#DC6E26]"
           />
         </div>
 
@@ -272,7 +276,7 @@ export default function WorkspaceTasksPage({
         <select
           value={filterProject}
           onChange={(e) => setFilterProject(e.target.value)}
-          className="bg-zinc-950 border border-zinc-800/80 rounded-lg px-2.5 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500"
+          className="bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
         >
           <option value="all">All Projects</option>
           {projects.map((p) => (
@@ -286,7 +290,7 @@ export default function WorkspaceTasksPage({
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="bg-zinc-950 border border-zinc-800/80 rounded-lg px-2.5 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500"
+          className="bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
         >
           <option value="all">All Statuses</option>
           {STATUS_COLUMNS.map((st) => (
@@ -301,7 +305,7 @@ export default function WorkspaceTasksPage({
         <select
           value={filterPriority}
           onChange={(e) => setFilterPriority(e.target.value)}
-          className="bg-zinc-950 border border-zinc-800/80 rounded-lg px-2.5 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500"
+          className="bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
         >
           <option value="all">All Priorities</option>
           <option value="Urgent">Urgent</option>
@@ -314,7 +318,7 @@ export default function WorkspaceTasksPage({
         <select
           value={filterAssignee}
           onChange={(e) => setFilterAssignee(e.target.value)}
-          className="bg-zinc-950 border border-zinc-800/80 rounded-lg px-2.5 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500"
+          className="bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
         >
           <option value="all">All Assignees</option>
           <option value="unassigned">Unassigned (Inbox)</option>
@@ -325,31 +329,31 @@ export default function WorkspaceTasksPage({
           ))}
         </select>
 
-        <span className="text-[11px] font-mono text-zinc-500 ml-auto">
+        <span className="text-[11px] font-mono text-[#736251] ml-auto">
           {filteredTasks.length} {filteredTasks.length === 1 ? 'task' : 'tasks'}
         </span>
       </div>
 
       {/* Main Task View */}
       {loading ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-12 text-zinc-500 gap-2 font-mono text-xs">
-          <Loader2 className="h-5 w-5 animate-spin text-indigo-500" />
+        <div className="flex-1 flex flex-col items-center justify-center p-12 text-[#736251] gap-2 font-mono text-xs">
+          <Loader2 className="h-5 w-5 animate-spin text-[#DC6E26]" />
           <span>Synchronizing tasks with Supabase...</span>
         </div>
       ) : filteredTasks.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-12 rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 text-center space-y-3">
-          <div className="h-10 w-10 rounded-xl bg-zinc-800/60 text-zinc-400 flex items-center justify-center mx-auto">
-            <CheckSquare className="h-5 w-5" />
+        <div className="flex-1 flex flex-col items-center justify-center p-12 rounded-3xl border border-dashed border-[#E3DAC8] bg-[#FAF7F2] text-center space-y-3">
+          <div className="h-12 w-12 rounded-2xl bg-[#EFE9DF] text-[#736251] flex items-center justify-center mx-auto">
+            <CheckSquare className="h-6 w-6" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-zinc-200">No matching tasks found</h3>
-            <p className="text-xs text-zinc-500 max-w-sm">
+            <h3 className="text-base font-semibold text-[#23170E]">No matching tasks found</h3>
+            <p className="text-xs text-[#6E5D4E] max-w-sm">
               Adjust your search filters or create a new task for your team.
             </p>
           </div>
           <button
             onClick={() => setIsCreateTaskOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs"
           >
             <Plus className="h-3.5 w-3.5" /> Create Task
           </button>
@@ -362,14 +366,14 @@ export default function WorkspaceTasksPage({
             return (
               <div
                 key={colStatus}
-                className="rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-3 space-y-3 flex flex-col min-h-[300px]"
+                className="rounded-2xl border border-[#E3DAC8] bg-[#F2ECE1]/70 p-3.5 space-y-3 flex flex-col min-h-[340px] shadow-2xs"
               >
                 {/* Column Header */}
-                <div className="flex items-center justify-between pb-2 border-b border-zinc-800/60">
-                  <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="flex items-center justify-between pb-2 border-b border-[#E3DAC8]">
+                  <span className="text-xs font-semibold text-[#23170E] uppercase tracking-wider flex items-center gap-1.5">
                     {colStatus}
                   </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 font-semibold">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E4DBC9] text-[#23170E] font-bold">
                     {colTasks.length}
                   </span>
                 </div>
@@ -377,7 +381,7 @@ export default function WorkspaceTasksPage({
                 {/* Column Task Cards */}
                 <div className="space-y-2 flex-1">
                   {colTasks.length === 0 ? (
-                    <div className="h-20 rounded-lg border border-dashed border-zinc-800/60 flex items-center justify-center text-[11px] text-zinc-600 font-mono">
+                    <div className="h-24 rounded-xl border border-dashed border-[#E3DAC8] flex items-center justify-center text-[11px] text-[#736251] font-mono">
                       Empty
                     </div>
                   ) : (
@@ -385,14 +389,14 @@ export default function WorkspaceTasksPage({
                       <div
                         key={t.id}
                         onClick={() => openTask(t)}
-                        className="group p-3 rounded-lg border border-zinc-800 bg-zinc-900/90 hover:border-indigo-500/50 hover:bg-zinc-800/80 transition-all cursor-pointer shadow-sm space-y-2"
+                        className="group p-3.5 rounded-xl border border-[#E3DAC8] bg-[#FAF7F2] hover:border-[#DC6E26]/60 hover:shadow-md transition-all cursor-pointer shadow-2xs space-y-2.5"
                       >
                         <div className="flex items-center justify-between text-[10px] font-mono">
-                          <span className="text-indigo-400 font-semibold">
+                          <span className="text-[#DC6E26] font-bold">
                             {t.project?.identifier}-{t.task_number}
                           </span>
                           <span
-                            className={`px-1.5 py-0.2 rounded border text-[9px] font-semibold ${getPriorityBadgeClass(
+                            className={`px-2 py-0.5 rounded-full border text-[9px] font-semibold ${getPriorityBadgeClass(
                               t.priority
                             )}`}
                           >
@@ -400,22 +404,22 @@ export default function WorkspaceTasksPage({
                           </span>
                         </div>
 
-                        <p className="text-xs font-medium text-zinc-200 line-clamp-2 leading-snug group-hover:text-white">
+                        <p className="text-xs font-medium text-[#23170E] line-clamp-2 leading-snug group-hover:text-[#DC6E26] transition-colors">
                           {t.title}
                         </p>
 
-                        <div className="pt-1.5 border-t border-zinc-800/60 flex items-center justify-between text-[10px] text-zinc-500">
+                        <div className="pt-2 border-t border-[#E4DBC9]/60 flex items-center justify-between text-[10px] text-[#736251]">
                           <div className="flex items-center gap-1">
                             {t.assignee ? (
-                              <span className="text-zinc-300 font-medium truncate max-w-[90px]">
+                              <span className="text-[#23170E] font-medium truncate max-w-[90px]">
                                 {t.assignee.display_name}
                               </span>
                             ) : (
-                              <span className="text-amber-400/80 font-mono">Unassigned</span>
+                              <span className="text-[#D68B1C] font-mono font-medium">Unassigned</span>
                             )}
                           </div>
                           {t.due_date && (
-                            <span className="font-mono text-zinc-400 flex items-center gap-1">
+                            <span className="font-mono text-[#736251] flex items-center gap-1">
                               <Calendar className="h-2.5 w-2.5" />
                               {new Date(t.due_date).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                             </span>
@@ -431,10 +435,10 @@ export default function WorkspaceTasksPage({
         </div>
       ) : (
         /* ================= LIST / TABLE VIEW ================= */
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 overflow-hidden shadow-sm">
+        <div className="rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] overflow-hidden shadow-2xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-zinc-950/80 text-zinc-400 font-medium uppercase tracking-wider text-[10px] border-b border-zinc-800">
+              <thead className="bg-[#F2ECE1] text-[#736251] font-mono text-[10px] uppercase tracking-wider border-b border-[#E3DAC8]">
                 <tr>
                   <th className="py-3 px-4">Identifier</th>
                   <th className="py-3 px-4">Title</th>
@@ -445,48 +449,48 @@ export default function WorkspaceTasksPage({
                   <th className="py-3 px-4">Due Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
+              <tbody className="divide-y divide-[#E4DBC9]/70 text-[#23170E]">
                 {filteredTasks.map((t) => (
                   <tr
                     key={t.id}
                     onClick={() => openTask(t)}
-                    className="hover:bg-zinc-800/40 cursor-pointer transition-colors"
+                    className="hover:bg-[#F2ECE1]/60 cursor-pointer transition-colors"
                   >
-                    <td className="py-2.5 px-4 font-mono font-semibold text-indigo-400 whitespace-nowrap">
+                    <td className="py-3 px-4 font-mono font-bold text-[#DC6E26] whitespace-nowrap">
                       {t.project?.identifier}-{t.task_number}
                     </td>
-                    <td className="py-2.5 px-4 font-medium text-zinc-100 max-w-xs truncate">
+                    <td className="py-3 px-4 font-medium text-[#23170E] max-w-xs truncate">
                       {t.title}
                     </td>
-                    <td className="py-2.5 px-4 text-zinc-400 whitespace-nowrap">
+                    <td className="py-3 px-4 text-[#6E5D4E] whitespace-nowrap">
                       {t.project?.name || 'Project'}
                     </td>
-                    <td className="py-2.5 px-4 whitespace-nowrap">
+                    <td className="py-3 px-4 whitespace-nowrap">
                       <span
-                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold border ${getStatusBadgeClass(
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${getStatusBadgeClass(
                           t.status
                         )}`}
                       >
                         {t.status}
                       </span>
                     </td>
-                    <td className="py-2.5 px-4 whitespace-nowrap">
+                    <td className="py-3 px-4 whitespace-nowrap">
                       <span
-                        className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold border ${getPriorityBadgeClass(
+                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold border ${getPriorityBadgeClass(
                           t.priority
                         )}`}
                       >
                         {t.priority}
                       </span>
                     </td>
-                    <td className="py-2.5 px-4 whitespace-nowrap">
+                    <td className="py-3 px-4 whitespace-nowrap">
                       {t.assignee ? (
-                        <span className="text-zinc-200 font-medium">{t.assignee.display_name}</span>
+                        <span className="text-[#23170E] font-medium">{t.assignee.display_name}</span>
                       ) : (
-                        <span className="text-amber-400/80 font-mono text-[11px]">Unassigned</span>
+                        <span className="text-[#D68B1C] font-mono text-[11px] font-medium">Unassigned</span>
                       )}
                     </td>
-                    <td className="py-2.5 px-4 text-zinc-400 font-mono text-[11px] whitespace-nowrap">
+                    <td className="py-3 px-4 text-[#736251] font-mono text-[11px] whitespace-nowrap">
                       {t.due_date ? new Date(t.due_date).toLocaleDateString() : '—'}
                     </td>
                   </tr>

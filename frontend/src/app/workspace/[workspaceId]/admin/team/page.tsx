@@ -217,20 +217,20 @@ export default function AdminTeamGovernancePage({
   if (role && role !== 'admin') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 sm:p-12 text-center space-y-4">
-        <div className="h-14 w-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20">
+        <div className="h-14 w-14 rounded-2xl bg-[#FCF3E3] text-[#824B04] flex items-center justify-center mx-auto border border-[#F1DCBA]">
           <ShieldCheck className="h-7 w-7" />
         </div>
         <div className="space-y-1">
-          <h2 className="text-lg font-bold text-zinc-100">Administrator Access Required</h2>
-          <p className="text-xs text-zinc-400 max-w-md">
-            You are signed in as a <span className="font-mono text-indigo-400 uppercase font-semibold">{role}</span>. Team governance and member invitations are restricted to workspace administrators.
+          <h2 className="text-lg font-serif font-bold text-[#23170E]">Administrator Access Required</h2>
+          <p className="text-xs text-[#6E5D4E] max-w-md">
+            You are signed in as a <span className="font-mono text-[#DC6E26] uppercase font-semibold">{role}</span>. Team governance and member invitations are restricted to workspace administrators.
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
           {role === 'lead' && (
             <Link
               href={`/workspace/${workspaceId}/lead`}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold transition-colors shadow-xs"
             >
               <Compass className="h-4 w-4" /> Go to Team Lead Portal
             </Link>
@@ -238,14 +238,14 @@ export default function AdminTeamGovernancePage({
           {role === 'member' && (
             <Link
               href={`/workspace/${workspaceId}/member`}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold transition-colors shadow-xs"
             >
               <Users className="h-4 w-4" /> Go to My Tasks
             </Link>
           )}
           <Link
             href={`/workspace/${workspaceId}/tasks`}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-medium transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#E3DAC8] bg-[#F2ECE1] hover:bg-[#EFE9DF] text-[#23170E] text-xs font-medium transition-colors"
           >
             Workspace Tasks
           </Link>
@@ -260,16 +260,16 @@ export default function AdminTeamGovernancePage({
       <div className="space-y-2">
         <Link
           href={`/workspace/${workspaceId}/admin`}
-          className="text-xs text-zinc-400 hover:text-zinc-200 inline-flex items-center gap-1"
+          className="text-xs text-[#736251] hover:text-[#23170E] inline-flex items-center gap-1"
         >
           <ChevronLeft className="h-3.5 w-3.5" /> Back to Admin Overview
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-100 flex items-center gap-2.5">
-              <Users className="h-6 w-6 text-indigo-400" /> Team Governance &amp; Access
+            <h1 className="text-xl sm:text-2xl font-serif font-bold tracking-tight text-[#23170E] flex items-center gap-2.5">
+              <Users className="h-6 w-6 text-[#DC6E26]" /> Team Governance &amp; Access
             </h1>
-            <p className="text-xs text-zinc-400 mt-1">
+            <p className="text-xs text-[#6E5D4E] mt-1">
               Manage workspace member roles, designate the single team lead, and issue invitation codes.
             </p>
           </div>
@@ -278,28 +278,28 @@ export default function AdminTeamGovernancePage({
 
       {/* Notifications */}
       {actionMessage && (
-        <div className="p-3 rounded-lg bg-emerald-950/40 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4 text-emerald-400" /> {actionMessage}
+        <div className="p-3 rounded-lg bg-[#ECF6E3] border border-[#D4E9C1] text-[#2B5910] text-xs flex items-center gap-2">
+          <CheckCircle2 className="h-4 w-4 text-[#2B5910]" /> {actionMessage}
         </div>
       )}
       {errorMessage && (
-        <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
-          <AlertCircle className="h-4 w-4 text-rose-400" /> {errorMessage}
+        <div className="p-3 rounded-lg bg-[#FCECE9] border border-[#F4CFC8] text-[#882315] text-xs flex items-center gap-2">
+          <AlertCircle className="h-4 w-4 text-[#882315]" /> {errorMessage}
         </div>
       )}
 
       {/* Members Table Card */}
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 overflow-hidden shadow-sm space-y-3 p-5">
+      <div className="rounded-xl border border-[#E3DAC8] bg-[#FAF7F2] overflow-hidden shadow-xs space-y-3 p-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-indigo-400" /> Workspace Members ({members.length})
+          <h2 className="text-sm font-serif font-bold text-[#23170E] flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-[#2B5910]" /> Workspace Members ({members.length})
           </h2>
-          <span className="text-[11px] font-mono text-zinc-400">Strictly 1 Team Lead per Workspace</span>
+          <span className="text-[11px] font-mono text-[#736251]">Strictly 1 Team Lead per Workspace</span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 bg-zinc-950/60 border-b border-zinc-800">
+            <thead className="text-[10px] uppercase font-mono tracking-wider text-[#736251] bg-[#F2ECE1] border-b border-[#E3DAC8]">
               <tr>
                 <th className="py-2.5 px-4">Member</th>
                 <th className="py-2.5 px-4">GitHub Username</th>
@@ -308,11 +308,11 @@ export default function AdminTeamGovernancePage({
                 <th className="py-2.5 px-4 text-right">Role Governance</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/60 text-zinc-300">
+            <tbody className="divide-y divide-[#E3DAC8] text-[#23170E]">
               {members.map((m) => (
-                <tr key={m.id} className="hover:bg-zinc-800/30 transition-colors">
-                  <td className="py-3 px-4 font-medium text-zinc-100 flex items-center gap-2.5">
-                    <div className="h-7 w-7 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                <tr key={m.id} className="hover:bg-[#F2ECE1] transition-colors">
+                  <td className="py-3 px-4 font-medium text-[#23170E] flex items-center gap-2.5">
+                    <div className="h-7 w-7 rounded-full bg-[#DC6E26] flex items-center justify-center text-xs font-bold text-white shrink-0">
                       {m.profiles?.avatar_url ? (
                         <img
                           src={m.profiles.avatar_url}
@@ -324,34 +324,33 @@ export default function AdminTeamGovernancePage({
                       )}
                     </div>
                     <div>
-                      <div className="font-semibold text-zinc-100">{m.profiles?.display_name}</div>
-                      <div className="text-[10px] text-zinc-500 font-mono">{m.profiles?.email}</div>
+                      <div className="font-semibold text-[#23170E]">{m.profiles?.display_name}</div>
+                      <div className="text-[10px] text-[#736251] font-mono">{m.profiles?.email}</div>
                     </div>
                   </td>
-                  <td className="py-3 px-4 font-mono text-zinc-400 text-xs">
+                  <td className="py-3 px-4 font-mono text-[#736251] text-xs">
                     {m.profiles?.github_username ? `@${m.profiles.github_username}` : '—'}
                   </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`inline-block px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase ${
-                        m.role === 'admin'
-                          ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                          : m.role === 'lead'
-                          ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                          : 'bg-zinc-800 text-zinc-400'
-                      }`}
+                      className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold uppercase ${m.role === 'admin'
+                        ? 'bg-[#ECF6E3] text-[#2B5910] border border-[#D4E9C1]'
+                        : m.role === 'lead'
+                          ? 'bg-[#FCF3E3] text-[#824B04] border border-[#F1DCBA]'
+                          : 'bg-[#F2ECE1] text-[#736251] border border-[#E4DBC9]'
+                        }`}
                     >
                       {m.role}
                     </span>
                   </td>
-                  <td className="py-3 px-4 font-mono text-zinc-400 text-[11px]">
+                  <td className="py-3 px-4 font-mono text-[#736251] text-[11px]">
                     {new Date(m.joined_at).toLocaleDateString()}
                   </td>
                   <td className="py-3 px-4 text-right">
                     <select
                       value={m.role}
                       onChange={(e) => handleRoleChange(m.user_id, e.target.value as WorkspaceRole)}
-                      className="bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500 font-medium"
+                      className="bg-[#FAF7F2] border border-[#E3DAC8] rounded-lg px-2.5 py-1 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26] font-medium"
                     >
                       <option value="member">Member</option>
                       <option value="lead">Designate Lead</option>
@@ -368,23 +367,23 @@ export default function AdminTeamGovernancePage({
       {/* Invitations Management Card */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Create Invitation Form */}
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-4">
+        <div className="rounded-xl border border-[#E3DAC8] bg-[#FAF7F2] p-5 space-y-4 shadow-xs">
           <div className="space-y-1">
-            <h3 className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
-              <KeyRound className="h-4 w-4 text-indigo-400" /> Issue Invitation Code
+            <h3 className="text-sm font-serif font-bold text-[#23170E] flex items-center gap-2">
+              <KeyRound className="h-4 w-4 text-[#DC6E26]" /> Issue Invitation Code
             </h3>
-            <p className="text-[11px] text-zinc-400">
+            <p className="text-[11px] text-[#6E5D4E]">
               Generate an expiring single-use or multi-use invitation code for new teammates.
             </p>
           </div>
 
           <form onSubmit={handleGenerateInvite} className="space-y-3.5">
             <div className="space-y-1">
-              <label className="text-[11px] font-medium text-zinc-300">Grant Role</label>
+              <label className="text-[11px] font-medium text-[#736251]">Grant Role</label>
               <select
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value as 'lead' | 'member')}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500 font-medium"
+                className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-lg px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26] font-medium"
               >
                 <option value="member">Member (Regular)</option>
                 <option value="lead">Team Lead (Enforces single lead)</option>
@@ -392,33 +391,33 @@ export default function AdminTeamGovernancePage({
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] font-medium text-zinc-300">Maximum Redemptions</label>
+              <label className="text-[11px] font-medium text-[#736251]">Maximum Redemptions</label>
               <input
                 type="number"
                 min={1}
                 max={50}
                 value={maxUses}
                 onChange={(e) => setMaxUses(parseInt(e.target.value) || 1)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-lg px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] font-medium text-zinc-300">Expiry (Days)</label>
+              <label className="text-[11px] font-medium text-[#736251]">Expiry (Days)</label>
               <input
                 type="number"
                 min={1}
                 max={30}
                 value={expiryDays}
                 onChange={(e) => setExpiryDays(parseInt(e.target.value) || 7)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-lg px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
               />
             </div>
 
             <button
               type="submit"
               disabled={generatingInvite}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 text-xs font-medium transition-colors shadow-sm disabled:opacity-50"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white px-4 py-2 text-xs font-semibold transition-colors shadow-xs disabled:opacity-50"
             >
               {generatingInvite ? (
                 <>
@@ -432,33 +431,33 @@ export default function AdminTeamGovernancePage({
         </div>
 
         {/* Active Invitations List */}
-        <div className="lg:col-span-2 rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-3">
+        <div className="lg:col-span-2 rounded-xl border border-[#E3DAC8] bg-[#FAF7F2] p-5 space-y-3 shadow-xs">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-zinc-200">Active Invitation Codes ({invitations.length})</h3>
-            <span className="text-[11px] font-mono text-zinc-500">Redeemable at /onboarding</span>
+            <h3 className="text-sm font-serif font-bold text-[#23170E]">Active Invitation Codes ({invitations.length})</h3>
+            <span className="text-[11px] font-mono text-[#736251]">Redeemable at /onboarding</span>
           </div>
 
           <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
             {invitations.length === 0 ? (
-              <div className="text-center py-8 text-xs text-zinc-600 font-mono">
+              <div className="text-center py-8 text-xs text-[#736251] font-mono">
                 No active invitation codes. Generate one to invite teammates.
               </div>
             ) : (
               invitations.map((inv) => (
                 <div
                   key={inv.id}
-                  className="p-3 rounded-lg border border-zinc-800 bg-zinc-950/60 flex items-center justify-between text-xs"
+                  className="p-3 rounded-lg border border-[#E3DAC8] bg-[#F2ECE1] flex items-center justify-between text-xs shadow-2xs"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-indigo-400 tracking-wider text-sm">
+                      <span className="font-mono font-bold text-[#DC6E26] tracking-wider text-sm">
                         {inv.code}
                       </span>
-                      <span className="px-1.5 py-0.2 rounded bg-zinc-800 text-[10px] font-mono uppercase text-zinc-400 font-semibold">
+                      <span className="px-2 py-0.5 rounded-full bg-[#FAF7F2] text-[10px] font-mono uppercase text-[#736251] border border-[#E3DAC8] font-semibold">
                         {inv.role}
                       </span>
                     </div>
-                    <div className="text-[10px] text-zinc-500 font-mono flex items-center gap-3">
+                    <div className="text-[10px] text-[#736251] font-mono flex items-center gap-3">
                       <span>Uses: {inv.uses_count} / {inv.max_uses}</span>
                       <span>Expires: {new Date(inv.expires_at).toLocaleDateString()}</span>
                     </div>
@@ -466,11 +465,11 @@ export default function AdminTeamGovernancePage({
 
                   <button
                     onClick={() => copyToClipboard(inv.code)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-800 text-zinc-300 text-xs font-mono transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E3DAC8] hover:bg-[#FAF7F2] text-[#23170E] text-xs font-mono transition-colors"
                   >
                     {copiedCode === inv.code ? (
                       <>
-                        <CheckCircle2 className="h-3 w-3 text-emerald-400" /> Copied
+                        <CheckCircle2 className="h-3 w-3 text-[#2B5910]" /> Copied
                       </>
                     ) : (
                       <>

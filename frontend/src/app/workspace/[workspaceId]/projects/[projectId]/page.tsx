@@ -959,8 +959,8 @@ export default function ProjectDetailPage({
 
   if (loading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-12 text-zinc-500 font-mono text-xs gap-2">
-        <Loader2 className="h-5 w-5 animate-spin text-indigo-400" />
+      <div className="flex-1 flex flex-col items-center justify-center p-12 text-[#6E5D4E] font-mono text-xs gap-2">
+        <Loader2 className="h-5 w-5 animate-spin text-[#DC6E26]" />
         <span>Loading project workspace &amp; teams...</span>
       </div>
     );
@@ -969,14 +969,14 @@ export default function ProjectDetailPage({
   if (!project) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-3">
-        <AlertCircle className="h-8 w-8 text-rose-400 mx-auto" />
-        <h3 className="text-base font-semibold text-zinc-100">Project Not Found</h3>
-        <p className="text-xs text-zinc-400">
+        <AlertCircle className="h-8 w-8 text-[#882315] mx-auto" />
+        <h3 className="text-base font-serif font-bold text-[#23170E]">Project Not Found</h3>
+        <p className="text-xs text-[#6E5D4E]">
           This project either does not exist or you lack permission to view it.
         </p>
         <Link
           href={`/workspace/${workspaceId}/projects`}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-200 text-xs hover:bg-zinc-700"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FAF7F2] hover:bg-[#EAE2D4] border border-[#E3DAC8] text-[#23170E] text-xs font-semibold transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Projects
         </Link>
@@ -993,17 +993,17 @@ export default function ProjectDetailPage({
   return (
     <div className="flex-1 flex flex-col p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
       {/* Breadcrumb & Navigation */}
-      <div className="flex items-center justify-between text-xs text-zinc-400">
+      <div className="flex items-center justify-between text-xs text-[#6E5D4E]">
         <div className="flex items-center gap-2">
           <Link
             href={`/workspace/${workspaceId}/projects`}
-            className="hover:text-zinc-200 flex items-center gap-1 transition-colors"
+            className="hover:text-[#23170E] flex items-center gap-1 transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Projects
           </Link>
           <span>/</span>
-          <span className="font-mono text-zinc-200 font-bold">[{project.identifier}]</span>
-          <span className="text-zinc-300 truncate max-w-xs">{project.name}</span>
+          <span className="font-mono text-[#23170E] font-bold">[{project.identifier}]</span>
+          <span className="text-[#6E5D4E] truncate max-w-xs">{project.name}</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -1016,22 +1016,22 @@ export default function ProjectDetailPage({
       </div>
 
       {/* Project Header Banner */}
-      <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm flex flex-col md:flex-row md:items-start justify-between gap-6 shadow-sm">
+      <div className="p-6 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] shadow-xs flex flex-col md:flex-row md:items-start justify-between gap-6">
         <div className="space-y-3 flex-1">
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-[#FCF3E3] text-[#824B04] border border-[#F1DCBA]">
               {project.identifier}
             </span>
             <span
-              className={`text-[10px] font-mono uppercase font-semibold px-2 py-0.5 rounded-full border ${project.status === 'active'
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+              className={`text-[10px] font-mono uppercase font-semibold px-2.5 py-0.5 rounded-full border ${project.status === 'active'
+                ? 'bg-[#ECF6E3] text-[#2B5910] border-[#D4E9C1]'
                 : project.status === 'planning'
-                  ? 'bg-sky-500/10 text-sky-400 border-sky-500/20'
+                  ? 'bg-[#FCF3E3] text-[#824B04] border-[#F1DCBA]'
                   : project.status === 'at_risk'
-                    ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                    ? 'bg-[#FCECE9] text-[#882315] border-[#F4CFC8]'
                     : project.status === 'completed'
-                      ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
-                      : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                      ? 'bg-[#ECF6E3] text-[#2B5910] border-[#D4E9C1]'
+                      : 'bg-[#F2ECE1] text-[#6E5D4E] border-[#E3DAC8]'
                 }`}
             >
               {project.status}
@@ -1039,24 +1039,24 @@ export default function ProjectDetailPage({
           </div>
 
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-100">{project.name}</h1>
+            <h1 className="text-xl sm:text-2xl font-serif font-bold tracking-tight text-[#23170E]">{project.name}</h1>
             {project.description && (
-              <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed max-w-2xl">{project.description}</p>
+              <p className="text-xs text-[#6E5D4E] mt-1.5 leading-relaxed max-w-2xl">{project.description}</p>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400 pt-2">
-            <span className="flex items-center gap-1.5 text-zinc-300">
-              <User className="h-3.5 w-3.5 text-violet-400" />
+          <div className="flex flex-wrap items-center gap-4 text-xs text-[#6E5D4E] pt-2">
+            <span className="flex items-center gap-1.5 text-[#23170E]">
+              <User className="h-3.5 w-3.5 text-[#DC6E26]" />
               Lead: {project.lead?.display_name || 'Unassigned'}
             </span>
-            <span className="flex items-center gap-1.5 font-mono text-zinc-300">
-              <Users className="h-3.5 w-3.5 text-indigo-400" />
+            <span className="flex items-center gap-1.5 font-mono text-[#6E5D4E]">
+              <Users className="h-3.5 w-3.5 text-[#DC6E26]" />
               {teams.length} Teams &bull; {projectMembers.length} Members
             </span>
             {project.target_date && (
               <span className="flex items-center gap-1.5 font-mono">
-                <Calendar className="h-3.5 w-3.5 text-indigo-400" />
+                <Calendar className="h-3.5 w-3.5 text-[#DC6E26]" />
                 Target: {new Date(project.target_date).toLocaleDateString()}
               </span>
             )}
@@ -1065,18 +1065,18 @@ export default function ProjectDetailPage({
 
         {/* Completion Progress Widget */}
         <div className="flex flex-col sm:items-end justify-between gap-3 shrink-0">
-          <div className="w-48 space-y-1.5 bg-zinc-950/60 p-3.5 rounded-xl border border-zinc-800/80">
+          <div className="w-48 space-y-1.5 bg-[#F2ECE1] p-3.5 rounded-2xl border border-[#E3DAC8]">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-zinc-400 font-medium">Completion</span>
-              <span className="font-mono text-zinc-200 font-semibold">{progressPercent}%</span>
+              <span className="text-[#6E5D4E] font-medium">Completion</span>
+              <span className="font-mono text-[#23170E] font-bold">{progressPercent}%</span>
             </div>
-            <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-[#E3DAC8] rounded-full overflow-hidden">
               <div
-                className="h-full bg-indigo-600 rounded-full transition-all duration-300"
+                className="h-full bg-[#DC6E26] rounded-full transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <div className="text-[10px] text-zinc-500 text-right">
+            <div className="text-[10px] text-[#6E5D4E] text-right">
               {completedTasks} of {totalTasks} tasks done
             </div>
           </div>
@@ -1084,7 +1084,7 @@ export default function ProjectDetailPage({
       </div>
 
       {/* Navigation Tabs Bar */}
-      <div className="flex items-center gap-1 border-b border-zinc-800 overflow-x-auto text-xs font-medium pb-px">
+      <div className="flex items-center gap-1 border-b border-[#E3DAC8] overflow-x-auto text-xs font-medium pb-px">
         {[
           { id: 'overview', label: 'Overview', icon: Layers },
           { id: 'tasks', label: `Tasks (${tasks.length})`, icon: CheckCircle2 },
@@ -1104,8 +1104,8 @@ export default function ProjectDetailPage({
               key={tab.id}
               onClick={() => setTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 border-b-2 font-medium transition-colors whitespace-nowrap ${isActive
-                ? 'border-indigo-500 text-indigo-400 font-semibold'
-                : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
+                ? 'border-[#DC6E26] text-[#DC6E26] font-semibold'
+                : 'border-transparent text-[#6E5D4E] hover:text-[#23170E] hover:border-[#E3DAC8]'
                 }`}
             >
               <Icon className="h-4 w-4" />
@@ -1123,22 +1123,22 @@ export default function ProjectDetailPage({
           {/* Sync / Regeneration Feedback Banner */}
           {syncFeedback && (
             <div
-              className={`p-3.5 rounded-xl text-xs flex items-center justify-between border ${syncFeedback.type === 'success'
-                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
-                : 'bg-rose-500/10 border-rose-500/20 text-rose-300'
+              className={`p-3.5 rounded-2xl text-xs flex items-center justify-between border ${syncFeedback.type === 'success'
+                ? 'bg-[#ECF6E3] border-[#D4E9C1] text-[#2B5910]'
+                : 'bg-[#FCECE9] border-[#F4CFC8] text-[#882315]'
                 }`}
             >
               <div className="flex items-center gap-2">
                 {syncFeedback.type === 'success' ? (
-                  <Check className="h-4 w-4 text-emerald-400" />
+                  <Check className="h-4 w-4 text-[#2B5910]" />
                 ) : (
-                  <AlertCircle className="h-4 w-4 text-rose-400" />
+                  <AlertCircle className="h-4 w-4 text-[#882315]" />
                 )}
                 <span>{syncFeedback.message}</span>
               </div>
               <button
                 onClick={() => setSyncFeedback(null)}
-                className="text-zinc-400 hover:text-zinc-200"
+                className="text-[#6E5D4E] hover:text-[#23170E]"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -1146,15 +1146,15 @@ export default function ProjectDetailPage({
           )}
 
           {/* 1. Connected GitHub Repository Source Card */}
-          <div className="p-5 rounded-2xl border border-zinc-800 bg-zinc-900/40 space-y-4">
+          <div className="p-6 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-4 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center shrink-0">
-                  <GitBranch className="h-4 w-4 text-indigo-400" />
+                <div className="h-9 w-9 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] flex items-center justify-center shrink-0">
+                  <GitBranch className="h-4 w-4 text-[#DC6E26]" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-bold text-zinc-100 font-mono">
+                    <h2 className="text-sm font-bold text-[#23170E] font-mono">
                       {githubRepo ? githubRepo.full_name : 'No GitHub Repository Linked'}
                     </h2>
                     {githubRepo && (
@@ -1162,13 +1162,13 @@ export default function ProjectDetailPage({
                         href={githubRepo.repo_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-zinc-400 hover:text-indigo-400"
+                        className="text-[#6E5D4E] hover:text-[#DC6E26]"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                       </a>
                     )}
                   </div>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                  <p className="text-[11px] text-[#6E5D4E] mt-0.5">
                     {githubRepo?.description || 'Connected repository providing authoritative source evidence.'}
                   </p>
                 </div>
@@ -1179,9 +1179,9 @@ export default function ProjectDetailPage({
                   <button
                     onClick={handleSyncGithub}
                     disabled={isSyncingGithub}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FAF7F2] hover:bg-[#EAE2D4] border border-[#E3DAC8] text-[#23170E] text-xs font-semibold transition-colors disabled:opacity-50 shadow-xs"
                   >
-                    <RefreshCw className={`h-3 w-3 ${isSyncingGithub ? 'animate-spin text-indigo-400' : ''}`} />
+                    <RefreshCw className={`h-3 w-3 ${isSyncingGithub ? 'animate-spin text-[#DC6E26]' : ''}`} />
                     {isSyncingGithub ? 'Syncing...' : 'Sync GitHub Data'}
                   </button>
                 </div>
@@ -1189,50 +1189,50 @@ export default function ProjectDetailPage({
             </div>
 
             {githubRepo ? (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-zinc-800/60 text-xs">
-                <div className="p-2.5 rounded-xl bg-zinc-950/60 border border-zinc-800/60 space-y-1">
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase">Visibility & Branch</span>
-                  <div className="flex items-center gap-1.5 font-mono text-zinc-200">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-[#E3DAC8] text-xs">
+                <div className="p-2.5 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] space-y-1">
+                  <span className="text-[10px] font-mono text-[#6E5D4E] uppercase">Visibility & Branch</span>
+                  <div className="flex items-center gap-1.5 font-mono text-[#23170E]">
                     {githubRepo.is_private ? (
-                      <span className="flex items-center gap-1 text-amber-400 text-[11px]">
+                      <span className="flex items-center gap-1 text-[#824B04] text-[11px] font-medium">
                         <Lock className="h-3 w-3" /> Private
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 text-emerald-400 text-[11px]">
+                      <span className="flex items-center gap-1 text-[#2B5910] text-[11px] font-medium">
                         <Globe className="h-3 w-3" /> Public
                       </span>
                     )}
-                    <span className="text-zinc-600">&bull;</span>
+                    <span className="text-[#A89A8A]">&bull;</span>
                     <span className="text-[11px] truncate">{githubRepo.default_branch}</span>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-zinc-950/60 border border-zinc-800/60 space-y-1">
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase">Primary Language</span>
-                  <p className="font-mono text-zinc-200 text-[11px] truncate">
+                <div className="p-2.5 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] space-y-1">
+                  <span className="text-[10px] font-mono text-[#6E5D4E] uppercase">Primary Language</span>
+                  <p className="font-mono text-[#23170E] text-[11px] truncate">
                     {githubRepo.primary_language || 'Not detected'}
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-zinc-950/60 border border-zinc-800/60 space-y-1">
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase">Stats</span>
-                  <p className="font-mono text-zinc-200 text-[11px]">
+                <div className="p-2.5 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] space-y-1">
+                  <span className="text-[10px] font-mono text-[#6E5D4E] uppercase">Stats</span>
+                  <p className="font-mono text-[#23170E] text-[11px]">
                     ⭐ {githubRepo.stars_count || 0} &bull; 🍴 {githubRepo.forks_count || 0} &bull; ⚠️ {githubRepo.open_issues_count || 0}
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-zinc-950/60 border border-zinc-800/60 space-y-1">
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase">Data Freshness</span>
+                <div className="p-2.5 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] space-y-1">
+                  <span className="text-[10px] font-mono text-[#6E5D4E] uppercase">Data Freshness</span>
                   <div className="flex items-center gap-1.5">
                     <span
                       className={`h-1.5 w-1.5 rounded-full ${githubRepo.sync_status === 'synced'
-                        ? 'bg-emerald-400'
+                        ? 'bg-[#2B5910]'
                         : githubRepo.sync_status === 'syncing'
-                          ? 'bg-indigo-400 animate-pulse'
-                          : 'bg-zinc-500'
+                          ? 'bg-[#DC6E26] animate-pulse'
+                          : 'bg-[#6E5D4E]'
                         }`}
                     />
-                    <span className="font-mono text-[11px] text-zinc-300 capitalize">
+                    <span className="font-mono text-[11px] text-[#23170E] capitalize">
                       {githubRepo.last_sync_at
                         ? new Date(githubRepo.last_sync_at).toLocaleTimeString([], {
                           hour: '2-digit',
@@ -1244,42 +1244,42 @@ export default function ProjectDetailPage({
                 </div>
               </div>
             ) : (
-              <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-800/30 text-amber-300 text-xs flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
+              <div className="p-3.5 rounded-2xl bg-[#FCF3E3] border border-[#F1DCBA] text-[#824B04] text-xs flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 shrink-0 text-[#824B04]" />
                 <span>Legacy project created without a mandatory GitHub repository connection.</span>
               </div>
             )}
           </div>
 
           {/* 2. Universal Gemini Intelligence Card */}
-          <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/40 space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
+          <div className="p-6 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-5 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E3DAC8]">
               <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-xl bg-indigo-950/60 border border-indigo-500/30 flex items-center justify-center shrink-0">
-                  <Bot className="h-4 w-4 text-indigo-400" />
+                <div className="h-9 w-9 rounded-xl bg-[#FCF3E3] border border-[#F1DCBA] flex items-center justify-center shrink-0">
+                  <Bot className="h-4 w-4 text-[#DC6E26]" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-bold text-zinc-100 flex items-center gap-1.5">
+                    <h2 className="text-sm font-bold font-serif text-[#23170E] flex items-center gap-1.5">
                       Gemini Project Intelligence
                     </h2>
                     {aiModelId && (
-                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300">
+                      <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#F2ECE1] border border-[#E3DAC8] text-[#6E5D4E]">
                         {aiModelId}
                       </span>
                     )}
                     <span
                       className={`font-mono text-[10px] px-2 py-0.5 rounded-full uppercase font-semibold ${aiContextStatus === 'completed'
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                        ? 'bg-[#ECF6E3] text-[#2B5910] border border-[#D4E9C1]'
                         : aiContextStatus === 'pending'
-                          ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 animate-pulse'
-                          : 'bg-zinc-800 text-zinc-400'
+                          ? 'bg-[#FCF3E3] text-[#824B04] border border-[#F1DCBA] animate-pulse'
+                          : 'bg-[#F2ECE1] text-[#6E5D4E] border border-[#E3DAC8]'
                         }`}
                     >
                       {aiContextStatus}
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                  <p className="text-[11px] text-[#6E5D4E] mt-0.5">
                     {aiAnalyzedAt
                       ? `Generated from repository evidence at ${new Date(aiAnalyzedAt).toLocaleString()}`
                       : 'AI-derived project interpretation grounded in GitHub source data.'}
@@ -1291,7 +1291,7 @@ export default function ProjectDetailPage({
                 <button
                   onClick={handleRegenerateAI}
                   disabled={isRegeneratingAI}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-all disabled:opacity-50 shrink-0"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs transition-all disabled:opacity-50 shrink-0"
                 >
                   <RefreshCw className={`h-3 w-3 ${isRegeneratingAI ? 'animate-spin' : ''}`} />
                   {isRegeneratingAI ? 'Analyzing Evidence...' : 'Regenerate AI Context'}
@@ -1303,11 +1303,11 @@ export default function ProjectDetailPage({
               <div className="space-y-4 text-xs">
                 {/* Suggested Description Box */}
                 {aiContext.suggestedDescription && (
-                  <div className="p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/30 space-y-1">
-                    <span className="font-mono text-[10px] uppercase font-bold text-indigo-300">
+                  <div className="p-3.5 rounded-2xl bg-[#FCF3E3] border border-[#F1DCBA] space-y-1">
+                    <span className="font-mono text-[10px] uppercase font-bold text-[#824B04]">
                       Suggested Project Description
                     </span>
-                    <p className="text-zinc-200 leading-relaxed text-xs">
+                    <p className="text-[#23170E] leading-relaxed text-xs">
                       {aiContext.suggestedDescription}
                     </p>
                   </div>
@@ -1315,20 +1315,20 @@ export default function ProjectDetailPage({
 
                 {/* Purpose and Problem Domain */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1">
-                    <span className="font-mono text-[10px] uppercase text-zinc-400 font-bold">Purpose</span>
-                    <p className="text-zinc-300 text-xs leading-relaxed">{aiContext.purpose}</p>
+                  <div className="p-3.5 rounded-2xl bg-[#F2ECE1] border border-[#E3DAC8] space-y-1">
+                    <span className="font-mono text-[10px] uppercase text-[#6E5D4E] font-bold">Purpose</span>
+                    <p className="text-[#23170E] text-xs leading-relaxed">{aiContext.purpose}</p>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1">
-                    <span className="font-mono text-[10px] uppercase text-zinc-400 font-bold">Problem Domain</span>
-                    <p className="text-zinc-300 text-xs leading-relaxed">{aiContext.problemDomain}</p>
+                  <div className="p-3.5 rounded-2xl bg-[#F2ECE1] border border-[#E3DAC8] space-y-1">
+                    <span className="font-mono text-[10px] uppercase text-[#6E5D4E] font-bold">Problem Domain</span>
+                    <p className="text-[#23170E] text-xs leading-relaxed">{aiContext.problemDomain}</p>
                   </div>
                 </div>
 
                 {/* Frameworks & Tools and Architecture Hints */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
-                    <span className="font-mono text-[10px] uppercase text-zinc-400 font-bold">
+                  <div className="p-3.5 rounded-2xl bg-[#F2ECE1] border border-[#E3DAC8] space-y-2">
+                    <span className="font-mono text-[10px] uppercase text-[#6E5D4E] font-bold">
                       Frameworks &amp; Major Tools
                     </span>
                     <div className="flex flex-wrap gap-1.5">
@@ -1336,30 +1336,30 @@ export default function ProjectDetailPage({
                         aiContext.frameworksAndTools?.map((tool, idx) => (
                           <span
                             key={idx}
-                            className="font-mono text-[11px] px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700/60"
+                            className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-[#FAF7F2] text-[#23170E] border border-[#E3DAC8]"
                           >
                             {tool}
                           </span>
                         ))
                       ) : (
-                        <span className="text-zinc-500 italic text-[11px]">None detected in manifests</span>
+                        <span className="text-[#6E5D4E] italic text-[11px]">None detected in manifests</span>
                       )}
                     </div>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-2">
-                    <span className="font-mono text-[10px] uppercase text-zinc-400 font-bold">
+                  <div className="p-3.5 rounded-2xl bg-[#F2ECE1] border border-[#E3DAC8] space-y-2">
+                    <span className="font-mono text-[10px] uppercase text-[#6E5D4E] font-bold">
                       Architecture Characteristics
                     </span>
                     <ul className="space-y-1">
                       {aiContext.architectureHints?.length > 0 ? (
                         aiContext.architectureHints?.map((hint, idx) => (
-                          <li key={idx} className="text-zinc-300 text-[11px] flex items-start gap-1.5">
-                            <span className="text-indigo-400">&bull;</span> {hint}
+                          <li key={idx} className="text-[#23170E] text-[11px] flex items-start gap-1.5">
+                            <span className="text-[#DC6E26] font-bold">&bull;</span> {hint}
                           </li>
                         ))
                       ) : (
-                        <li className="text-zinc-500 italic text-[11px]">Standard repository layout</li>
+                        <li className="text-[#6E5D4E] italic text-[11px]">Standard repository layout</li>
                       )}
                     </ul>
                   </div>
@@ -1367,11 +1367,11 @@ export default function ProjectDetailPage({
 
                 {/* Recent Activity Summary */}
                 {aiContext.recentActivitySummary && (
-                  <div className="p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 space-y-1">
-                    <span className="font-mono text-[10px] uppercase text-zinc-400 font-bold">
+                  <div className="p-3.5 rounded-2xl bg-[#F2ECE1] border border-[#E3DAC8] space-y-1">
+                    <span className="font-mono text-[10px] uppercase text-[#6E5D4E] font-bold">
                       Recent Activity Summary
                     </span>
-                    <p className="text-zinc-300 text-xs leading-relaxed">
+                    <p className="text-[#23170E] text-xs leading-relaxed">
                       {aiContext.recentActivitySummary}
                     </p>
                   </div>
@@ -1379,8 +1379,8 @@ export default function ProjectDetailPage({
 
                 {/* Blockers or Failed Checks Alert (if present) */}
                 {aiContext.notableBlockersOrFailedChecks && aiContext.notableBlockersOrFailedChecks?.length > 0 && (
-                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 space-y-1">
-                    <span className="font-mono text-[10px] uppercase font-bold flex items-center gap-1.5 text-rose-400">
+                  <div className="p-3.5 rounded-2xl bg-[#FCECE9] border border-[#F4CFC8] text-[#882315] space-y-1">
+                    <span className="font-mono text-[10px] uppercase font-bold flex items-center gap-1.5 text-[#882315]">
                       <AlertTriangle className="h-3.5 w-3.5" /> Notable Blockers &amp; Failing Checks
                     </span>
                     <ul className="space-y-0.5 pl-4 list-disc text-[11px]">
@@ -1393,24 +1393,24 @@ export default function ProjectDetailPage({
 
                 {/* Confidence & Evidence References Footer */}
                 {aiContext.confidenceNotes && aiContext.confidenceNotes?.length > 0 && (
-                  <div className="pt-2 text-[10px] text-zinc-500 font-mono space-y-1">
-                    <span className="text-zinc-400 font-semibold">Confidence Notes:</span>
+                  <div className="pt-2 text-[10px] text-[#6E5D4E] font-mono space-y-1">
+                    <span className="text-[#23170E] font-semibold">Confidence Notes:</span>
                     <p>{aiContext.confidenceNotes?.join(' • ')}</p>
                   </div>
                 )}
               </div>
             ) : (
               <div className="py-6 text-center space-y-2">
-                <Bot className="h-6 w-6 text-indigo-400 mx-auto" />
-                <p className="text-xs text-zinc-300 font-medium">No Gemini Analysis Generated Yet</p>
-                <p className="text-[11px] text-zinc-500 max-w-md mx-auto">
+                <Bot className="h-6 w-6 text-[#DC6E26] mx-auto" />
+                <p className="text-xs text-[#23170E] font-medium">No Gemini Analysis Generated Yet</p>
+                <p className="text-[11px] text-[#6E5D4E] max-w-md mx-auto">
                   Run Gemini analysis on the connected GitHub repository evidence to extract architecture insights, frameworks, and activity summaries.
                 </p>
                 {githubRepo && (
                   <button
                     onClick={handleRegenerateAI}
                     disabled={isRegeneratingAI}
-                    className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold"
+                    className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs transition-colors"
                   >
                     <Bot className="h-3 w-3" /> Generate Context
                   </button>
@@ -1423,16 +1423,16 @@ export default function ProjectDetailPage({
           {githubRepo && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Recent Commits */}
-              <div className="p-4 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-3">
+              <div className="p-5 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-3 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-zinc-200 flex items-center gap-1.5">
-                    <FileText className="h-3.5 w-3.5 text-indigo-400" /> Recent Commits
+                  <h3 className="text-xs font-bold font-serif text-[#23170E] flex items-center gap-1.5">
+                    <FileText className="h-3.5 w-3.5 text-[#DC6E26]" /> Recent Commits
                   </h3>
-                  <span className="text-[10px] font-mono text-zinc-500">Authoritative Evidence</span>
+                  <span className="text-[10px] font-mono text-[#6E5D4E]">Authoritative Evidence</span>
                 </div>
                 <div className="space-y-1.5">
                   {evidenceArtifacts.filter((a) => a.artifact_type === 'commit').slice(0, 5).length === 0 ? (
-                    <p className="text-[11px] text-zinc-500 py-2">No commit artifacts synced yet.</p>
+                    <p className="text-[11px] text-[#6E5D4E] py-2">No commit artifacts synced yet.</p>
                   ) : (
                     evidenceArtifacts
                       .filter((a) => a.artifact_type === 'commit')
@@ -1440,11 +1440,11 @@ export default function ProjectDetailPage({
                       .map((c) => (
                         <div
                           key={c.id}
-                          className="p-2 rounded-lg bg-zinc-950/50 border border-zinc-800/60 flex items-start justify-between gap-2 text-xs"
+                          className="p-2.5 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] flex items-start justify-between gap-2 text-xs"
                         >
                           <div className="min-w-0 flex-1">
-                            <p className="text-zinc-200 font-mono text-[11px] truncate">{c.title}</p>
-                            <span className="text-[10px] text-zinc-500 font-mono">
+                            <p className="text-[#23170E] font-mono text-[11px] truncate">{c.title}</p>
+                            <span className="text-[10px] text-[#6E5D4E] font-mono">
                               {c.created_at_external ? new Date(c.created_at_external).toLocaleDateString() : ''}
                             </span>
                           </div>
@@ -1452,7 +1452,7 @@ export default function ProjectDetailPage({
                             href={c.source_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-zinc-900 text-indigo-300 border border-zinc-800 hover:text-indigo-200 shrink-0"
+                            className="font-mono text-[10px] px-1.5 py-0.5 rounded-full bg-[#FAF7F2] text-[#DC6E26] border border-[#E3DAC8] hover:text-[#C05617] shrink-0 font-medium"
                           >
                             {c.external_id.slice(0, 7)}
                           </a>
@@ -1463,40 +1463,40 @@ export default function ProjectDetailPage({
               </div>
 
               {/* Contributors with Identity Mapping */}
-              <div className="p-4 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-3">
+              <div className="p-5 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-3 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-zinc-200 flex items-center gap-1.5">
-                    <Users className="h-3.5 w-3.5 text-indigo-400" /> GitHub Contributors ({contributors.length})
+                  <h3 className="text-xs font-bold font-serif text-[#23170E] flex items-center gap-1.5">
+                    <Users className="h-3.5 w-3.5 text-[#DC6E26]" /> GitHub Contributors ({contributors.length})
                   </h3>
-                  <span className="text-[10px] font-mono text-zinc-500">Identity Status</span>
+                  <span className="text-[10px] font-mono text-[#6E5D4E]">Identity Status</span>
                 </div>
                 <div className="space-y-1.5">
                   {contributors.slice(0, 5).length === 0 ? (
-                    <p className="text-[11px] text-zinc-500 py-2">No contributor records loaded yet.</p>
+                    <p className="text-[11px] text-[#6E5D4E] py-2">No contributor records loaded yet.</p>
                   ) : (
                     contributors.slice(0, 5).map((ct) => (
                       <div
                         key={ct.id}
-                        className="p-2 rounded-lg bg-zinc-950/50 border border-zinc-800/60 flex items-center justify-between gap-2 text-xs"
+                        className="p-2.5 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] flex items-center justify-between gap-2 text-xs"
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           {ct.avatar_url ? (
                             <img src={ct.avatar_url} alt="" className="h-5 w-5 rounded-full shrink-0" />
                           ) : (
-                            <div className="h-5 w-5 rounded-full bg-zinc-800 shrink-0" />
+                            <div className="h-5 w-5 rounded-full bg-[#E3DAC8] shrink-0" />
                           )}
-                          <span className="font-mono text-[11px] text-zinc-200 truncate">{ct.login}</span>
+                          <span className="font-mono text-[11px] text-[#23170E] truncate font-medium">{ct.login}</span>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="font-mono text-[10px] text-zinc-400">
+                          <span className="font-mono text-[10px] text-[#6E5D4E]">
                             {ct.contributions_count} commits
                           </span>
                           {ct.profiles ? (
-                            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#ECF6E3] text-[#2B5910] border border-[#D4E9C1]">
                               {ct.profiles.display_name}
                             </span>
                           ) : (
-                            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500">
+                            <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#FAF7F2] text-[#6E5D4E] border border-[#E3DAC8]">
                               External User
                             </span>
                           )}
@@ -1511,59 +1511,59 @@ export default function ProjectDetailPage({
 
           {/* 4. Quick Stats Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/30 space-y-1">
-              <span className="text-[11px] font-mono text-zinc-400">Total Tasks</span>
+            <div className="p-5 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-1 shadow-xs">
+              <span className="text-[11px] font-mono text-[#6E5D4E]">Total Tasks</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-zinc-100">{totalTasks}</span>
-                <span className="text-xs text-emerald-400">({completedTasks} done)</span>
+                <span className="text-2xl font-serif font-bold text-[#23170E]">{totalTasks}</span>
+                <span className="text-xs text-[#2B5910] font-medium">({completedTasks} done)</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/30 space-y-1">
-              <span className="text-[11px] font-mono text-zinc-400">Project Teams</span>
+            <div className="p-5 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-1 shadow-xs">
+              <span className="text-[11px] font-mono text-[#6E5D4E]">Project Teams</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-zinc-100">{teams.length}</span>
-                <span className="text-xs text-zinc-400">across {projectMembers.length} members</span>
+                <span className="text-2xl font-serif font-bold text-[#23170E]">{teams.length}</span>
+                <span className="text-xs text-[#6E5D4E]">across {projectMembers.length} members</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/30 space-y-1">
-              <span className="text-[11px] font-mono text-zinc-400">Connected Repositories</span>
+            <div className="p-5 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-1 shadow-xs">
+              <span className="text-[11px] font-mono text-[#6E5D4E]">Connected Repositories</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-zinc-100">
+                <span className="text-2xl font-serif font-bold text-[#23170E]">
                   {githubRepo ? 1 : project.project_repositories?.length || 0}
                 </span>
-                <span className="text-xs text-indigo-400">code graph linked</span>
+                <span className="text-xs text-[#DC6E26] font-medium">code graph linked</span>
               </div>
             </div>
           </div>
 
           {/* 5. Teams Summary in Overview */}
-          <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-4">
+          <div className="p-6 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-4 shadow-xs">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-violet-400" />
-                <h2 className="text-sm font-bold text-zinc-100">Project Teams</h2>
+                <Users className="h-4 w-4 text-[#DC6E26]" />
+                <h2 className="text-sm font-serif font-bold text-[#23170E]">Project Teams</h2>
               </div>
               <button
                 onClick={() => setTab('teams')}
-                className="text-xs text-indigo-400 hover:text-indigo-300 font-medium"
+                className="text-xs text-[#DC6E26] hover:text-[#C05617] font-semibold"
               >
                 Manage Teams &rarr;
               </button>
             </div>
 
             {teams.length === 0 ? (
-              <p className="text-xs text-zinc-500 py-3">No teams created under this project yet.</p>
+              <p className="text-xs text-[#6E5D4E] py-3">No teams created under this project yet.</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {teams.map((t) => (
-                  <div key={t.id} className="p-3.5 rounded-xl border border-zinc-800/80 bg-zinc-950/50 flex items-center justify-between">
+                  <div key={t.id} className="p-3.5 rounded-2xl border border-[#E3DAC8] bg-[#F2ECE1] flex items-center justify-between">
                     <div>
-                      <h4 className="text-xs font-bold text-zinc-100">{t.name}</h4>
-                      <p className="text-[11px] text-zinc-400">Lead: {t.lead?.display_name || 'Unassigned'}</p>
+                      <h4 className="text-xs font-bold text-[#23170E]">{t.name}</h4>
+                      <p className="text-[11px] text-[#6E5D4E]">Lead: {t.lead?.display_name || 'Unassigned'}</p>
                     </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FAF7F2] text-[#23170E] border border-[#E3DAC8]">
                       {t.team_members?.length || 0} members
                     </span>
                   </div>
@@ -1581,58 +1581,58 @@ export default function ProjectDetailPage({
         <div className="space-y-4 animate-in fade-in">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-indigo-400" />
-              <h2 className="text-sm font-bold text-zinc-100">Project Tasks ({tasks.length})</h2>
+              <CheckCircle2 className="h-4 w-4 text-[#DC6E26]" />
+              <h2 className="text-sm font-serif font-bold text-[#23170E]">Project Tasks ({tasks.length})</h2>
             </div>
             <button
               onClick={() => setIsNewTaskOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs transition-colors"
             >
               <Plus className="h-3.5 w-3.5" /> Add Task
             </button>
           </div>
 
           {tasks.length === 0 ? (
-            <div className="p-8 rounded-xl border border-dashed border-zinc-800 text-center space-y-2">
-              <p className="text-xs text-zinc-400">No tasks created under {project.name} yet.</p>
+            <div className="p-8 rounded-2xl border border-dashed border-[#E3DAC8] text-center space-y-2 bg-[#FAF7F2]">
+              <p className="text-xs text-[#6E5D4E]">No tasks created under {project.name} yet.</p>
               <button
                 onClick={() => setIsNewTaskOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs"
               >
                 <Plus className="h-3.5 w-3.5" /> Create First Task
               </button>
             </div>
           ) : (
-            <div className="divide-y divide-zinc-800/60 border border-zinc-800/80 rounded-xl overflow-hidden bg-zinc-950/40">
+            <div className="divide-y divide-[#E3DAC8] border border-[#E3DAC8] rounded-2xl overflow-hidden bg-[#FAF7F2] shadow-xs">
               {tasks.map((task) => (
                 <div
                   key={task.id}
                   onClick={() => setSelectedTask(task)}
-                  className="p-3.5 hover:bg-zinc-900/80 cursor-pointer transition-colors flex items-center justify-between gap-4"
+                  className="p-3.5 hover:bg-[#F2ECE1] cursor-pointer transition-colors flex items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="font-mono text-xs font-bold text-zinc-400">
+                    <span className="font-mono text-xs font-bold text-[#6E5D4E]">
                       {project.identifier}-{task.task_number}
                     </span>
-                    <p className="text-xs font-medium text-zinc-200 truncate">{task.title}</p>
+                    <p className="text-xs font-medium text-[#23170E] truncate">{task.title}</p>
                   </div>
 
                   <div className="flex items-center gap-3 shrink-0 text-xs">
                     <span
-                      className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold ${task.priority === 'Urgent'
-                        ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold border ${task.priority === 'Urgent'
+                        ? 'bg-[#FCECE9] text-[#882315] border-[#F4CFC8]'
                         : task.priority === 'High'
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                          : 'bg-zinc-800 text-zinc-400'
+                          ? 'bg-[#FCF3E3] text-[#824B04] border-[#F1DCBA]'
+                          : 'bg-[#F2ECE1] text-[#6E5D4E] border-[#E3DAC8]'
                         }`}
                     >
                       {task.priority}
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#F2ECE1] text-[#23170E] border border-[#E3DAC8]">
                       {task.status}
                     </span>
-                    <span className="text-[11px] text-zinc-400 min-w-[100px] text-right truncate">
-                      {task.assignee?.display_name || <span className="text-amber-400">Unassigned</span>}
+                    <span className="text-[11px] text-[#6E5D4E] min-w-[100px] text-right truncate">
+                      {task.assignee?.display_name || <span className="text-[#824B04]">Unassigned</span>}
                     </span>
                   </div>
                 </div>
@@ -1648,13 +1648,13 @@ export default function ProjectDetailPage({
       {activeTab === 'teams' && (
         <div className="space-y-8 animate-in fade-in">
           {/* Project Teams Section */}
-          <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-6">
+          <div className="p-6 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-6 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
-                  <Users className="h-4 w-4 text-violet-400" /> Project Teams ({teams.length})
+                <h2 className="text-sm font-bold font-serif text-[#23170E] flex items-center gap-2">
+                  <Users className="h-4 w-4 text-[#DC6E26]" /> Project Teams ({teams.length})
                 </h2>
-                <p className="text-xs text-zinc-400 mt-1">
+                <p className="text-xs text-[#6E5D4E] mt-1">
                   Teams are scoped strictly to {project.name}. Team leaders manage their own squads, while Workspace Admins can transfer members.
                 </p>
               </div>
@@ -1662,7 +1662,7 @@ export default function ProjectDetailPage({
               {isAuthorizedToEdit && (
                 <button
                   onClick={() => setIsCreateTeamOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm shrink-0"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs transition-colors shrink-0"
                 >
                   <Plus className="h-3.5 w-3.5" /> Create Project Team
                 </button>
@@ -1670,13 +1670,13 @@ export default function ProjectDetailPage({
             </div>
 
             {teams.length === 0 ? (
-              <div className="p-8 rounded-xl border border-dashed border-zinc-800 text-center space-y-3">
-                <Users className="h-6 w-6 text-zinc-600 mx-auto" />
-                <p className="text-xs text-zinc-400">No teams created for {project.name} yet.</p>
+              <div className="p-8 rounded-2xl border border-dashed border-[#E3DAC8] text-center space-y-3 bg-[#FAF7F2]">
+                <Users className="h-6 w-6 text-[#DC6E26] mx-auto" />
+                <p className="text-xs text-[#6E5D4E]">No teams created for {project.name} yet.</p>
                 {isAuthorizedToEdit && (
                   <button
                     onClick={() => setIsCreateTeamOpen(true)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs"
                   >
                     <Plus className="h-3.5 w-3.5" /> Create First Team
                   </button>
@@ -1691,59 +1691,59 @@ export default function ProjectDetailPage({
                   return (
                     <div
                       key={team.id}
-                      className="p-5 rounded-xl border border-zinc-800 bg-zinc-950/60 space-y-4 shadow-sm"
+                      className="p-5 rounded-2xl border border-[#E3DAC8] bg-[#F2ECE1] space-y-4 shadow-xs"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <div className="flex items-center gap-2">
-                            <h3 className="font-bold text-sm text-zinc-100">{team.name}</h3>
-                            <span className="text-[10px] font-mono text-zinc-500">({team.slug})</span>
+                            <h3 className="font-bold text-sm text-[#23170E]">{team.name}</h3>
+                            <span className="text-[10px] font-mono text-[#6E5D4E]">({team.slug})</span>
                           </div>
                           {team.description && (
-                            <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                            <p className="text-xs text-[#6E5D4E] mt-1 leading-relaxed">
                               {team.description}
                             </p>
                           )}
                         </div>
 
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 shrink-0">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FAF7F2] text-[#23170E] border border-[#E3DAC8] shrink-0">
                           {team.team_members?.length || 0} members
                         </span>
                       </div>
 
                       {/* Team Lead Indicator */}
-                      <div className="flex items-center gap-2 text-xs text-zinc-300 pt-2 border-t border-zinc-800/80">
-                        <Compass className="h-3.5 w-3.5 text-violet-400 shrink-0" />
-                        <span className="text-zinc-400">Team Leader:</span>
-                        <span className="font-semibold text-zinc-200">
-                          {team.lead?.display_name || <span className="text-amber-400 font-normal">Unassigned</span>}
+                      <div className="flex items-center gap-2 text-xs text-[#6E5D4E] pt-2 border-t border-[#E3DAC8]">
+                        <Compass className="h-3.5 w-3.5 text-[#DC6E26] shrink-0" />
+                        <span className="text-[#6E5D4E]">Team Leader:</span>
+                        <span className="font-semibold text-[#23170E]">
+                          {team.lead?.display_name || <span className="text-[#824B04] font-normal">Unassigned</span>}
                         </span>
                       </div>
 
                       {/* Members List in Team */}
-                      <div className="space-y-2 pt-2 border-t border-zinc-800/60">
-                        <span className="text-[11px] font-mono uppercase text-zinc-500 font-semibold block">
+                      <div className="space-y-2 pt-2 border-t border-[#E3DAC8]">
+                        <span className="text-[11px] font-mono uppercase text-[#6E5D4E] font-semibold block">
                           Team Members
                         </span>
 
                         {!team.team_members || team.team_members.length === 0 ? (
-                          <p className="text-xs text-zinc-500">No members assigned to this team yet.</p>
+                          <p className="text-xs text-[#6E5D4E]">No members assigned to this team yet.</p>
                         ) : (
                           <div className="space-y-1.5">
                             {team.team_members.map((tm) => (
                               <div
                                 key={tm.id}
-                                className="flex items-center justify-between p-2 rounded-lg bg-zinc-900/60 border border-zinc-800/60 text-xs"
+                                className="flex items-center justify-between p-2 rounded-xl bg-[#FAF7F2] border border-[#E3DAC8] text-xs"
                               >
                                 <div className="flex items-center gap-2 min-w-0">
-                                  <div className="h-5 w-5 rounded-full bg-indigo-600/30 flex items-center justify-center text-[10px] font-bold text-indigo-300 shrink-0">
+                                  <div className="h-5 w-5 rounded-full bg-[#EAE2D4] flex items-center justify-center text-[10px] font-bold text-[#DC6E26] shrink-0">
                                     {tm.profiles?.display_name?.[0]?.toUpperCase() || 'U'}
                                   </div>
-                                  <span className="truncate text-zinc-200 font-medium">
+                                  <span className="truncate text-[#23170E] font-medium">
                                     {tm.profiles?.display_name || tm.user_id.slice(0, 8)}
                                   </span>
                                   {tm.user_id === team.lead_id && (
-                                    <span className="text-[9px] font-mono px-1 rounded bg-violet-500/20 text-violet-300">
+                                    <span className="text-[9px] font-mono px-1.5 rounded-full bg-[#FCF3E3] text-[#824B04] border border-[#F1DCBA]">
                                       Leader
                                     </span>
                                   )}
@@ -1765,7 +1765,7 @@ export default function ProjectDetailPage({
                                         });
                                       }}
                                       title="Transfer member to another team"
-                                      className="p-1 rounded text-zinc-400 hover:text-indigo-300 hover:bg-zinc-800 transition-colors"
+                                      className="p-1 rounded text-[#6E5D4E] hover:text-[#DC6E26] hover:bg-[#EAE2D4] transition-colors"
                                     >
                                       <ArrowRightLeft className="h-3 w-3" />
                                     </button>
@@ -1776,7 +1776,7 @@ export default function ProjectDetailPage({
                                     <button
                                       onClick={() => handleRemoveTeamMember(team.id, tm.user_id)}
                                       title="Remove from team"
-                                      className="p-1 rounded text-zinc-500 hover:text-rose-400 hover:bg-zinc-800 transition-colors"
+                                      className="p-1 rounded text-[#6E5D4E] hover:text-[#882315] hover:bg-[#EAE2D4] transition-colors"
                                     >
                                       <Trash2 className="h-3 w-3" />
                                     </button>
@@ -1795,7 +1795,7 @@ export default function ProjectDetailPage({
                             setAddingToTeamId(team.id);
                             setSelectedMemberToAdd(workspaceMembers[0]?.user_id || '');
                           }}
-                          className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-dashed border-zinc-700 bg-zinc-900/40 text-xs font-medium text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
+                          className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-dashed border-[#E3DAC8] bg-[#FAF7F2] text-xs font-medium text-[#6E5D4E] hover:border-[#DC6E26] hover:text-[#DC6E26] transition-colors"
                         >
                           <Plus className="h-3 w-3" /> Add Member to Team
                         </button>
@@ -1808,13 +1808,13 @@ export default function ProjectDetailPage({
           </div>
 
           {/* Project Membership Section */}
-          <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-4">
+          <div className="p-6 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-4 shadow-xs">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-emerald-400" /> Authorized Project Members ({projectMembers.length})
+                <h2 className="text-sm font-bold font-serif text-[#23170E] flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-[#2B5910]" /> Authorized Project Members ({projectMembers.length})
                 </h2>
-                <p className="text-xs text-zinc-400 mt-1">
+                <p className="text-xs text-[#6E5D4E] mt-1">
                   Users with authorized access to {project.name}. Team membership is drawn from this authorized scope.
                 </p>
               </div>
@@ -1825,7 +1825,7 @@ export default function ProjectDetailPage({
                     setIsEnrollMemberOpen(true);
                     setEnrollUserId(workspaceMembers[0]?.user_id || '');
                   }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FAF7F2] hover:bg-[#EAE2D4] border border-[#E3DAC8] text-[#23170E] text-xs font-semibold transition-colors shadow-xs"
                 >
                   <Plus className="h-3 w-3" /> Enroll Workspace Member
                 </button>
@@ -1836,24 +1836,24 @@ export default function ProjectDetailPage({
               {projectMembers.map((pm) => (
                 <div
                   key={pm.id}
-                  className="p-3 rounded-xl border border-zinc-800/80 bg-zinc-950/60 flex items-center justify-between"
+                  className="p-3.5 rounded-2xl border border-[#E3DAC8] bg-[#F2ECE1] flex items-center justify-between"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="h-7 w-7 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-200 shrink-0">
+                    <div className="h-7 w-7 rounded-full bg-[#EAE2D4] flex items-center justify-center text-xs font-bold text-[#DC6E26] shrink-0">
                       {pm.profiles?.display_name?.[0]?.toUpperCase() || 'U'}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-medium text-zinc-200 truncate">
+                      <p className="text-xs font-medium text-[#23170E] truncate">
                         {pm.profiles?.display_name || pm.user_id.slice(0, 8)}
                       </p>
-                      <p className="text-[10px] text-zinc-500 font-mono truncate">{pm.profiles?.email}</p>
+                      <p className="text-[10px] text-[#6E5D4E] font-mono truncate">{pm.profiles?.email}</p>
                     </div>
                   </div>
 
                   <span
-                    className={`text-[9px] font-mono uppercase px-1.5 py-0.5 rounded ${pm.role === 'lead'
-                      ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                      : 'bg-zinc-800 text-zinc-400'
+                    className={`text-[9px] font-mono uppercase px-2 py-0.5 rounded-full font-semibold border ${pm.role === 'lead'
+                      ? 'bg-[#FCF3E3] text-[#824B04] border-[#F1DCBA]'
+                      : 'bg-[#FAF7F2] text-[#6E5D4E] border-[#E3DAC8]'
                       }`}
                   >
                     {pm.role}
@@ -1872,12 +1872,12 @@ export default function ProjectDetailPage({
         <div className="space-y-6 animate-in fade-in">
 
           {/* Authorized GitHub repositories (new flow) */}
-          <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-4">
+          <div className="p-6 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-4 shadow-xs">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <GitBranch className="h-4 w-4 text-indigo-400" />
-                <h2 className="text-sm font-bold text-zinc-100">Authorized GitHub Repositories</h2>
-                <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">
+                <GitBranch className="h-4 w-4 text-[#DC6E26]" />
+                <h2 className="text-sm font-bold font-serif text-[#23170E]">Authorized GitHub Repositories</h2>
+                <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#F2ECE1] text-[#23170E] border border-[#E3DAC8]">
                   {project.github_repositories?.length || 0}
                 </span>
               </div>
@@ -1885,7 +1885,7 @@ export default function ProjectDetailPage({
               {isAuthorizedToEdit && (!project.github_repositories || project.github_repositories.length === 0) && (
                 <button
                   onClick={() => setIsAddRepoOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-all"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs transition-all"
                 >
                   <Plus className="h-3.5 w-3.5" /> Link Repository
                 </button>
@@ -1893,13 +1893,13 @@ export default function ProjectDetailPage({
             </div>
 
             {!project.github_repositories || project.github_repositories.length === 0 ? (
-              <div className="p-8 rounded-xl border border-dashed border-zinc-800 text-center space-y-4">
-                <GitBranch className="h-6 w-6 text-zinc-600 mx-auto" />
+              <div className="p-8 rounded-2xl border border-dashed border-[#E3DAC8] text-center space-y-4 bg-[#FAF7F2]">
+                <GitBranch className="h-6 w-6 text-[#DC6E26] mx-auto" />
                 <div>
-                  <p className="text-xs text-zinc-300 font-medium">
+                  <p className="text-xs text-[#23170E] font-medium">
                     No GitHub repository linked to this project.
                   </p>
-                  <p className="text-[11px] text-zinc-500 mt-0.5">
+                  <p className="text-[11px] text-[#6E5D4E] mt-0.5">
                     Link an authorized repository installed in this workspace to enable evidence collection and Gemini analysis.
                   </p>
                 </div>
@@ -1910,7 +1910,7 @@ export default function ProjectDetailPage({
                       <select
                         value={selectedRepoToLink}
                         onChange={(e) => setSelectedRepoToLink(e.target.value)}
-                        className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-zinc-200 text-xs focus:outline-none focus:border-indigo-500 font-mono"
+                        className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-[#23170E] text-xs focus:outline-none focus:border-[#DC6E26] font-mono"
                       >
                         <option value="">Select an authorized repository...</option>
                         {availableRepos.map((ar) => (
@@ -1922,7 +1922,7 @@ export default function ProjectDetailPage({
                       <button
                         onClick={() => handleLinkExistingRepo(selectedRepoToLink)}
                         disabled={!selectedRepoToLink || linkingRepo}
-                        className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shrink-0 disabled:opacity-50 transition-all"
+                        className="px-4 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shrink-0 disabled:opacity-50 transition-all shadow-xs"
                       >
                         {linkingRepo ? 'Linking...' : 'Connect'}
                       </button>
@@ -1933,14 +1933,14 @@ export default function ProjectDetailPage({
                     {isAuthorizedToEdit && (
                       <button
                         onClick={() => setIsAddRepoOpen(true)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-colors"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FAF7F2] hover:bg-[#EAE2D4] border border-[#E3DAC8] text-[#23170E] text-xs font-semibold transition-colors shadow-xs"
                       >
                         <Plus className="h-3 w-3" /> Connect via URL
                       </button>
                     )}
                     <Link
                       href={`/workspace/${workspaceId}/admin/integrations`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm transition-all"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs transition-all"
                     >
                       <Settings className="h-3 w-3" /> GitHub Integration Settings
                     </Link>
@@ -1952,15 +1952,15 @@ export default function ProjectDetailPage({
                 {project.github_repositories.map((repo) => (
                   <div
                     key={repo.id}
-                    className="p-4 rounded-xl border border-zinc-800/80 bg-zinc-950/50 space-y-3"
+                    className="p-5 rounded-2xl border border-[#E3DAC8] bg-[#F2ECE1] space-y-3 shadow-xs"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="h-8 w-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
+                        <div className="h-8 w-8 rounded-xl bg-[#FAF7F2] border border-[#E3DAC8] flex items-center justify-center shrink-0">
                           {repo.is_private ? (
-                            <Lock className="h-3.5 w-3.5 text-amber-400" />
+                            <Lock className="h-3.5 w-3.5 text-[#824B04]" />
                           ) : (
-                            <Globe className="h-3.5 w-3.5 text-emerald-400" />
+                            <Globe className="h-3.5 w-3.5 text-[#2B5910]" />
                           )}
                         </div>
                         <div className="min-w-0">
@@ -1968,12 +1968,12 @@ export default function ProjectDetailPage({
                             href={repo.repo_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-mono text-xs font-semibold text-zinc-200 hover:text-indigo-300 flex items-center gap-1 truncate"
+                            className="font-mono text-xs font-semibold text-[#23170E] hover:text-[#DC6E26] flex items-center gap-1 truncate"
                           >
                             {repo.full_name}
                             <ExternalLink className="h-3 w-3 shrink-0" />
                           </a>
-                          <p className="text-[10px] text-zinc-500 font-mono">
+                          <p className="text-[10px] text-[#6E5D4E] font-mono">
                             {repo.is_private ? 'Private' : 'Public'} · default: {repo.default_branch}
                           </p>
                         </div>
@@ -1983,9 +1983,9 @@ export default function ProjectDetailPage({
                         <button
                           onClick={handleSyncGithub}
                           disabled={isSyncingGithub}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-colors disabled:opacity-50"
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF7F2] hover:bg-[#EAE2D4] border border-[#E3DAC8] text-[#23170E] text-xs font-semibold transition-colors disabled:opacity-50 shadow-xs"
                         >
-                          <RefreshCw className={`h-3 w-3 ${isSyncingGithub ? 'animate-spin text-indigo-400' : ''}`} />
+                          <RefreshCw className={`h-3 w-3 ${isSyncingGithub ? 'animate-spin text-[#DC6E26]' : ''}`} />
                           {isSyncingGithub ? 'Syncing...' : 'Sync'}
                         </button>
                         {isAuthorizedToEdit && (
@@ -1993,20 +1993,20 @@ export default function ProjectDetailPage({
                             onClick={() => handleUnlinkGithubRepo(repo.id, repo.full_name)}
                             disabled={unlinkingRepo}
                             title="Unlink repository from this project"
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-zinc-800 hover:border-rose-500/40 text-zinc-400 hover:text-rose-400 text-xs transition-colors disabled:opacity-50"
+                            className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-[#E3DAC8] bg-[#FAF7F2] hover:border-[#F4CFC8] text-[#6E5D4E] hover:text-[#882315] text-xs font-medium transition-colors disabled:opacity-50"
                           >
                             <Trash2 className="h-3 w-3" />
                             <span>Unlink</span>
                           </button>
                         )}
                         <span
-                          className={`text-[10px] font-mono px-2 py-0.5 rounded-full border shrink-0 ${repo.sync_status === 'synced'
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                          className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full border shrink-0 ${repo.sync_status === 'synced'
+                            ? 'bg-[#ECF6E3] text-[#2B5910] border-[#D4E9C1]'
                             : repo.sync_status === 'syncing'
-                              ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20 animate-pulse'
+                              ? 'bg-[#FCF3E3] text-[#824B04] border-[#F1DCBA] animate-pulse'
                               : repo.sync_status === 'error'
-                                ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                                : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                                ? 'bg-[#FCECE9] text-[#882315] border-[#F4CFC8]'
+                                : 'bg-[#FAF7F2] text-[#6E5D4E] border-[#E3DAC8]'
                             }`}
                         >
                           {repo.sync_status}
@@ -2015,25 +2015,25 @@ export default function ProjectDetailPage({
                     </div>
 
                     {repo.description && (
-                      <p className="text-[11px] text-zinc-400 leading-relaxed">{repo.description}</p>
+                      <p className="text-[11px] text-[#6E5D4E] leading-relaxed">{repo.description}</p>
                     )}
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-zinc-800/60 text-[11px]">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-[#E3DAC8] text-[11px]">
                       <div className="space-y-0.5">
-                        <span className="text-[9px] font-mono uppercase text-zinc-500">Language</span>
-                        <p className="font-mono text-zinc-200">{repo.primary_language || 'N/A'}</p>
+                        <span className="text-[9px] font-mono uppercase text-[#6E5D4E]">Language</span>
+                        <p className="font-mono text-[#23170E]">{repo.primary_language || 'N/A'}</p>
                       </div>
                       <div className="space-y-0.5">
-                        <span className="text-[9px] font-mono uppercase text-zinc-500">Stars</span>
-                        <p className="font-mono text-zinc-200">⭐ {repo.stars_count}</p>
+                        <span className="text-[9px] font-mono uppercase text-[#6E5D4E]">Stars</span>
+                        <p className="font-mono text-[#23170E]">⭐ {repo.stars_count}</p>
                       </div>
                       <div className="space-y-0.5">
-                        <span className="text-[9px] font-mono uppercase text-zinc-500">Forks</span>
-                        <p className="font-mono text-zinc-200">🍴 {repo.forks_count}</p>
+                        <span className="text-[9px] font-mono uppercase text-[#6E5D4E]">Forks</span>
+                        <p className="font-mono text-[#23170E]">🍴 {repo.forks_count}</p>
                       </div>
                       <div className="space-y-0.5">
-                        <span className="text-[9px] font-mono uppercase text-zinc-500">Last Sync</span>
-                        <p className="font-mono text-zinc-300">
+                        <span className="text-[9px] font-mono uppercase text-[#6E5D4E]">Last Sync</span>
+                        <p className="font-mono text-[#23170E]">
                           {repo.last_sync_at
                             ? new Date(repo.last_sync_at).toLocaleDateString()
                             : 'Never'}
@@ -2048,11 +2048,11 @@ export default function ProjectDetailPage({
 
           {/* Legacy URL-only repositories (if any exist) */}
           {project.project_repositories && project.project_repositories.length > 0 && (
-            <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-4">
+            <div className="p-6 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-4 shadow-xs">
               <div className="flex items-center gap-2">
-                <GitBranch className="h-4 w-4 text-zinc-500" />
-                <h2 className="text-sm font-bold text-zinc-100">Legacy Repository URLs</h2>
-                <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">
+                <GitBranch className="h-4 w-4 text-[#DC6E26]" />
+                <h2 className="text-sm font-bold font-serif text-[#23170E]">Legacy Repository URLs</h2>
+                <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#F2ECE1] text-[#23170E] border border-[#E3DAC8]">
                   {project.project_repositories.length}
                 </span>
               </div>
@@ -2060,26 +2060,26 @@ export default function ProjectDetailPage({
                 {project.project_repositories.map((repo) => (
                   <div
                     key={repo.id}
-                    className="p-2.5 rounded-lg bg-zinc-950/50 border border-zinc-800/60 flex items-center justify-between"
+                    className="p-2.5 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] flex items-center justify-between"
                   >
                     <a
                       href={repo.repository_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-mono text-[11px] text-zinc-300 hover:text-indigo-300 truncate flex items-center gap-1"
+                      className="font-mono text-[11px] text-[#23170E] hover:text-[#DC6E26] truncate flex items-center gap-1 font-medium"
                     >
                       {repo.repository_url}
                       <ExternalLink className="h-3 w-3 shrink-0" />
                     </a>
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-[10px] font-mono text-zinc-500">
+                      <span className="text-[10px] font-mono text-[#6E5D4E]">
                         {new Date(repo.created_at).toLocaleDateString()}
                       </span>
                       {isAuthorizedToEdit && (
                         <button
                           onClick={() => handleRemoveRepo(repo.id, repo.repository_url)}
                           title="Unlink legacy repository"
-                          className="p-1 text-zinc-500 hover:text-rose-400 hover:bg-zinc-800 rounded transition-colors"
+                          className="p-1 text-[#6E5D4E] hover:text-[#882315] hover:bg-[#EAE2D4] rounded transition-colors"
                         >
                           <Trash2 className="h-3 w-3" />
                         </button>
@@ -2098,27 +2098,27 @@ export default function ProjectDetailPage({
       {/* TAB 5: ACTIVITY TRAIL */}
       {/* ==================================================================== */}
       {activeTab === 'activity' && (
-        <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-4 animate-in fade-in">
+        <div className="p-6 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-4 animate-in fade-in shadow-xs">
           <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-indigo-400" />
-            <h2 className="text-sm font-bold text-zinc-100">Project Audit Activity</h2>
+            <Activity className="h-4 w-4 text-[#DC6E26]" />
+            <h2 className="text-sm font-bold font-serif text-[#23170E]">Project Audit Activity</h2>
           </div>
 
           {projectActivities.length === 0 ? (
-            <p className="text-xs text-zinc-500 py-4">No recent activity recorded for this project.</p>
+            <p className="text-xs text-[#6E5D4E] py-4">No recent activity recorded for this project.</p>
           ) : (
-            <div className="divide-y divide-zinc-800/60 border border-zinc-800/80 rounded-xl overflow-hidden bg-zinc-950/40">
+            <div className="divide-y divide-[#E3DAC8] border border-[#E3DAC8] rounded-2xl overflow-hidden bg-[#F2ECE1] shadow-xs">
               {projectActivities.map((act) => (
                 <div key={act.id} className="p-3 text-xs flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 uppercase">
+                    <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#FAF7F2] text-[#23170E] border border-[#E3DAC8] uppercase font-semibold">
                       {act.event_type}
                     </span>
-                    <span className="text-zinc-300">
+                    <span className="text-[#23170E]">
                       {act.profiles?.display_name || 'System'} modified {act.entity_type}
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-500">
+                  <span className="text-[10px] font-mono text-[#6E5D4E]">
                     {new Date(act.created_at).toLocaleDateString()} {new Date(act.created_at).toLocaleTimeString()}
                   </span>
                 </div>
@@ -2132,41 +2132,41 @@ export default function ProjectDetailPage({
       {/* TAB 6: SETTINGS */}
       {/* ==================================================================== */}
       {activeTab === 'settings' && (
-        <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-6 max-w-2xl animate-in fade-in">
+        <div className="p-6 rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-6 max-w-2xl animate-in fade-in shadow-xs">
           <div>
-            <h2 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
-              <Settings className="h-4 w-4 text-indigo-400" /> Project Metadata &amp; Lifecycle
+            <h2 className="text-sm font-bold font-serif text-[#23170E] flex items-center gap-2">
+              <Settings className="h-4 w-4 text-[#DC6E26]" /> Project Metadata &amp; Lifecycle
             </h2>
-            <p className="text-xs text-zinc-400 mt-1">
+            <p className="text-xs text-[#6E5D4E] mt-1">
               Configure project naming, lifecycle condition, designated project lead, and target completion date.
             </p>
           </div>
 
           {editMessage && (
-            <div className="p-3 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-mono">
+            <div className="p-3.5 rounded-2xl border border-[#D4E9C1] bg-[#ECF6E3] text-[#2B5910] text-xs font-mono">
               {editMessage}
             </div>
           )}
 
           <form onSubmit={handleUpdateProject} className="space-y-4 text-xs">
             <div className="space-y-1">
-              <label className="font-medium text-zinc-300">Project Name</label>
+              <label className="font-medium text-[#23170E]">Project Name</label>
               <input
                 type="text"
                 required
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-3 py-2 text-[#23170E] focus:outline-none focus:border-[#DC6E26] focus:ring-1 focus:ring-[#DC6E26]"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="font-medium text-zinc-300">Lifecycle Status</label>
+                <label className="font-medium text-[#23170E]">Lifecycle Status</label>
                 <select
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value as ProjectStatus)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-2 text-zinc-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-2.5 py-2 text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
                 >
                   <option value="planning">Planning</option>
                   <option value="active">Active</option>
@@ -2178,11 +2178,11 @@ export default function ProjectDetailPage({
               </div>
 
               <div className="space-y-1">
-                <label className="font-medium text-zinc-300">Project Lead</label>
+                <label className="font-medium text-[#23170E]">Project Lead</label>
                 <select
                   value={editLeadId}
                   onChange={(e) => setEditLeadId(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-2 text-zinc-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-2.5 py-2 text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
                 >
                   <option value="">(None - Unassigned)</option>
                   {projectMembers.map((pm) => (
@@ -2195,22 +2195,22 @@ export default function ProjectDetailPage({
             </div>
 
             <div className="space-y-1">
-              <label className="font-medium text-zinc-300">Target Completion Date</label>
+              <label className="font-medium text-[#23170E]">Target Completion Date</label>
               <input
                 type="date"
                 value={editTargetDate}
                 onChange={(e) => setEditTargetDate(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-2 text-zinc-200 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-2.5 py-2 text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="font-medium text-zinc-300">Description</label>
+              <label className="font-medium text-[#23170E]">Description</label>
               <textarea
                 rows={3}
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-zinc-200 focus:outline-none focus:border-indigo-500 resize-none"
+                className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl p-2.5 text-[#23170E] focus:outline-none focus:border-[#DC6E26] resize-none"
               />
             </div>
 
@@ -2218,7 +2218,7 @@ export default function ProjectDetailPage({
               <button
                 type="submit"
                 disabled={editSubmitting || !isAuthorizedToEdit}
-                className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold disabled:opacity-50 transition-colors"
+                className="px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white font-semibold shadow-xs disabled:opacity-50 transition-colors"
               >
                 {editSubmitting ? 'Saving Changes...' : 'Save Settings'}
               </button>

@@ -472,25 +472,25 @@ export function TaskDetailDrawer({
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in">
-      <div className="w-full max-w-xl h-full bg-zinc-950 border-l border-zinc-800 flex flex-col shadow-2xl overflow-hidden">
+      <div className="w-full max-w-xl h-full bg-[#FAF7F2] border-l border-[#E3DAC8] flex flex-col shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="px-5 py-3.5 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/60">
+        <div className="px-5 py-3.5 border-b border-[#E3DAC8] flex items-center justify-between bg-[#FAF7F2]">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-zinc-800 text-indigo-400 border border-zinc-700">
+            <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-[#F2ECE1] text-[#DC6E26] border border-[#E3DAC8]">
               {task.project?.identifier}-{task.task_number}
             </span>
-            <span className="text-xs text-zinc-400 font-medium truncate max-w-[200px]">
+            <span className="text-xs text-[#6E5D4E] font-medium truncate max-w-[200px]">
               {task.project?.name}
             </span>
             {saveStatus && (
-              <span className="text-[11px] font-mono text-zinc-400 flex items-center gap-1 ml-2">
-                <CheckCircle2 className="h-3 w-3 text-emerald-400" /> {saveStatus}
+              <span className="text-[11px] font-mono text-[#2B5910] flex items-center gap-1 ml-2">
+                <CheckCircle2 className="h-3 w-3 text-[#2B5910]" /> {saveStatus}
               </span>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+            className="p-1.5 rounded-full text-[#6E5D4E] hover:text-[#23170E] hover:bg-[#F2ECE1] transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -506,14 +506,14 @@ export function TaskDetailDrawer({
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded px-2.5 py-1 text-sm font-semibold text-zinc-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-2.5 py-1 text-sm font-semibold text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
                 />
                 <button
                   onClick={() => {
                     handleFieldUpdate('title', title.trim());
                     setIsEditingTitle(false);
                   }}
-                  className="px-2.5 py-1 rounded bg-indigo-600 text-xs font-medium text-white hover:bg-indigo-500"
+                  className="px-3.5 py-1 rounded-full bg-[#DC6E26] text-xs font-semibold text-white hover:bg-[#C05617] shadow-xs"
                 >
                   Save
                 </button>
@@ -522,48 +522,48 @@ export function TaskDetailDrawer({
               <h2
                 onClick={() => setIsEditingTitle(true)}
                 title="Click to edit title"
-                className="text-base sm:text-lg font-bold text-zinc-100 cursor-pointer hover:text-indigo-300 transition-colors"
+                className="text-base sm:text-lg font-serif font-bold text-[#23170E] cursor-pointer hover:text-[#DC6E26] transition-colors"
               >
                 {title}
               </h2>
             )}
             <div className="flex items-center gap-2 pt-1 flex-wrap">
-              <span className="text-[11px] text-zinc-500 font-mono">
+              <span className="text-[11px] text-[#6E5D4E] font-mono">
                 Created {new Date(task.created_at).toLocaleDateString()}
               </span>
               {task.assignment_type === 'team' && (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 flex items-center gap-1">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FCF3E3] text-[#824B04] border border-[#F1DCBA] flex items-center gap-1">
                   <Users className="h-3 w-3" /> Team Task
                 </span>
               )}
               {task.source === 'slack' ? (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 flex items-center gap-1">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FCF3E3] text-[#DC6E26] border border-[#F1DCBA] flex items-center gap-1">
                   <MessageSquare className="h-3 w-3" /> Slack Origin
                   {task.slack_channel_id && ` (${task.slack_channel_id})`}
                 </span>
               ) : (
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#F2ECE1] border border-[#E3DAC8] text-[#6E5D4E]">
                   Source: {task.source}
                 </span>
               )}
             </div>
 
             {routingDecision && (
-              <div className="mt-2.5 p-3 rounded-xl border border-indigo-500/30 bg-indigo-500/5 text-xs space-y-1.5">
+              <div className="mt-2.5 p-3 rounded-2xl border border-[#E3DAC8] bg-[#F2ECE1] text-xs space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-indigo-300 flex items-center gap-1.5">
-                    <Bot className="h-3.5 w-3.5 text-indigo-400" />
+                  <span className="font-semibold text-[#23170E] flex items-center gap-1.5">
+                    <Bot className="h-3.5 w-3.5 text-[#DC6E26]" />
                     Agent Routing Transparency
                   </span>
-                  <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-[#FAF7F2] text-[#DC6E26] border border-[#E3DAC8]">
                     {routingDecision.decision_method.replace(/_/g, ' ')}
                   </span>
                 </div>
-                <p className="text-zinc-300 text-[11px] leading-relaxed">
+                <p className="text-[#23170E] text-[11px] leading-relaxed">
                   {routingDecision.rationale || 'Task was processed by intelligent routing engine.'}
                 </p>
                 {routingDecision.human_intervention_needed && (
-                  <span className="text-[10px] font-mono text-amber-400 block">
+                  <span className="text-[10px] font-mono text-[#824B04] block font-semibold">
                     * Flagged for team lead triage
                   </span>
                 )}
@@ -572,10 +572,10 @@ export function TaskDetailDrawer({
           </div>
 
           {/* Properties Grid */}
-          <div className="grid grid-cols-2 gap-4 p-4 rounded-xl border border-zinc-800 bg-zinc-900/40 text-xs">
+          <div className="grid grid-cols-2 gap-4 p-4 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] text-xs shadow-xs">
             {/* Status Selector */}
             <div className="space-y-1">
-              <label className="text-[11px] text-zinc-400">Status</label>
+              <label className="text-[11px] text-[#6E5D4E] font-medium">Status</label>
               <select
                 value={status}
                 onChange={(e) => {
@@ -586,7 +586,7 @@ export function TaskDetailDrawer({
                     setStatusReasonError(null);
                   }
                 }}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
               >
                 <option value="Backlog">Backlog</option>
                 <option value="Todo">Todo</option>
@@ -598,13 +598,13 @@ export function TaskDetailDrawer({
               </select>
 
               {task.status_reason && (
-                <div className="p-2 rounded bg-zinc-950/80 border border-zinc-800 text-[11px] text-zinc-400 mt-1.5 space-y-0.5">
-                  <span className="text-[10px] font-mono uppercase text-zinc-500 block font-semibold">
+                <div className="p-2.5 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] text-[11px] text-[#6E5D4E] mt-1.5 space-y-0.5">
+                  <span className="text-[10px] font-mono uppercase text-[#6E5D4E] block font-semibold">
                     Current Status Reason:
                   </span>
-                  <p className="text-zinc-300 italic">&ldquo;{task.status_reason}&rdquo;</p>
+                  <p className="text-[#23170E] italic">&ldquo;{task.status_reason}&rdquo;</p>
                   {task.status_changed_at && (
-                    <span className="text-[10px] font-mono text-zinc-500 block pt-0.5">
+                    <span className="text-[10px] font-mono text-[#6E5D4E] block pt-0.5">
                       Updated {new Date(task.status_changed_at).toLocaleString()}
                     </span>
                   )}
@@ -614,7 +614,7 @@ export function TaskDetailDrawer({
 
             {/* Priority Selector */}
             <div className="space-y-1">
-              <label className="text-[11px] text-zinc-400">Priority</label>
+              <label className="text-[11px] text-[#6E5D4E] font-medium">Priority</label>
               <select
                 value={priority}
                 onChange={(e) => {
@@ -622,7 +622,7 @@ export function TaskDetailDrawer({
                   setPriority(val);
                   handleFieldUpdate('priority', val);
                 }}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
               >
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
@@ -633,7 +633,7 @@ export function TaskDetailDrawer({
 
             {/* Assignee Selector */}
             <div className="space-y-1">
-              <label className="text-[11px] text-zinc-400 flex items-center gap-1">
+              <label className="text-[11px] text-[#6E5D4E] flex items-center gap-1 font-medium">
                 <User className="h-3 w-3" /> Assignee
               </label>
               <select
@@ -644,7 +644,7 @@ export function TaskDetailDrawer({
                   setAssigneeId(val);
                   handleFieldUpdate('assignee_id', val || null);
                 }}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+                className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26] disabled:opacity-50"
               >
                 <option value="">Unassigned (Incoming Inbox)</option>
                 {members.map((m) => (
@@ -657,7 +657,7 @@ export function TaskDetailDrawer({
 
             {/* Due Date */}
             <div className="space-y-1">
-              <label className="text-[11px] text-zinc-400 flex items-center gap-1">
+              <label className="text-[11px] text-[#6E5D4E] flex items-center gap-1 font-medium">
                 <Calendar className="h-3 w-3" /> Due Date
               </label>
               <input
@@ -668,55 +668,55 @@ export function TaskDetailDrawer({
                   setDueDate(val);
                   handleFieldUpdate('due_date', val || null);
                 }}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
               />
             </div>
           </div>
 
           {/* Description Section */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-zinc-300">Description</label>
+            <label className="text-xs font-semibold text-[#23170E]">Description</label>
             <textarea
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onBlur={() => handleFieldUpdate('description', description.trim() || null)}
               placeholder="Add technical specifications, context, or links..."
-              className="w-full bg-zinc-900/60 border border-zinc-800 rounded-xl p-3 text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 resize-none leading-relaxed"
+              className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-2xl p-3 text-xs text-[#23170E] placeholder:text-[#6E5D4E] focus:outline-none focus:border-[#DC6E26] resize-none leading-relaxed"
             />
           </div>
 
           {/* Phase 3: Work Claims & GitHub Evidence Section */}
-          <div className="space-y-4 pt-4 border-t border-zinc-800">
+          <div className="space-y-4 pt-4 border-t border-[#E3DAC8]">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-xs font-semibold text-zinc-200 flex items-center gap-1.5">
-                  <ShieldCheck className="h-4 w-4 text-purple-400" /> Verifiable Evidence &amp; Work Claims
+                <h3 className="text-xs font-semibold text-[#23170E] flex items-center gap-1.5">
+                  <ShieldCheck className="h-4 w-4 text-[#DC6E26]" /> Verifiable Evidence &amp; Work Claims
                 </h3>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
+                <p className="text-[11px] text-[#6E5D4E] mt-0.5">
                   Explicit work claims correlated against GitHub commits, PRs, and CI checks.
                 </p>
               </div>
 
               <button
                 onClick={() => setIsClaimModalOpen(true)}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-medium transition-colors"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs transition-colors"
               >
                 <Plus className="h-3.5 w-3.5" /> Submit Work Claim
               </button>
             </div>
 
             {/* Verification & Real-Time Evidence (Phase 3 Backend Integration) */}
-            <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-950/70 space-y-3.5">
+            <div className="p-4 rounded-2xl border border-[#E3DAC8] bg-[#F2ECE1] space-y-3.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                  <span className="text-xs font-semibold text-zinc-100">Live Verification Engine</span>
+                  <ShieldCheck className="h-4 w-4 text-[#2B5910]" />
+                  <span className="text-xs font-semibold text-[#23170E]">Live Verification Engine</span>
                 </div>
                 <button
                   onClick={handleTriggerVerification}
                   disabled={verifying}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800 text-emerald-300 text-xs font-medium transition-all shadow-sm disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#2B5910] hover:bg-[#20420C] text-white text-xs font-semibold transition-all shadow-xs disabled:opacity-50"
                 >
                   {verifying ? (
                     <>
@@ -738,10 +738,10 @@ export function TaskDetailDrawer({
                     ? claims[0].review_state === 'supported'
                       ? 'verified'
                       : claims[0].review_state === 'partially_supported'
-                      ? 'partial_evidence'
-                      : claims[0].review_state === 'pending'
-                      ? 'needs_review'
-                      : 'awaiting_evidence'
+                        ? 'partial_evidence'
+                        : claims[0].review_state === 'pending'
+                          ? 'needs_review'
+                          : 'awaiting_evidence'
                     : 'awaiting_evidence');
 
                 const statusMap: Record<
@@ -750,73 +750,73 @@ export function TaskDetailDrawer({
                 > = {
                   verified: {
                     label: 'Verified Completion',
-                    badgeCls: 'bg-emerald-950/80 text-emerald-300 border-emerald-800',
-                    dotCls: 'bg-emerald-400',
+                    badgeCls: 'bg-[#ECF6E3] text-[#2B5910] border-[#D4E9C1]',
+                    dotCls: 'bg-[#2B5910]',
                   },
                   partial_evidence: {
                     label: 'Partial Evidence',
-                    badgeCls: 'bg-amber-950/80 text-amber-300 border-amber-800',
-                    dotCls: 'bg-amber-400',
+                    badgeCls: 'bg-[#FCF3E3] text-[#824B04] border-[#F1DCBA]',
+                    dotCls: 'bg-[#824B04]',
                   },
                   awaiting_evidence: {
                     label: 'Awaiting Evidence',
-                    badgeCls: 'bg-zinc-900 text-zinc-300 border-zinc-700',
-                    dotCls: 'bg-zinc-400',
+                    badgeCls: 'bg-[#FAF7F2] text-[#6E5D4E] border-[#E3DAC8]',
+                    dotCls: 'bg-[#6E5D4E]',
                   },
                   no_evidence: {
                     label: 'Awaiting Evidence',
-                    badgeCls: 'bg-zinc-900 text-zinc-300 border-zinc-700',
-                    dotCls: 'bg-zinc-400',
+                    badgeCls: 'bg-[#FAF7F2] text-[#6E5D4E] border-[#E3DAC8]',
+                    dotCls: 'bg-[#6E5D4E]',
                   },
                   blocked: {
                     label: 'Blocked by Dependency',
-                    badgeCls: 'bg-rose-950/80 text-rose-300 border-rose-800',
-                    dotCls: 'bg-rose-400',
+                    badgeCls: 'bg-[#FCECE9] text-[#882315] border-[#F4CFC8]',
+                    dotCls: 'bg-[#882315]',
                   },
                   identity_mismatch: {
                     label: 'Identity Mismatch',
-                    badgeCls: 'bg-rose-950/80 text-rose-300 border-rose-800',
-                    dotCls: 'bg-rose-400',
+                    badgeCls: 'bg-[#FCECE9] text-[#882315] border-[#F4CFC8]',
+                    dotCls: 'bg-[#882315]',
                   },
                   repository_mismatch: {
                     label: 'Repository Mismatch',
-                    badgeCls: 'bg-amber-950/80 text-amber-300 border-amber-800',
-                    dotCls: 'bg-amber-400',
+                    badgeCls: 'bg-[#FCF3E3] text-[#824B04] border-[#F1DCBA]',
+                    dotCls: 'bg-[#824B04]',
                   },
                   human_review: {
                     label: 'Human Review Required',
-                    badgeCls: 'bg-purple-950/80 text-purple-300 border-purple-800',
-                    dotCls: 'bg-purple-400',
+                    badgeCls: 'bg-[#FCF3E3] text-[#DC6E26] border-[#F1DCBA]',
+                    dotCls: 'bg-[#DC6E26]',
                   },
                   needs_review: {
                     label: 'Human Review Required',
-                    badgeCls: 'bg-purple-950/80 text-purple-300 border-purple-800',
-                    dotCls: 'bg-purple-400',
+                    badgeCls: 'bg-[#FCF3E3] text-[#DC6E26] border-[#F1DCBA]',
+                    dotCls: 'bg-[#DC6E26]',
                   },
                   unavailable: {
                     label: 'Verification Unavailable',
-                    badgeCls: 'bg-zinc-900 text-zinc-400 border-zinc-800',
-                    dotCls: 'bg-zinc-500',
+                    badgeCls: 'bg-[#FAF7F2] text-[#6E5D4E] border-[#E3DAC8]',
+                    dotCls: 'bg-[#6E5D4E]',
                   },
                 };
 
                 const cfg = statusMap[rawStatus] || statusMap['awaiting_evidence'];
 
                 return (
-                  <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-lg bg-zinc-900/60 border border-zinc-800">
+                  <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-[#FAF7F2] border border-[#E3DAC8]">
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-zinc-400 font-mono">Verification State:</span>
+                      <span className="text-[11px] text-[#6E5D4E] font-mono">Verification State:</span>
                       <span
-                        className={`text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-full border flex items-center gap-1.5 ${cfg.badgeCls}`}
+                        className={`text-[10px] font-mono uppercase font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${cfg.badgeCls}`}
                       >
                         <span className={`h-1.5 w-1.5 rounded-full ${cfg.dotCls}`} />
                         {cfg.label}
                       </span>
                     </div>
                     {verificationData?.next_action && (
-                      <span className="text-[10px] font-mono text-zinc-400">
+                      <span className="text-[10px] font-mono text-[#6E5D4E]">
                         Next Action:{' '}
-                        <strong className="text-zinc-200">
+                        <strong className="text-[#23170E]">
                           {verificationData.next_action.replace('_', ' ')}
                         </strong>
                       </span>
@@ -827,33 +827,33 @@ export function TaskDetailDrawer({
 
               {/* Latest Contributor Claim details */}
               {claims.length > 0 ? (
-                <div className="p-3 rounded-lg bg-zinc-900/40 border border-zinc-800/80 space-y-1.5">
+                <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#E3DAC8] space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-zinc-400">
+                    <span className="text-[#6E5D4E]">
                       Latest Claim by{' '}
-                      <strong className="text-zinc-200">
+                      <strong className="text-[#23170E]">
                         {claims[0].profiles?.display_name || 'Member'}
                       </strong>
                     </span>
-                    <span className="text-[10px] font-mono text-zinc-500">
-                      {new Date(claims[0].created_at).toLocaleString()} • via {claims[0].claim_source}
+                    <span className="text-[10px] font-mono text-[#6E5D4E]">
+                      {new Date(claims[0].created_at).toLocaleString()} &bull; via {claims[0].claim_source}
                     </span>
                   </div>
-                  <p className="text-xs text-zinc-300 italic">&ldquo;{claims[0].claim_text}&rdquo;</p>
+                  <p className="text-xs text-[#23170E] italic">&ldquo;{claims[0].claim_text}&rdquo;</p>
                 </div>
               ) : (
-                <div className="text-[11px] text-zinc-500 italic p-2 bg-zinc-900/30 rounded border border-zinc-800/50">
+                <div className="text-[11px] text-[#6E5D4E] italic p-2.5 bg-[#FAF7F2] rounded-xl border border-[#E3DAC8]">
                   No contributor completion claim recorded yet.
                 </div>
               )}
 
               {/* Backend Evidence & Reasons */}
               {verificationData?.reasons && verificationData.reasons.length > 0 && (
-                <div className="p-3 rounded-lg bg-zinc-900/40 border border-zinc-800/80 space-y-1">
-                  <span className="text-[10px] font-mono uppercase text-zinc-400 font-semibold block">
+                <div className="p-3 rounded-xl bg-[#FAF7F2] border border-[#E3DAC8] space-y-1">
+                  <span className="text-[10px] font-mono uppercase text-[#6E5D4E] font-semibold block">
                     Backend Evidence &amp; Evaluation Reasons:
                   </span>
-                  <ul className="list-disc list-inside space-y-0.5 text-[11px] text-zinc-300 font-mono">
+                  <ul className="list-disc list-inside space-y-0.5 text-[11px] text-[#23170E] font-mono">
                     {verificationData.reasons.map((r, idx) => (
                       <li key={idx}>{r}</li>
                     ))}
@@ -863,40 +863,40 @@ export function TaskDetailDrawer({
 
               {/* Verification Error Notice */}
               {verificationError && (
-                <div className="p-2.5 rounded-lg bg-rose-950/30 border border-rose-900/60 text-rose-300 text-xs flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+                <div className="p-2.5 rounded-xl bg-[#FCECE9] border border-[#F4CFC8] text-[#882315] text-xs flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-[#882315]" />
                   <span>{verificationError}</span>
                 </div>
               )}
 
               {/* Dignity & Contribution Potential */}
               {taskDignity && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 rounded-lg bg-zinc-900/30 border border-zinc-800/60 text-xs font-mono">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 rounded-xl bg-[#FAF7F2] border border-[#E3DAC8] text-xs font-mono">
                   <div>
-                    <span className="text-zinc-500 block text-[10px] uppercase font-sans">Task Scope / Value (Vt)</span>
-                    <span className="text-zinc-200 font-bold">
+                    <span className="text-[#6E5D4E] block text-[10px] uppercase font-sans font-semibold">Task Scope / Value (Vt)</span>
+                    <span className="text-[#23170E] font-bold">
                       {taskDignity.accepted_contribution_points.toFixed(1)} pts
                     </span>
                   </div>
                   <div>
-                    <span className="text-zinc-500 block text-[10px] uppercase font-sans">Reliability State</span>
-                    <span className="text-zinc-300">
+                    <span className="text-[#6E5D4E] block text-[10px] uppercase font-sans font-semibold">Reliability State</span>
+                    <span className="text-[#23170E]">
                       {taskDignity.claim_reliability.status === 'insufficient_data'
                         ? 'Insufficient data (<3)'
                         : `${taskDignity.claim_reliability.score ?? '—'}`}
                     </span>
                   </div>
                   <div className="col-span-2 sm:col-span-1">
-                    <span className="text-zinc-500 block text-[10px] uppercase font-sans">Audit Model</span>
-                    <span className="text-zinc-400 text-[10px]">Formula v1 (Phase 3)</span>
+                    <span className="text-[#6E5D4E] block text-[10px] uppercase font-sans font-semibold">Audit Model</span>
+                    <span className="text-[#6E5D4E] text-[10px]">Formula v1 (Phase 3)</span>
                   </div>
                 </div>
               )}
 
               {/* Last Status Transition */}
-              <div className="pt-2 border-t border-zinc-800/60 flex items-center justify-between text-[11px] font-mono text-zinc-500">
+              <div className="pt-2 border-t border-[#E3DAC8] flex items-center justify-between text-[11px] font-mono text-[#6E5D4E]">
                 <span>
-                  Current Status: <strong className="text-zinc-300 uppercase">{task.status.replace('_', ' ')}</strong>
+                  Current Status: <strong className="text-[#23170E] uppercase">{task.status.replace('_', ' ')}</strong>
                 </span>
                 {task.status_changed_at && (
                   <span>
@@ -909,13 +909,13 @@ export function TaskDetailDrawer({
 
             {/* Claims List */}
             <div className="space-y-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-semibold block">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#6E5D4E] font-semibold block">
                 Work Claims ({claims.length})
               </span>
               {loadingEvidence ? (
-                <div className="text-center py-3 text-xs text-zinc-500 font-mono">Loading claims...</div>
+                <div className="text-center py-3 text-xs text-[#6E5D4E] font-mono">Loading claims...</div>
               ) : claims.length === 0 ? (
-                <div className="p-3 rounded-lg border border-dashed border-zinc-800 text-center text-xs text-zinc-500">
+                <div className="p-3 rounded-2xl border border-dashed border-[#E3DAC8] text-center text-xs text-[#6E5D4E]">
                   No work claims submitted yet for this task.
                 </div>
               ) : (
@@ -923,62 +923,62 @@ export function TaskDetailDrawer({
                   const stateConfig: Record<ClaimReviewState, { label: string; cls: string }> = {
                     pending: {
                       label: 'Awaiting Admin Review',
-                      cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                      cls: 'bg-[#FCF3E3] text-[#824B04] border-[#F1DCBA]',
                     },
                     supported: {
                       label: 'Supported by GitHub Evidence',
-                      cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                      cls: 'bg-[#ECF6E3] text-[#2B5910] border-[#D4E9C1]',
                     },
                     partially_supported: {
                       label: 'Partially Supported',
-                      cls: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+                      cls: 'bg-[#FCF3E3] text-[#824B04] border-[#F1DCBA]',
                     },
                     needs_clarification: {
                       label: 'Needs Clarification',
-                      cls: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                      cls: 'bg-[#FCF3E3] text-[#DC6E26] border-[#F1DCBA]',
                     },
                     unverified: {
                       label: 'Insufficient Evidence',
-                      cls: 'bg-zinc-800 text-zinc-400 border-zinc-700',
+                      cls: 'bg-[#F2ECE1] text-[#6E5D4E] border border-[#E3DAC8]',
                     },
                     disputed: {
                       label: 'Disputed / Escalated',
-                      cls: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+                      cls: 'bg-[#FCECE9] text-[#882315] border border-[#F4CFC8]',
                     },
                   };
                   const currentCfg = stateConfig[claim.review_state] || {
                     label: claim.review_state,
-                    cls: 'bg-zinc-800 text-zinc-400',
+                    cls: 'bg-[#F2ECE1] text-[#6E5D4E]',
                   };
 
                   return (
                     <div
                       key={claim.id}
-                      className="p-3 rounded-xl border border-zinc-800/80 bg-zinc-900/60 space-y-2"
+                      className="p-3.5 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-2 shadow-xs"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-xs text-zinc-200">
+                          <span className="font-semibold text-xs text-[#23170E]">
                             {claim.profiles?.display_name || 'Member'}
                           </span>
-                          <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400">
+                          <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-[#F2ECE1] border border-[#E3DAC8] text-[#6E5D4E]">
                             {claim.claim_type.replace('_', ' ')}
                           </span>
                         </div>
-                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${currentCfg.cls}`}>
+                        <span className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full border ${currentCfg.cls}`}>
                           {currentCfg.label}
                         </span>
                       </div>
-                      <p className="text-xs text-zinc-300 leading-relaxed font-sans">{claim.claim_text}</p>
+                      <p className="text-xs text-[#23170E] leading-relaxed font-sans">{claim.claim_text}</p>
                       {claim.review_rationale && (
-                        <div className="p-2 rounded bg-zinc-950 border border-zinc-800/80 text-[11px] text-zinc-400 space-y-0.5">
-                          <span className="text-[10px] font-mono text-zinc-500 uppercase block font-semibold">
+                        <div className="p-2.5 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] text-[11px] text-[#6E5D4E] space-y-0.5">
+                          <span className="text-[10px] font-mono text-[#6E5D4E] uppercase block font-semibold">
                             Admin Review Rationale:
                           </span>
-                          <p>{claim.review_rationale}</p>
+                          <p className="text-[#23170E]">{claim.review_rationale}</p>
                         </div>
                       )}
-                      <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono pt-1 border-t border-zinc-800/40">
+                      <div className="flex items-center justify-between text-[10px] text-[#6E5D4E] font-mono pt-1 border-t border-[#E3DAC8]">
                         <span>Submitted via {claim.claim_source}</span>
                         <span>{new Date(claim.created_at).toLocaleDateString()}</span>
                       </div>
@@ -990,11 +990,11 @@ export function TaskDetailDrawer({
 
             {/* Artifacts List */}
             <div className="space-y-2 pt-1">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-semibold block">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#6E5D4E] font-semibold block">
                 Associated GitHub Artifacts ({artifacts.length})
               </span>
               {artifacts.length === 0 ? (
-                <div className="p-3 rounded-lg border border-dashed border-zinc-800 text-center text-xs text-zinc-500">
+                <div className="p-3 rounded-2xl border border-dashed border-[#E3DAC8] text-center text-xs text-[#6E5D4E]">
                   No GitHub artifacts linked yet. Connect a repository and mention this task identifier in PR titles or commit messages.
                 </div>
               ) : (
@@ -1007,28 +1007,28 @@ export function TaskDetailDrawer({
                     return (
                       <div
                         key={art.id}
-                        className="p-2.5 rounded-lg border border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900/70 transition-colors flex items-center justify-between gap-3 text-xs"
+                        className="p-2.5 rounded-xl border border-[#E3DAC8] bg-[#FAF7F2] hover:bg-[#F2ECE1] transition-colors flex items-center justify-between gap-3 text-xs"
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           {art.artifact_type === 'pull_request' && (
-                            <GitPullRequest className="h-4 w-4 text-purple-400 shrink-0" />
+                            <GitPullRequest className="h-4 w-4 text-[#DC6E26] shrink-0" />
                           )}
                           {art.artifact_type === 'commit' && (
-                            <GitCommit className="h-4 w-4 text-indigo-400 shrink-0" />
+                            <GitCommit className="h-4 w-4 text-[#2B5910] shrink-0" />
                           )}
                           {art.artifact_type === 'check_run' &&
                             (art.artifact_state === 'success' ? (
-                              <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" />
+                              <CheckCircle className="h-4 w-4 text-[#2B5910] shrink-0" />
                             ) : (
-                              <AlertTriangle className="h-4 w-4 text-rose-400 shrink-0" />
+                              <AlertTriangle className="h-4 w-4 text-[#882315] shrink-0" />
                             ))}
                           {art.artifact_type === 'review' && (
-                            <ShieldCheck className="h-4 w-4 text-blue-400 shrink-0" />
+                            <ShieldCheck className="h-4 w-4 text-[#824B04] shrink-0" />
                           )}
 
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-mono text-[11px] text-zinc-200 truncate">
+                              <span className="font-mono text-[11px] text-[#23170E] truncate font-semibold">
                                 {art.artifact_type === 'pull_request' &&
                                   `PR #${(art.metadata as any)?.number || art.external_id}`}
                                 {art.artifact_type === 'commit' &&
@@ -1038,11 +1038,11 @@ export function TaskDetailDrawer({
                                 {art.artifact_type === 'review' &&
                                   `Review by @${art.author_login || 'reviewer'}`}
                               </span>
-                              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400">
+                              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#F2ECE1] border border-[#E3DAC8] text-[#6E5D4E]">
                                 {art.artifact_state}
                               </span>
                             </div>
-                            <span className="text-[10px] text-zinc-500 font-mono block truncate">
+                            <span className="text-[10px] text-[#6E5D4E] font-mono block truncate">
                               {repoName} &bull; {art.match_method.replace(/_/g, ' ')}
                             </span>
                           </div>
@@ -1053,7 +1053,7 @@ export function TaskDetailDrawer({
                             href={art.source_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-1.5 rounded text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 shrink-0"
+                            className="p-1.5 rounded-full text-[#6E5D4E] hover:text-[#23170E] hover:bg-[#F2ECE1] shrink-0 transition-colors"
                             title="Open in GitHub"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
@@ -1068,34 +1068,34 @@ export function TaskDetailDrawer({
           </div>
 
           {/* Comments and Notes Section */}
-          <div className="space-y-3 pt-4 border-t border-zinc-800">
+          <div className="space-y-3 pt-4 border-t border-[#E3DAC8]">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                <MessageSquare className="h-3.5 w-3.5 text-indigo-400" /> Discussion &amp; Progress Notes
+              <h3 className="text-xs font-semibold text-[#23170E] flex items-center gap-1.5">
+                <MessageSquare className="h-3.5 w-3.5 text-[#DC6E26]" /> Discussion &amp; Progress Notes
               </h3>
-              <span className="text-[11px] font-mono text-zinc-500">{comments.length}</span>
+              <span className="text-[11px] font-mono text-[#6E5D4E]">{comments.length}</span>
             </div>
 
             {/* Comments List */}
             <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1">
               {loadingComments ? (
-                <div className="text-center py-4 text-xs text-zinc-500 font-mono">Loading notes...</div>
+                <div className="text-center py-4 text-xs text-[#6E5D4E] font-mono">Loading notes...</div>
               ) : comments.length === 0 ? (
-                <div className="text-center py-4 text-xs text-zinc-600 bg-zinc-900/20 rounded-lg border border-dashed border-zinc-800/80">
+                <div className="text-center py-4 text-xs text-[#6E5D4E] bg-[#FAF7F2] rounded-xl border border-dashed border-[#E3DAC8]">
                   No notes recorded yet. Post progress updates below.
                 </div>
               ) : (
                 comments.map((comment) => (
-                  <div key={comment.id} className="p-3 rounded-lg border border-zinc-800/80 bg-zinc-900/50 space-y-1">
+                  <div key={comment.id} className="p-3 rounded-xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-1 shadow-xs">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-semibold text-zinc-300">
+                      <span className="font-semibold text-[#23170E]">
                         {comment.profiles?.display_name || 'Member'}
                       </span>
-                      <span className="text-zinc-500 font-mono text-[10px]">
+                      <span className="text-[#6E5D4E] font-mono text-[10px]">
                         {new Date(comment.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed">{comment.body}</p>
+                    <p className="text-xs text-[#23170E] whitespace-pre-wrap leading-relaxed">{comment.body}</p>
                   </div>
                 ))
               )}
@@ -1108,12 +1108,12 @@ export function TaskDetailDrawer({
                 placeholder="Write a progress note or comment..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500"
+                className="flex-1 bg-[#FAF7F2] border border-[#E3DAC8] rounded-xl px-3 py-2 text-xs text-[#23170E] placeholder:text-[#6E5D4E] focus:outline-none focus:border-[#DC6E26]"
               />
               <button
                 type="submit"
                 disabled={savingComment || !newComment.trim()}
-                className="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors disabled:opacity-50 shrink-0"
+                className="px-4 py-2 rounded-xl bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold transition-colors disabled:opacity-50 shrink-0 shadow-xs"
               >
                 {savingComment ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
               </button>
@@ -1123,33 +1123,33 @@ export function TaskDetailDrawer({
 
         {/* Submit Work Claim Modal */}
         {isClaimModalOpen && (
-          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-            <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl p-6 space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-                <h3 className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-purple-400" /> Submit Work Claim
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-[#23170E]/60 backdrop-blur-sm animate-in fade-in">
+            <div className="w-full max-w-md rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] shadow-2xl p-6 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#E3DAC8]">
+                <h3 className="text-base font-serif font-bold text-[#23170E] flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-[#DC6E26]" /> Submit Work Claim
                 </h3>
                 <button
                   onClick={() => setIsClaimModalOpen(false)}
-                  className="p-1 rounded-md text-zinc-400 hover:text-zinc-200"
+                  className="p-1.5 rounded-full text-[#6E5D4E] hover:text-[#23170E] hover:bg-[#F2ECE1] transition-colors"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
               {claimError && (
-                <div className="p-3 rounded-lg border border-rose-900/40 bg-rose-950/20 text-rose-300 text-xs">
+                <div className="p-3 rounded-2xl border border-[#F4CFC8] bg-[#FCECE9] text-[#882315] text-xs">
                   {claimError}
                 </div>
               )}
 
               <form onSubmit={handleSubmitClaim} className="space-y-3.5 text-xs">
                 <div className="space-y-1">
-                  <label className="font-medium text-zinc-300">Claim Type</label>
+                  <label className="font-semibold text-[#23170E]">Claim Type</label>
                   <select
                     value={claimType}
                     onChange={(e) => setClaimType(e.target.value as ClaimType)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 focus:outline-none focus:border-purple-500"
+                    className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-3 py-2 text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
                   >
                     <option value="implementation">Implementation (New Code)</option>
                     <option value="bug_fix">Bug Fix</option>
@@ -1162,30 +1162,30 @@ export function TaskDetailDrawer({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-medium text-zinc-300">Work Assertion / Description</label>
+                  <label className="font-semibold text-[#23170E]">Work Assertion / Description</label>
                   <textarea
                     rows={3}
                     required
                     placeholder="e.g. Implemented OAuth callback handling, wrote integration tests, and opened PR #42."
                     value={claimText}
                     onChange={(e) => setClaimText(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-zinc-100 focus:outline-none focus:border-purple-500 resize-none leading-relaxed"
+                    className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl p-3 text-[#23170E] focus:outline-none focus:border-[#DC6E26] resize-none leading-relaxed"
                   />
-                  <p className="text-[10px] text-zinc-500">
+                  <p className="text-[10px] text-[#6E5D4E]">
                     Be explicit and factual. This claim will be compared against actual GitHub artifacts during human review.
                   </p>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-medium text-zinc-300">
-                    GitHub PR or Commit URL <span className="text-zinc-500 font-normal">(Optional)</span>
+                  <label className="font-semibold text-[#23170E]">
+                    GitHub PR or Commit URL <span className="text-[#6E5D4E] font-normal">(Optional)</span>
                   </label>
                   <input
                     type="url"
                     placeholder="https://github.com/owner/repo/pull/42"
                     value={claimArtifactUrl}
                     onChange={(e) => setClaimArtifactUrl(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-purple-500"
+                    className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-3 py-2 text-[#23170E] font-mono focus:outline-none focus:border-[#DC6E26]"
                   />
                 </div>
 
@@ -1193,14 +1193,14 @@ export function TaskDetailDrawer({
                   <button
                     type="button"
                     onClick={() => setIsClaimModalOpen(false)}
-                    className="px-3.5 py-1.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-zinc-200"
+                    className="px-4 py-1.5 rounded-full border border-[#E3DAC8] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#23170E] text-xs font-semibold transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submittingClaim || !claimText.trim()}
-                    className="px-4 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-medium disabled:opacity-50"
+                    className="px-4 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white font-semibold text-xs shadow-xs transition-colors disabled:opacity-50"
                   >
                     {submittingClaim ? 'Submitting...' : 'Submit Claim'}
                   </button>
@@ -1211,40 +1211,40 @@ export function TaskDetailDrawer({
         )}
         {/* Status Transition Reason Modal */}
         {pendingStatus && (
-          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-            <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl p-6 space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-[#23170E]/60 backdrop-blur-sm animate-in fade-in">
+            <div className="w-full max-w-md rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] shadow-2xl p-6 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#E3DAC8]">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono">
+                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#FCF3E3] text-[#DC6E26] border border-[#F1DCBA] font-mono">
                     {status} &rarr; {pendingStatus}
                   </span>
-                  <h3 className="text-sm font-semibold text-zinc-100">
+                  <h3 className="text-base font-serif font-bold text-[#23170E]">
                     Status Change Reason
                   </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setPendingStatus(null)}
-                  className="p-1 rounded-md text-zinc-400 hover:text-zinc-200"
+                  className="p-1.5 rounded-full text-[#6E5D4E] hover:text-[#23170E] hover:bg-[#F2ECE1] transition-colors"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-[#6E5D4E] leading-relaxed">
                 TaskPilot requires an audit reason for all status transitions to maintain transparency across teams.
               </p>
 
               {statusReasonError && (
-                <div className="p-3 rounded-lg border border-rose-900/40 bg-rose-950/20 text-rose-300 text-xs">
+                <div className="p-3 rounded-2xl border border-[#F4CFC8] bg-[#FCECE9] text-[#882315] text-xs">
                   {statusReasonError}
                 </div>
               )}
 
               <form onSubmit={handleConfirmStatusChange} className="space-y-3.5 text-xs">
                 <div className="space-y-1">
-                  <label className="font-medium text-zinc-300">
-                    Reason / Context <span className="text-rose-400">*</span>
+                  <label className="font-semibold text-[#23170E]">
+                    Reason / Context <span className="text-[#882315]">*</span>
                   </label>
                   <textarea
                     rows={3}
@@ -1253,9 +1253,9 @@ export function TaskDetailDrawer({
                     placeholder="e.g. Blocked on API specification from backend team, or: Completed code review and merged PR."
                     value={statusReason}
                     onChange={(e) => setStatusReason(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-zinc-100 focus:outline-none focus:border-indigo-500 resize-none leading-relaxed"
+                    className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl p-3 text-[#23170E] focus:outline-none focus:border-[#DC6E26] resize-none leading-relaxed"
                   />
-                  <span className="text-[10px] text-zinc-500">
+                  <span className="text-[10px] text-[#6E5D4E]">
                     Minimum 3 characters required.
                   </span>
                 </div>
@@ -1264,14 +1264,14 @@ export function TaskDetailDrawer({
                   <button
                     type="button"
                     onClick={() => setPendingStatus(null)}
-                    className="px-3.5 py-1.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-zinc-200"
+                    className="px-4 py-1.5 rounded-full border border-[#E3DAC8] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#23170E] text-xs font-semibold transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={statusReasonSubmitting || statusReason.trim().length < 3}
-                    className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium disabled:opacity-50 flex items-center gap-1.5"
+                    className="px-4 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white font-semibold text-xs shadow-xs transition-colors disabled:opacity-50 flex items-center gap-1.5"
                   >
                     {statusReasonSubmitting ? (
                       <>

@@ -48,13 +48,13 @@ export function getProjectDeadlineStatus(project: {
       return {
         status: 'completed_on_time',
         label: 'Completed On Time',
-        badgeClass: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+        badgeClass: 'text-[#2B5910] bg-[#ECF6E3] border-[#D4E9C1]',
       };
     }
     return {
       status: 'completed_late',
       label: 'Completed Late',
-      badgeClass: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+      badgeClass: 'text-[#824B04] bg-[#FCF3E3] border-[#F1DCBA]',
     };
   }
 
@@ -63,7 +63,7 @@ export function getProjectDeadlineStatus(project: {
     return {
       status: 'no_deadline',
       label: project.status === 'archived' ? 'Archived' : 'Paused',
-      badgeClass: 'text-zinc-400 bg-zinc-800/80 border-zinc-700/50',
+      badgeClass: 'text-[#736251] bg-[#F2ECE1] border-[#E4DBC9]',
     };
   }
 
@@ -71,7 +71,7 @@ export function getProjectDeadlineStatus(project: {
     return {
       status: 'no_deadline',
       label: 'No Deadline',
-      badgeClass: 'text-zinc-500 bg-zinc-900 border-zinc-800',
+      badgeClass: 'text-[#736251] bg-[#F2ECE1] border-[#E4DBC9]',
     };
   }
 
@@ -83,27 +83,27 @@ export function getProjectDeadlineStatus(project: {
     return {
       status: 'overdue',
       label: `Overdue (${Math.abs(diffDays)}d)`,
-      badgeClass: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
+      badgeClass: 'text-[#882315] bg-[#FCECE9] border-[#F4CFC8]',
     };
   }
   if (diffDays <= 3) {
     return {
       status: 'closing_soon',
       label: `Closing Soon (${diffDays}d)`,
-      badgeClass: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+      badgeClass: 'text-[#824B04] bg-[#FCF3E3] border-[#F1DCBA]',
     };
   }
   if (diffDays <= 7) {
     return {
       status: 'deadline_approaching',
       label: `Due in ${diffDays}d`,
-      badgeClass: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+      badgeClass: 'text-[#DC6E26] bg-[#FCF3E3] border-[#F1DCBA]',
     };
   }
   return {
     status: 'on_track',
     label: `On Track (${diffDays}d left)`,
-    badgeClass: 'text-zinc-300 bg-zinc-800/60 border-zinc-700/40',
+    badgeClass: 'text-[#2B5910] bg-[#ECF6E3] border-[#D4E9C1]',
   };
 }
 

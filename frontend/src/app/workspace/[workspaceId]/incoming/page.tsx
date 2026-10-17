@@ -194,27 +194,27 @@ export default function IncomingTriagePage({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-100 flex items-center gap-2">
-              <Clock className="h-6 w-6 text-amber-400" /> Incoming Triage Inbox
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#23170E] flex items-center gap-2">
+              <Clock className="h-7 w-7 text-[#D68B1C]" /> Incoming Triage Inbox
             </h1>
-            <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-[#FCF3E3] text-[#824B04] border border-[#F1DCBA]">
               {tasks.length} Unassigned
             </span>
           </div>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-[#6E5D4E] mt-1">
             Incoming tasks requiring team lead prioritization, routing, and explicit member assignment.
           </p>
         </div>
 
         {notification && (
-          <div className="p-2.5 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-2 animate-in fade-in">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" /> {notification}
+          <div className="p-2.5 rounded-xl bg-[#ECF6E3] border border-[#D4E9C1] text-[#2B5910] text-xs flex items-center gap-2 animate-in fade-in shadow-2xs">
+            <CheckCircle2 className="h-4 w-4 text-[#4F8E27]" /> {notification}
           </div>
         )}
       </div>
 
       {/* Source Filter Tabs */}
-      <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-900/60 border border-zinc-800/80 w-fit text-xs">
+      <div className="flex items-center gap-1 p-1 rounded-full bg-[#F2ECE1] border border-[#E3DAC8] w-fit text-xs">
         {[
           { id: 'all', label: `All (${tasks.length})` },
           { id: 'slack', label: `Slack Intake (${tasks.filter((t) => t.source === 'slack').length})` },
@@ -223,10 +223,10 @@ export default function IncomingTriagePage({
           <button
             key={tab.id}
             onClick={() => setSourceFilter(tab.id as any)}
-            className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
+            className={`px-3.5 py-1.5 rounded-full font-medium transition-colors ${
               sourceFilter === tab.id
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                : 'text-zinc-400 hover:text-zinc-200'
+                ? 'bg-[#FAF7F2] text-[#23170E] font-semibold shadow-2xs'
+                : 'text-[#736251] hover:text-[#23170E]'
             }`}
           >
             {tab.label}
@@ -236,25 +236,25 @@ export default function IncomingTriagePage({
 
       {/* Main Content */}
       {loading ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-12 text-zinc-500 gap-2 font-mono text-xs">
-          <Loader2 className="h-5 w-5 animate-spin text-amber-400" />
+        <div className="flex-1 flex flex-col items-center justify-center p-12 text-[#736251] gap-2 font-mono text-xs">
+          <Loader2 className="h-5 w-5 animate-spin text-[#D68B1C]" />
           <span>Scanning incoming task queue...</span>
         </div>
       ) : tasks.filter((t) => sourceFilter === 'all' || (sourceFilter === 'slack' ? t.source === 'slack' : t.source !== 'slack')).length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-12 rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 text-center space-y-3">
-          <div className="h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto">
+        <div className="flex-1 flex flex-col items-center justify-center p-12 rounded-3xl border border-dashed border-[#E3DAC8] bg-[#FAF7F2] text-center space-y-3">
+          <div className="h-12 w-12 rounded-2xl bg-[#ECF6E3] text-[#4F8E27] flex items-center justify-center mx-auto">
             <CheckCircle2 className="h-6 w-6" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-base font-semibold text-zinc-100">All incoming tasks triaged</h3>
-            <p className="text-xs text-zinc-400 max-w-sm">
+            <h3 className="text-base font-semibold text-[#23170E]">All incoming tasks triaged</h3>
+            <p className="text-xs text-[#6E5D4E] max-w-sm">
               There are zero unassigned items in this workspace. Any newly arriving tasks from Slack, autonomous agents,
               or the dashboard will appear here.
             </p>
           </div>
           <button
             onClick={() => setIsCreateTaskOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs"
           >
             <Plus className="h-3.5 w-3.5" /> Submit Task for Triage
           </button>
@@ -268,161 +268,161 @@ export default function IncomingTriagePage({
                 (sourceFilter === 'slack' ? t.source === 'slack' : t.source !== 'slack')
             )
             .map((task) => (
-            <div
-              key={task.id}
-              className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/60 hover:border-zinc-700 transition-all space-y-4 shadow-sm"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-zinc-800 text-indigo-400 border border-zinc-700">
-                      {task.project?.identifier}-{task.task_number}
-                    </span>
-                    <span className="text-xs text-zinc-400 font-medium">
-                      Project: {task.project?.name || 'Project'}
-                    </span>
-                    {task.source === 'slack' ? (
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 flex items-center gap-1 font-semibold">
-                        <MessageSquare className="h-3 w-3" /> Slack Origin
-                        {task.slack_channel_id && ` (${task.slack_channel_id})`}
+              <div
+                key={task.id}
+                className="p-5 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] hover:border-[#DC6E26]/60 transition-all space-y-4 shadow-2xs"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-[#F2ECE1] text-[#DC6E26] border border-[#E4DBC9]">
+                        {task.project?.identifier}-{task.task_number}
                       </span>
-                    ) : (
-                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400">
-                        Source: {task.source}
+                      <span className="text-xs text-[#6E5D4E] font-medium">
+                        Project: {task.project?.name || 'Project'}
                       </span>
-                    )}
-                  </div>
-                  <h3 className="text-base font-semibold text-zinc-100">{task.title}</h3>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-zinc-400">Priority:</span>
-                  <select
-                    value={task.priority}
-                    disabled={!isTriageAuthorized}
-                    onChange={(e) => handlePriorityUpdate(task.id, e.target.value as TaskPriority)}
-                    className="bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500 font-medium"
-                  >
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                    <option value="Urgent">Urgent</option>
-                  </select>
-                </div>
-              </div>
-
-              {task.description && (
-                <p className="text-xs text-zinc-300 leading-relaxed bg-zinc-950/40 p-3 rounded-lg border border-zinc-800/60">
-                  {task.description}
-                </p>
-              )}
-
-              {/* Agent Routing Recommendation / Lead Flag */}
-              {(() => {
-                const decision = routingMap[task.id];
-                if (!decision) return null;
-
-                const recommendedMember = decision.proposed_assignee_id
-                  ? members.find((m) => m.user_id === decision.proposed_assignee_id)
-                  : null;
-
-                if (recommendedMember) {
-                  return (
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/25 text-xs">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="h-8 w-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
-                          <Bot className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0 space-y-0.5">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-semibold text-zinc-100">
-                              Agent Recommends: <span className="text-indigo-300 font-bold">{recommendedMember.display_name}</span> ({recommendedMember.role})
-                            </span>
-                            <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300">
-                              {decision.decision_method.replace(/_/g, ' ')}
-                            </span>
-                          </div>
-                          {decision.rationale && (
-                            <p className="text-[11px] text-zinc-300 truncate max-w-xl font-sans">
-                              {decision.rationale}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {isTriageAuthorized && (
-                        <button
-                          onClick={() => handleAssignTask(task.id, recommendedMember.user_id)}
-                          disabled={assigningId === task.id}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs whitespace-nowrap shadow-sm shrink-0 transition-colors"
-                        >
-                          <CheckCircle2 className="h-3 w-3" />
-                          Accept &amp; Assign
-                        </button>
+                      {task.source === 'slack' ? (
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FBECE1] text-[#9A410D] border border-[#F3D5BE] flex items-center gap-1 font-semibold">
+                          <MessageSquare className="h-3 w-3" /> Slack Origin
+                          {task.slack_channel_id && ` (${task.slack_channel_id})`}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#EFE9DF] text-[#736251]">
+                          Source: {task.source}
+                        </span>
                       )}
                     </div>
-                  );
-                }
+                    <h3 className="text-base font-semibold text-[#23170E]">{task.title}</h3>
+                  </div>
 
-                if (decision.human_intervention_needed) {
-                  return (
-                    <div className="flex items-center gap-2 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
-                      <AlertCircle className="h-4 w-4 text-amber-400 shrink-0" />
-                      <span>
-                        <strong className="text-amber-200">Routing Agent Flag:</strong> {decision.rationale || 'Ambiguous destination; requires team lead triage.'}
-                      </span>
-                    </div>
-                  );
-                }
-
-                return null;
-              })()}
-
-              {/* Triage Action Row */}
-              <div className="pt-3 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-3 text-zinc-500 text-[11px] font-mono">
-                  <span>Created {new Date(task.created_at).toLocaleDateString()}</span>
-                  {task.due_date && <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-[#6E5D4E]">Priority:</span>
+                    <select
+                      value={task.priority}
+                      disabled={!isTriageAuthorized}
+                      onChange={(e) => handlePriorityUpdate(task.id, e.target.value as TaskPriority)}
+                      className="bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-2.5 py-1 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26] font-medium"
+                    >
+                      <option value="Low">Low</option>
+                      <option value="Medium">Medium</option>
+                      <option value="High">High</option>
+                      <option value="Urgent">Urgent</option>
+                    </select>
+                  </div>
                 </div>
 
-                {isTriageAuthorized ? (
-                  <div className="flex items-center gap-2">
-                    {user && (
-                      <button
-                        onClick={() => handleAssignTask(task.id, user.id)}
-                        disabled={assigningId === task.id}
-                        className="px-3 py-1.5 rounded-lg border border-indigo-500/40 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 font-medium text-xs transition-colors"
-                      >
-                        Assign to Me
-                      </button>
-                    )}
-
-                    <div className="flex items-center gap-1.5">
-                      <select
-                        defaultValue=""
-                        disabled={assigningId === task.id}
-                        onChange={(e) => handleAssignTask(task.id, e.target.value)}
-                        className="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500 font-medium"
-                      >
-                        <option value="" disabled>
-                          Assign to Member...
-                        </option>
-                        {members.map((m) => (
-                          <option key={m.user_id} value={m.user_id}>
-                            {m.display_name} ({m.role})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                ) : (
-                  <span className="text-[11px] text-zinc-500 italic">
-                    Awaiting Team Lead or Administrator assignment
-                  </span>
+                {task.description && (
+                  <p className="text-xs text-[#23170E] leading-relaxed bg-[#F2ECE1]/60 p-3.5 rounded-xl border border-[#E4DBC9]">
+                    {task.description}
+                  </p>
                 )}
+
+                {/* Agent Routing Recommendation / Lead Flag */}
+                {(() => {
+                  const decision = routingMap[task.id];
+                  if (!decision) return null;
+
+                  const recommendedMember = decision.proposed_assignee_id
+                    ? members.find((m) => m.user_id === decision.proposed_assignee_id)
+                    : null;
+
+                  if (recommendedMember) {
+                    return (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#FBECE1]/60 border border-[#F3D5BE] text-xs">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="h-8 w-8 rounded-xl bg-[#FBECE1] border border-[#F3D5BE] flex items-center justify-center text-[#DC6E26] shrink-0">
+                            <Bot className="h-4 w-4" />
+                          </div>
+                          <div className="min-w-0 space-y-0.5">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-semibold text-[#23170E]">
+                                Agent Recommends: <span className="text-[#DC6E26] font-bold">{recommendedMember.display_name}</span> ({recommendedMember.role})
+                              </span>
+                              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-[#F3D5BE] text-[#752F07] font-semibold">
+                                {decision.decision_method.replace(/_/g, ' ')}
+                              </span>
+                            </div>
+                            {decision.rationale && (
+                              <p className="text-[11px] text-[#6E5D4E] truncate max-w-xl font-sans">
+                                {decision.rationale}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {isTriageAuthorized && (
+                          <button
+                            onClick={() => handleAssignTask(task.id, recommendedMember.user_id)}
+                            disabled={assigningId === task.id}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white font-semibold text-xs whitespace-nowrap shadow-xs shrink-0 transition-colors"
+                          >
+                            <CheckCircle2 className="h-3 w-3" />
+                            Accept &amp; Assign
+                          </button>
+                        )}
+                      </div>
+                    );
+                  }
+
+                  if (decision.human_intervention_needed) {
+                    return (
+                      <div className="flex items-center gap-2 p-3 rounded-xl bg-[#FCF3E3] border border-[#F1DCBA] text-xs text-[#824B04]">
+                        <AlertCircle className="h-4 w-4 text-[#D68B1C] shrink-0" />
+                        <span>
+                          <strong className="text-[#633802]">Routing Agent Flag:</strong> {decision.rationale || 'Ambiguous destination; requires team lead triage.'}
+                        </span>
+                      </div>
+                    );
+                  }
+
+                  return null;
+                })()}
+
+                {/* Triage Action Row */}
+                <div className="pt-3 border-t border-[#E4DBC9]/70 flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-3 text-[#736251] text-[11px] font-mono">
+                    <span>Created {new Date(task.created_at).toLocaleDateString()}</span>
+                    {task.due_date && <span>Due: {new Date(task.due_date).toLocaleDateString()}</span>}
+                  </div>
+
+                  {isTriageAuthorized ? (
+                    <div className="flex items-center gap-2">
+                      {user && (
+                        <button
+                          onClick={() => handleAssignTask(task.id, user.id)}
+                          disabled={assigningId === task.id}
+                          className="px-3.5 py-1.5 rounded-full border border-[#E3DAC8] bg-[#F2ECE1] hover:bg-[#EFE9DF] text-[#23170E] font-semibold text-xs transition-colors"
+                        >
+                          Assign to Me
+                        </button>
+                      )}
+
+                      <div className="flex items-center gap-1.5">
+                        <select
+                          defaultValue=""
+                          disabled={assigningId === task.id}
+                          onChange={(e) => handleAssignTask(task.id, e.target.value)}
+                          className="bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-3 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26] font-medium"
+                        >
+                          <option value="" disabled>
+                            Assign to Member...
+                          </option>
+                          {members.map((m) => (
+                            <option key={m.user_id} value={m.user_id}>
+                              {m.display_name} ({m.role})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="text-[11px] text-[#736251] italic">
+                      Awaiting Team Lead or Administrator assignment
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       )}
     </div>

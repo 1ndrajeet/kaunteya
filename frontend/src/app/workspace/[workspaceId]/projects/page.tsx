@@ -347,33 +347,33 @@ export default function WorkspaceProjectsPage({
       case 'planning':
         return {
           label: 'Planning',
-          badgeClass: 'bg-sky-500/10 text-sky-400 border border-sky-500/20',
+          badgeClass: 'bg-[#FCF3E3] text-[#824B04] border border-[#F1DCBA]',
         };
       case 'active':
         return {
           label: 'Active',
-          badgeClass: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
+          badgeClass: 'bg-[#ECF6E3] text-[#2B5910] border border-[#D4E9C1]',
         };
       case 'at_risk':
         return {
           label: 'At Risk',
-          badgeClass: 'bg-rose-500/10 text-rose-400 border border-rose-500/20',
+          badgeClass: 'bg-[#FCECE9] text-[#882315] border border-[#F4CFC8]',
         };
       case 'completed':
         return {
           label: 'Completed',
-          badgeClass: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20',
+          badgeClass: 'bg-[#ECF6E3] text-[#2B5910] border border-[#D4E9C1]',
         };
       case 'paused':
         return {
           label: 'Paused',
-          badgeClass: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
+          badgeClass: 'bg-[#FCF3E3] text-[#824B04] border border-[#F1DCBA]',
         };
       case 'archived':
       default:
         return {
           label: 'Archived',
-          badgeClass: 'bg-zinc-800 text-zinc-400 border border-zinc-700',
+          badgeClass: 'bg-[#F2ECE1] text-[#736251] border border-[#E4DBC9]',
         };
     }
   };
@@ -389,10 +389,10 @@ export default function WorkspaceProjectsPage({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-100 flex items-center gap-2.5">
-            <Layers className="h-6 w-6 text-indigo-400" /> Projects
+          <h1 className="text-2xl font-serif font-bold tracking-tight text-[#23170E] flex items-center gap-2.5">
+            <Layers className="h-6 w-6 text-[#DC6E26]" /> Projects
           </h1>
-          <p className="text-sm text-zinc-400 mt-1">
+          <p className="text-sm text-[#6E5D4E] mt-1">
             Projects organized by scope, team assignments, deadlines, and connected GitHub repositories.
           </p>
         </div>
@@ -400,7 +400,7 @@ export default function WorkspaceProjectsPage({
         {isAuthorizedToCreate && (
           <button
             onClick={openCreateModal}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all shadow-md shadow-indigo-500/10"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white font-semibold text-sm transition-all shadow-xs"
           >
             <Plus className="h-4 w-4" /> New Project
           </button>
@@ -409,21 +409,21 @@ export default function WorkspaceProjectsPage({
 
       {/* Projects Grid */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center p-12 text-zinc-500 space-y-3">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+        <div className="flex flex-col items-center justify-center p-12 text-[#736251] space-y-3">
+          <Loader2 className="h-8 w-8 animate-spin text-[#DC6E26]" />
           <p className="text-sm">Loading projects...</p>
         </div>
       ) : projects.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/30 space-y-3">
-          <Layers className="h-10 w-10 text-zinc-600" />
-          <h3 className="text-base font-semibold text-zinc-200">No projects yet</h3>
-          <p className="text-xs text-zinc-400 max-w-sm">
+        <div className="flex flex-col items-center justify-center p-12 text-center rounded-2xl border border-dashed border-[#E3DAC8] bg-[#FAF7F2] space-y-3">
+          <Layers className="h-10 w-10 text-[#736251]" />
+          <h3 className="text-base font-serif font-semibold text-[#23170E]">No projects yet</h3>
+          <p className="text-xs text-[#6E5D4E] max-w-sm">
             Create your first project to organize work, link GitHub repositories, and unlock Gemini intelligence.
           </p>
           {isAuthorizedToCreate && (
             <button
               onClick={openCreateModal}
-              className="mt-2 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold"
+              className="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs"
             >
               <Plus className="h-3.5 w-3.5" /> Create Project
             </button>
@@ -444,23 +444,23 @@ export default function WorkspaceProjectsPage({
 
             const cardBorderClass =
               project.status === 'at_risk' || deadline.status === 'overdue'
-                ? 'border-rose-900/40 hover:border-rose-600/60 bg-zinc-900/40'
+                ? 'border-[#F4CFC8] bg-[#FCECE9]/40 hover:border-[#882315]/60'
                 : deadline.status === 'closing_soon'
-                  ? 'border-amber-900/40 hover:border-amber-600/60 bg-zinc-900/40'
+                  ? 'border-[#F1DCBA] bg-[#FCF3E3]/40 hover:border-[#824B04]/60'
                   : project.status === 'completed'
-                    ? 'border-indigo-900/40 hover:border-indigo-600/60 bg-zinc-900/30'
-                    : 'border-zinc-800 hover:border-indigo-500/60 bg-zinc-900/50';
+                    ? 'border-[#D4E9C1] bg-[#ECF6E3]/40 hover:border-[#2B5910]/60'
+                    : 'border-[#E3DAC8] bg-[#FAF7F2] hover:border-[#DC6E26]/50';
 
             return (
               <Link
                 key={project.id}
                 href={`/workspace/${workspaceId}/projects/${project.id}`}
-                className={`group p-5 rounded-2xl border ${cardBorderClass} hover:bg-zinc-900/80 transition-all flex flex-col justify-between space-y-4 shadow-sm`}
+                className={`group p-5 rounded-2xl border ${cardBorderClass} hover:bg-[#F2ECE1] transition-all flex flex-col justify-between space-y-4 shadow-xs`}
               >
                 <div className="space-y-3">
                   {/* Top Bar: Identifier + Status Badges */}
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-zinc-800 text-indigo-300 border border-zinc-700/80 shrink-0">
+                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-full bg-[#FCF3E3] text-[#DC6E26] border border-[#F1DCBA] shrink-0">
                       {project.identifier}
                     </span>
 
@@ -479,12 +479,12 @@ export default function WorkspaceProjectsPage({
 
                   {/* Project Name and Description */}
                   <div>
-                    <h3 className="font-bold text-base text-zinc-100 group-hover:text-indigo-300 transition-colors flex items-center justify-between">
+                    <h3 className="font-serif font-bold text-base text-[#23170E] group-hover:text-[#DC6E26] transition-colors flex items-center justify-between">
                       <span className="truncate">{project.name}</span>
-                      <ArrowRight className="h-4 w-4 text-zinc-600 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                      <ArrowRight className="h-4 w-4 text-[#736251] group-hover:text-[#DC6E26] group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
                     </h3>
                     {project.description && (
-                      <p className="text-xs text-zinc-400 line-clamp-2 mt-1.5 leading-relaxed">
+                      <p className="text-xs text-[#6E5D4E] line-clamp-2 mt-1.5 leading-relaxed">
                         {project.description}
                       </p>
                     )}
@@ -492,17 +492,17 @@ export default function WorkspaceProjectsPage({
 
                   {/* Connected Repository Pill */}
                   {linkedRepo ? (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-950/80 border border-zinc-800 text-[11px] text-zinc-300 font-mono">
-                      <GitBranch className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F2ECE1] border border-[#E4DBC9] text-[11px] text-[#23170E] font-mono">
+                      <GitBranch className="h-3.5 w-3.5 text-[#DC6E26] shrink-0" />
                       <span className="truncate">{linkedRepo.full_name}</span>
                       {linkedRepo.primary_language && (
-                        <span className="ml-auto text-[10px] text-zinc-500 bg-zinc-800/80 px-1.5 py-0.2 rounded shrink-0">
+                        <span className="ml-auto text-[10px] text-[#736251] bg-[#FAF7F2] border border-[#E3DAC8] px-1.5 py-0.2 rounded shrink-0">
                           {linkedRepo.primary_language}
                         </span>
                       )}
                     </div>
                   ) : (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-950/20 border border-amber-800/30 text-[11px] text-amber-400/90 font-mono">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FCF3E3] border border-[#F1DCBA] text-[11px] text-[#824B04] font-mono">
                       <AlertCircle className="h-3 w-3 shrink-0" />
                       <span>Legacy project (no repo linked)</span>
                     </div>
@@ -510,30 +510,30 @@ export default function WorkspaceProjectsPage({
                 </div>
 
                 {/* Scope & Team Metadata */}
-                <div className="space-y-3 pt-3 border-t border-zinc-800/80 text-xs">
+                <div className="space-y-3 pt-3 border-t border-[#E3DAC8] text-xs">
                   {/* Progress bar */}
                   <div className="space-y-1">
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400">
+                    <div className="flex items-center justify-between text-[11px] text-[#736251]">
                       <span>Tasks: {completedTasks}/{totalTasks} done</span>
-                      <span className="font-mono text-zinc-200">{percent}%</span>
+                      <span className="font-mono text-[#23170E] font-semibold">{percent}%</span>
                     </div>
-                    <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-[#E3DAC8] rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-indigo-600 rounded-full transition-all duration-300"
+                        className="h-full bg-[#DC6E26] rounded-full transition-all duration-300"
                         style={{ width: `${percent}%` }}
                       />
                     </div>
                   </div>
 
                   {/* Teams, Members & Lead footer */}
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-1">
+                  <div className="flex items-center justify-between text-[11px] text-[#736251] pt-1">
                     <div className="flex items-center gap-3">
-                      <span className="flex items-center gap-1 text-zinc-300 font-mono">
-                        <Users className="h-3.5 w-3.5 text-violet-400" />
+                      <span className="flex items-center gap-1 text-[#23170E] font-mono font-medium">
+                        <Users className="h-3.5 w-3.5 text-[#DC6E26]" />
                         {teamsCount} {teamsCount === 1 ? 'team' : 'teams'}
                       </span>
                       {membersCount > 0 && (
-                        <span className="text-zinc-500 font-mono">
+                        <span className="text-[#736251] font-mono">
                           ({membersCount} {membersCount === 1 ? 'member' : 'members'})
                         </span>
                       )}
@@ -541,9 +541,9 @@ export default function WorkspaceProjectsPage({
 
                     <div className="flex items-center gap-2">
                       {project.lead && (
-                        <span className="flex items-center gap-1 text-zinc-300">
-                          <User className="h-3.5 w-3.5 text-zinc-400" />
-                          <span className="truncate max-w-[80px]">{project.lead.display_name}</span>
+                        <span className="flex items-center gap-1 text-[#23170E]">
+                          <User className="h-3.5 w-3.5 text-[#736251]" />
+                          <span className="truncate max-w-[80px] font-medium">{project.lead.display_name}</span>
                         </span>
                       )}
                     </div>
@@ -557,22 +557,22 @@ export default function WorkspaceProjectsPage({
 
       {/* New Project Modal with Mandatory GitHub Repository Selection */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl p-6 space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-              <h3 className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                <Layers className="h-4 w-4 text-indigo-400" /> Create New Project
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#23170E]/40 backdrop-blur-xs animate-in fade-in">
+          <div className="w-full max-w-lg rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] shadow-2xl p-6 space-y-5 max-h-[90vh] overflow-y-auto text-[#23170E]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E3DAC8]">
+              <h3 className="text-sm font-serif font-bold text-[#23170E] flex items-center gap-2">
+                <Layers className="h-4 w-4 text-[#DC6E26]" /> Create New Project
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                className="text-[#736251] hover:text-[#23170E] transition-colors p-1"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             {errorMsg && (
-              <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-2">
+              <div className="p-3 rounded-lg bg-[#FCECE9] border border-[#F4CFC8] text-[#882315] text-xs flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{errorMsg}</span>
               </div>
@@ -580,34 +580,34 @@ export default function WorkspaceProjectsPage({
 
             <form onSubmit={handleCreateProject} className="space-y-4 text-xs">
               {/* Mandatory GitHub Repository Selector */}
-              <div className="space-y-2 p-3.5 rounded-xl border border-indigo-500/20 bg-indigo-950/10">
+              <div className="space-y-2 p-3.5 rounded-xl border border-[#E3DAC8] bg-[#F2ECE1]">
                 <div className="flex items-center justify-between">
-                  <label className="font-semibold text-zinc-200 flex items-center gap-1.5">
-                    <GitBranch className="h-4 w-4 text-indigo-400" /> Authorized GitHub Repository (Required)
+                  <label className="font-semibold text-[#23170E] flex items-center gap-1.5">
+                    <GitBranch className="h-4 w-4 text-[#DC6E26]" /> Authorized GitHub Repository (Required)
                   </label>
                   <button
                     type="button"
                     onClick={fetchAuthorizedRepos}
                     disabled={loadingRepos}
-                    className="text-[11px] text-indigo-400 hover:text-indigo-300 flex items-center gap-1 disabled:opacity-50"
+                    className="text-[11px] text-[#DC6E26] hover:text-[#C05617] font-semibold flex items-center gap-1 disabled:opacity-50"
                   >
                     <RefreshCw className={`h-3 w-3 ${loadingRepos ? 'animate-spin' : ''}`} /> Refresh
                   </button>
                 </div>
 
                 {!hasActiveInstallation ? (
-                  <div className="p-3 rounded-lg bg-zinc-950 border border-amber-500/30 text-amber-300 text-xs space-y-2">
+                  <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#F1DCBA] text-[#824B04] text-xs space-y-2">
                     <p className="flex items-center gap-1.5 font-medium">
-                      <AlertCircle className="h-4 w-4 text-amber-400" /> GitHub App Installation Required
+                      <AlertCircle className="h-4 w-4 text-[#824B04]" /> GitHub App Installation Required
                     </p>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-[11px] text-[#6E5D4E]">
                       TaskPilot requires an authorized GitHub App installation to link repositories and fetch evidence for new projects.
                     </p>
                     <button
                       type="button"
                       onClick={handleStartInstall}
                       disabled={startingInstall}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs mt-1 disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white font-medium text-xs mt-1 disabled:opacity-50 shadow-xs"
                     >
                       {startingInstall ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -618,18 +618,18 @@ export default function WorkspaceProjectsPage({
                     </button>
                   </div>
                 ) : loadingRepos ? (
-                  <div className="py-4 flex items-center justify-center gap-2 text-zinc-400">
-                    <Loader2 className="h-4 w-4 animate-spin text-indigo-400" />
+                  <div className="py-4 flex items-center justify-center gap-2 text-[#736251]">
+                    <Loader2 className="h-4 w-4 animate-spin text-[#DC6E26]" />
                     <span>Loading authorized repositories...</span>
                   </div>
                 ) : authorizedRepos.length === 0 ? (
-                  <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-400 text-xs space-y-2">
+                  <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E3DAC8] text-[#736251] text-xs space-y-2">
                     <p>No repositories currently accessible to this installation.</p>
                     <button
                       type="button"
                       onClick={handleStartInstall}
                       disabled={startingInstall}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs mt-1 disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white font-medium text-xs mt-1 disabled:opacity-50 shadow-xs"
                     >
                       {startingInstall ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -642,17 +642,17 @@ export default function WorkspaceProjectsPage({
                 ) : (
                   <div className="space-y-2">
                     <div className="relative">
-                      <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-500" />
+                      <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[#736251]" />
                       <input
                         type="text"
                         placeholder="Search authorized repositories..."
                         value={repoSearch}
                         onChange={(e) => setRepoSearch(e.target.value)}
-                        className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 text-xs"
+                        className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-lg pl-8 pr-3 py-1.5 text-[#23170E] placeholder:text-[#736251] focus:outline-none focus:border-[#DC6E26] text-xs"
                       />
                     </div>
 
-                    <div className="max-h-40 overflow-y-auto space-y-1 rounded-lg border border-zinc-800 bg-zinc-950 p-1">
+                    <div className="max-h-40 overflow-y-auto space-y-1 rounded-lg border border-[#E3DAC8] bg-[#FAF7F2] p-1">
                       {filteredRepos.map((repo) => {
                         const isSelected = selectedRepoId === repo.github_repo_id;
                         return (
@@ -661,32 +661,32 @@ export default function WorkspaceProjectsPage({
                             type="button"
                             onClick={() => handleSelectRepo(repo)}
                             className={`w-full text-left p-2 rounded-md transition-colors flex items-start justify-between gap-2 ${isSelected
-                              ? 'bg-indigo-600/20 border border-indigo-500/40 text-indigo-200'
-                              : 'hover:bg-zinc-900 border border-transparent text-zinc-300'
+                              ? 'bg-[#FCF3E3] border border-[#F1DCBA] text-[#824B04]'
+                              : 'hover:bg-[#F2ECE1] border border-transparent text-[#23170E]'
                               }`}
                           >
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-1.5 font-mono text-[11px] font-semibold truncate">
                                 {repo.is_private ? (
-                                  <Lock className="h-3 w-3 text-amber-400 shrink-0" />
+                                  <Lock className="h-3 w-3 text-[#824B04] shrink-0" />
                                 ) : (
-                                  <Globe className="h-3 w-3 text-emerald-400 shrink-0" />
+                                  <Globe className="h-3 w-3 text-[#2B5910] shrink-0" />
                                 )}
                                 <span className="truncate">{repo.full_name}</span>
                               </div>
                               {repo.description && (
-                                <p className="text-[10px] text-zinc-500 truncate mt-0.5">
+                                <p className="text-[10px] text-[#736251] truncate mt-0.5">
                                   {repo.description}
                                 </p>
                               )}
                             </div>
-                            <div className="flex items-center gap-1.5 shrink-0 text-[10px] text-zinc-400 font-mono">
+                            <div className="flex items-center gap-1.5 shrink-0 text-[10px] text-[#736251] font-mono">
                               {repo.primary_language && (
-                                <span className="bg-zinc-800 px-1.5 py-0.5 rounded">
+                                <span className="bg-[#F2ECE1] border border-[#E4DBC9] px-1.5 py-0.5 rounded">
                                   {repo.primary_language}
                                 </span>
                               )}
-                              <span className="text-zinc-500">{repo.default_branch}</span>
+                              <span className="text-[#736251]">{repo.default_branch}</span>
                             </div>
                           </button>
                         );
@@ -699,19 +699,19 @@ export default function WorkspaceProjectsPage({
               {/* Project Name and Identifier */}
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-2 space-y-1">
-                  <label className="font-medium text-zinc-300">Project Name</label>
+                  <label className="font-medium text-[#736251]">Project Name</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Core Platform Engine"
                     value={name}
                     onChange={(e) => handleNameChange(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-lg px-3 py-2 text-[#23170E] placeholder:text-[#736251] focus:outline-none focus:border-[#DC6E26]"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-medium text-zinc-300">Identifier</label>
+                  <label className="font-medium text-[#736251]">Identifier</label>
                   <input
                     type="text"
                     required
@@ -719,18 +719,18 @@ export default function WorkspaceProjectsPage({
                     placeholder="CORE"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value.toUpperCase().replace(/[^A-Z]/g, ''))}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 font-mono text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 tracking-wider"
+                    className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-lg px-3 py-2 font-mono text-[#23170E] placeholder:text-[#736251] focus:outline-none focus:border-[#DC6E26] tracking-wider"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-medium text-zinc-300">Lifecycle Status</label>
+                  <label className="font-medium text-[#736251]">Lifecycle Status</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as ProjectStatus)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-2 text-zinc-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-lg px-2.5 py-2 text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
                   >
                     <option value="planning">Planning</option>
                     <option value="active">Active</option>
@@ -741,33 +741,33 @@ export default function WorkspaceProjectsPage({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-medium text-zinc-300">Target Date</label>
+                  <label className="font-medium text-[#736251]">Target Date</label>
                   <input
                     type="date"
                     value={targetDate}
                     onChange={(e) => setTargetDate(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-2 text-zinc-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-lg px-2.5 py-2 text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="font-medium text-zinc-300">Description</label>
+                <label className="font-medium text-[#736251]">Description</label>
                 <textarea
                   rows={2}
                   placeholder="Summary of project goals and scope..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 resize-none"
+                  className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-lg p-2.5 text-[#23170E] placeholder:text-[#736251] focus:outline-none focus:border-[#DC6E26] resize-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-medium text-zinc-300">Project Lead</label>
+                <label className="font-medium text-[#736251]">Project Lead</label>
                 <select
                   value={leadId}
                   onChange={(e) => setLeadId(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-2 text-zinc-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-lg px-2.5 py-2 text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
                 >
                   <option value="">(None - Unassigned)</option>
                   {members.map((m) => (
@@ -778,23 +778,23 @@ export default function WorkspaceProjectsPage({
                 </select>
               </div>
 
-              <div className="pt-3 border-t border-zinc-800 flex items-center justify-between">
-                <div className="text-[11px] text-zinc-500 flex items-center gap-1">
-                  <Bot className="h-3 w-3 text-indigo-400" />
+              <div className="pt-3 border-t border-[#E3DAC8] flex items-center justify-between">
+                <div className="text-[11px] text-[#736251] flex items-center gap-1">
+                  <Bot className="h-3 w-3 text-[#DC6E26]" />
                   Gemini enrichment runs automatically after creation
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="px-3.5 py-2 rounded-lg border border-zinc-800 text-zinc-400 hover:text-zinc-200"
+                    className="px-4 py-2 rounded-full border border-[#E3DAC8] bg-[#F2ECE1] text-[#23170E] hover:bg-[#EFE9DF] text-xs font-medium"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting || !selectedRepoId}
-                    className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold disabled:opacity-50 flex items-center gap-1.5"
+                    className="px-5 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white font-semibold disabled:opacity-50 flex items-center gap-1.5 shadow-xs"
                   >
                     {submitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                     {submitting ? 'Creating Project...' : 'Create Project'}

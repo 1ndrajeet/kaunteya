@@ -214,41 +214,41 @@ export function CreateTaskModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-      <div className="w-full max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#23170E]/50 backdrop-blur-xs animate-in fade-in">
+      <div className="w-full max-w-lg rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] shadow-2xl overflow-hidden flex flex-col">
         {/* Modal Header */}
-        <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-950/60">
+        <div className="px-6 py-4 border-b border-[#E3DAC8] flex items-center justify-between bg-[#F2ECE1]">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-md bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+            <div className="h-7 w-7 rounded-lg bg-[#FBECE1] text-[#DC6E26] border border-[#F3D5BE] flex items-center justify-center">
               <Plus className="h-4 w-4" />
             </div>
-            <h3 className="text-sm font-semibold text-zinc-100">Create New Task</h3>
+            <h3 className="font-serif text-lg font-bold text-[#23170E]">Create New Task</h3>
           </div>
           <button
             onClick={onClose}
-            className="text-zinc-400 hover:text-zinc-200 p-1 rounded-md hover:bg-zinc-800 transition-colors"
+            className="text-[#736251] hover:text-[#23170E] p-1.5 rounded-lg hover:bg-[#E4DBC9] transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {errorMsg && (
-            <div className="p-3 rounded-lg border border-rose-900/50 bg-rose-950/30 text-rose-300 text-xs flex items-start gap-2">
-              <AlertCircle className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-xl border border-[#F4CFC8] bg-[#FCECE9] text-[#B33624] text-xs flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 text-[#B33624] shrink-0 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {/* Project Selection */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-300">Project</label>
+            <label className="text-xs font-medium text-[#23170E]">Project</label>
             <select
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
               required
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-3 py-2 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
             >
               {projects.length === 0 ? (
                 <option value="">No projects available (Create one first)</option>
@@ -264,26 +264,26 @@ export function CreateTaskModal({
 
           {/* Task Title */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-300">Title</label>
+            <label className="text-xs font-medium text-[#23170E]">Title</label>
             <input
               type="text"
               required
               placeholder="e.g. Implement GitHub OAuth state verification"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3.5 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-3.5 py-2 text-sm text-[#23170E] placeholder:text-[#93826F] focus:outline-none focus:border-[#DC6E26] focus:ring-1 focus:ring-[#DC6E26]"
             />
           </div>
 
           {/* Description */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-300">Description</label>
+            <label className="text-xs font-medium text-[#23170E]">Description</label>
             <textarea
               rows={3}
               placeholder="Add acceptance criteria, technical context, or links..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-xs text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 resize-none"
+              className="w-full bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl p-3 text-xs text-[#23170E] placeholder:text-[#93826F] focus:outline-none focus:border-[#DC6E26] focus:ring-1 focus:ring-[#DC6E26] resize-none"
             />
           </div>
 
@@ -291,11 +291,11 @@ export function CreateTaskModal({
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {/* Status */}
             <div className="space-y-1">
-              <label className="text-[11px] font-medium text-zinc-400">Status</label>
+              <label className="text-[11px] font-medium text-[#6E5D4E]">Status</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as TaskStatus)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
               >
                 <option value="Backlog">Backlog</option>
                 <option value="Todo">Todo</option>
@@ -308,11 +308,11 @@ export function CreateTaskModal({
 
             {/* Priority */}
             <div className="space-y-1">
-              <label className="text-[11px] font-medium text-zinc-400">Priority</label>
+              <label className="text-[11px] font-medium text-[#6E5D4E]">Priority</label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as TaskPriority)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
               >
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
@@ -323,25 +323,27 @@ export function CreateTaskModal({
 
             {/* Assignee / Team Scope */}
             <div className="space-y-1 col-span-2 sm:col-span-1">
-              <label className="text-[11px] font-medium text-zinc-400">Assignment Scope</label>
-              <div className="flex rounded-lg bg-zinc-950 border border-zinc-800 p-0.5 text-[10px] font-medium mb-1">
+              <label className="text-[11px] font-medium text-[#6E5D4E]">Assignment Scope</label>
+              <div className="flex rounded-lg bg-[#F2ECE1] border border-[#E3DAC8] p-0.5 text-[10px] font-medium mb-1">
                 <button
                   type="button"
                   onClick={() => setAssignmentType('individual')}
-                  className={`flex-1 py-1 rounded transition-colors ${assignmentType === 'individual'
-                    ? 'bg-zinc-800 text-zinc-100 font-semibold'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                    }`}
+                  className={`flex-1 py-1 rounded-md transition-colors ${
+                    assignmentType === 'individual'
+                      ? 'bg-[#FAF7F2] text-[#23170E] font-semibold shadow-2xs'
+                      : 'text-[#736251] hover:text-[#23170E]'
+                  }`}
                 >
                   Member
                 </button>
                 <button
                   type="button"
                   onClick={() => setAssignmentType('team')}
-                  className={`flex-1 py-1 rounded transition-colors ${assignmentType === 'team'
-                    ? 'bg-zinc-800 text-zinc-100 font-semibold'
-                    : 'text-zinc-400 hover:text-zinc-200'
-                    }`}
+                  className={`flex-1 py-1 rounded-md transition-colors ${
+                    assignmentType === 'team'
+                      ? 'bg-[#FAF7F2] text-[#23170E] font-semibold shadow-2xs'
+                      : 'text-[#736251] hover:text-[#23170E]'
+                  }`}
                 >
                   Team
                 </button>
@@ -351,7 +353,7 @@ export function CreateTaskModal({
                 <select
                   value={assigneeId}
                   onChange={(e) => setAssigneeId(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
                 >
                   <option value="">(Unassigned / Triage)</option>
                   {members.map((m) => (
@@ -364,7 +366,7 @@ export function CreateTaskModal({
                 <select
                   value={teamId}
                   onChange={(e) => setTeamId(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-2.5 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
                 >
                   <option value="">(No specific team)</option>
                   {projectTeams.map((t) => (
@@ -379,31 +381,31 @@ export function CreateTaskModal({
 
           {/* Due Date */}
           <div className="space-y-1">
-            <label className="text-[11px] font-medium text-zinc-400 flex items-center gap-1.5">
-              <Calendar className="h-3 w-3" /> Due Date (Optional)
+            <label className="text-[11px] font-medium text-[#6E5D4E] flex items-center gap-1.5">
+              <Calendar className="h-3 w-3 text-[#DC6E26]" /> Due Date (Optional)
             </label>
             <input
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-[#F3EEE5] border border-[#E3DAC8] rounded-xl px-3 py-1.5 text-xs text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
             />
           </div>
 
           {/* Form Actions */}
-          <div className="pt-3 border-t border-zinc-800 flex items-center justify-end gap-2">
+          <div className="pt-3 border-t border-[#E3DAC8] flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-3.5 py-2 rounded-lg border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+              className="px-4 py-2 rounded-full border border-[#E3DAC8] text-xs font-semibold text-[#736251] hover:text-[#23170E] hover:bg-[#EFE9DF] transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || projects.length === 0}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors shadow-sm shadow-indigo-600/30 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold transition-colors shadow-xs disabled:opacity-50"
             >
               {loading ? (
                 <>

@@ -298,12 +298,12 @@ export function PricingUpgradeDialog({
       : 'Choose a commercial plan to unlock higher resource capacities, autonomous task routing, and continuous GitHub evidence verification.';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm overflow-y-auto antialiased">
-      <div className="relative w-full max-w-4xl rounded-2xl border border-zinc-800 bg-zinc-900/95 shadow-2xl p-6 sm:p-8 space-y-6 my-8 text-zinc-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#23170E]/40 backdrop-blur-xs overflow-y-auto antialiased">
+      <div className="relative w-full max-w-4xl rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] shadow-2xl p-6 sm:p-8 space-y-6 my-8 text-[#23170E]">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+          className="absolute top-5 right-5 p-2 rounded-lg text-[#736251] hover:text-[#23170E] hover:bg-[#F2ECE1] transition-colors"
           aria-label="Close dialog"
         >
           <X className="h-5 w-5" />
@@ -311,17 +311,17 @@ export function PricingUpgradeDialog({
 
         {/* Limit Warning Banner */}
         {(isWorkspaceLimit || isProjectLimit) && (
-          <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-200 flex items-start gap-3">
+          <div className="p-4 rounded-xl border border-[#F1DCBA] bg-[#FCF3E3] text-[#824B04] flex items-start gap-3">
             {isWorkspaceLimit ? (
-              <Building className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
+              <Building className="h-5 w-5 text-[#824B04] shrink-0 mt-0.5" />
             ) : (
-              <Layers className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
+              <Layers className="h-5 w-5 text-[#824B04] shrink-0 mt-0.5" />
             )}
             <div className="space-y-1">
-              <h3 className="font-semibold text-sm text-amber-300">
+              <h3 className="font-semibold text-sm text-[#824B04]">
                 {customTitle || defaultTitle}
               </h3>
-              <p className="text-xs text-amber-200/90 leading-relaxed">
+              <p className="text-xs text-[#824B04]/90 leading-relaxed">
                 {customDescription || defaultDescription}
               </p>
             </div>
@@ -331,13 +331,13 @@ export function PricingUpgradeDialog({
         {/* Header */}
         {!isWorkspaceLimit && !isProjectLimit && (
           <div className="space-y-2 text-center max-w-xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-mono font-medium">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#F1DCBA] bg-[#FCF3E3] text-[#824B04] text-xs font-mono font-medium">
               <Building className="h-3.5 w-3.5" /> TaskPilot Commercial Plans
             </div>
-            <h2 className="text-2xl font-bold tracking-tight text-zinc-100">
+            <h2 className="text-2xl font-serif font-bold tracking-tight text-[#23170E]">
               {customTitle || defaultTitle}
             </h2>
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-[#6E5D4E] leading-relaxed">
               {customDescription || defaultDescription}
             </p>
           </div>
@@ -351,62 +351,60 @@ export function PricingUpgradeDialog({
               <div
                 key={plan.id}
                 onClick={() => setSelectedPlan(plan.id)}
-                className={`relative rounded-xl border p-5 flex flex-col justify-between cursor-pointer transition-all duration-200 ${
-                  isSelected
-                    ? 'border-indigo-500 bg-indigo-950/20 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/50'
-                    : 'border-zinc-800 bg-zinc-950/50 hover:border-zinc-700'
-                }`}
+                className={`relative rounded-xl border p-5 flex flex-col justify-between cursor-pointer transition-all duration-200 ${isSelected
+                  ? 'border-[#DC6E26] bg-[#FCF3E3]/40 shadow-md ring-1 ring-[#DC6E26]/50'
+                  : 'border-[#E3DAC8] bg-[#FAF7F2] hover:border-[#DC6E26]/50 hover:bg-[#F2ECE1]'
+                  }`}
               >
                 {plan.badge && (
-                  <div className="absolute -top-2.5 right-4 px-2 py-0.5 rounded-full bg-indigo-600 text-[10px] font-mono font-semibold text-white uppercase tracking-wider shadow-sm">
+                  <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-[#DC6E26] text-[10px] font-mono font-semibold text-white uppercase tracking-wider shadow-xs">
                     {plan.badge}
                   </div>
                 )}
 
                 <div className="space-y-3">
                   <div>
-                    <h4 className="font-bold text-base text-zinc-100 flex items-center justify-between">
+                    <h4 className="font-serif font-bold text-base text-[#23170E] flex items-center justify-between">
                       {plan.name}
-                      {isSelected && <Check className="h-4 w-4 text-indigo-400" />}
+                      {isSelected && <Check className="h-4 w-4 text-[#DC6E26]" />}
                     </h4>
-                    <p className="text-[11px] text-zinc-400 mt-1 leading-snug">
+                    <p className="text-[11px] text-[#6E5D4E] mt-1 leading-snug">
                       {plan.subtitle}
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-zinc-800/80">
+                  <div className="pt-2 border-t border-[#E3DAC8]">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-2xl sm:text-3xl font-extrabold text-zinc-100">
+                      <span className="text-2xl sm:text-3xl font-serif font-extrabold text-[#23170E]">
                         {plan.id === 'yearly' && appliedPromo?.discountPercent
                           ? `₹${Math.round(3000 * (1 - appliedPromo.discountPercent / 100))}`
                           : plan.price}
                       </span>
-                      <span className="text-xs text-zinc-400 font-mono">/{plan.period}</span>
+                      <span className="text-xs text-[#736251] font-mono">/{plan.period}</span>
                     </div>
                     {plan.id === 'yearly' && appliedPromo?.discountPercent && (
-                      <span className="text-[10px] text-emerald-400 font-mono line-through mr-1">
+                      <span className="text-[10px] text-[#2B5910] font-mono line-through mr-1">
                         ₹3,000
                       </span>
                     )}
                   </div>
 
-                  <ul className="space-y-2 pt-3 border-t border-zinc-800/60 text-xs">
+                  <ul className="space-y-2 pt-3 border-t border-[#E3DAC8] text-xs">
                     {plan.features.map((feat, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-zinc-300">
-                        <Check className="h-3.5 w-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                      <li key={idx} className="flex items-start gap-2 text-[#23170E]">
+                        <Check className="h-3.5 w-3.5 text-[#2B5910] shrink-0 mt-0.5" />
                         <span className="text-[11px] leading-relaxed">{feat}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-zinc-800/60">
+                <div className="pt-4 mt-4 border-t border-[#E3DAC8]">
                   <span
-                    className={`block w-full py-1.5 px-3 text-center text-xs font-semibold rounded-lg transition-colors ${
-                      isSelected
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-                    }`}
+                    className={`block w-full py-1.5 px-3 text-center text-xs font-semibold rounded-full transition-colors ${isSelected
+                      ? 'bg-[#DC6E26] text-white'
+                      : 'bg-[#F2ECE1] text-[#23170E] hover:bg-[#EFE9DF]'
+                      }`}
                   >
                     {plan.id === 'free' ? 'Starter Free' : isSelected ? 'Selected' : 'Choose Plan'}
                   </span>
@@ -417,13 +415,13 @@ export function PricingUpgradeDialog({
         </div>
 
         {/* Promo Code Input */}
-        <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-950/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-4 rounded-xl border border-[#E3DAC8] bg-[#F2ECE1] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Gift className="h-4 w-4 text-violet-400 shrink-0" />
+            <Gift className="h-4 w-4 text-[#DC6E26] shrink-0" />
             <div>
-              <span className="text-xs font-semibold text-zinc-200">Have a promotional code?</span>
-              <p className="text-[11px] text-zinc-500">
-                Early backers can redeem grant codes (e.g. <span className="font-mono text-zinc-400">LAUNCH50</span>).
+              <span className="text-xs font-semibold text-[#23170E]">Have a promotional code?</span>
+              <p className="text-[11px] text-[#736251]">
+                Early backers can redeem grant codes (e.g. <span className="font-mono text-[#DC6E26]">LAUNCH50</span>).
               </p>
             </div>
           </div>
@@ -434,12 +432,12 @@ export function PricingUpgradeDialog({
               placeholder="Enter promo code"
               value={promoCodeInput}
               onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
-              className="flex-1 px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-900 text-xs font-mono text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-indigo-500 uppercase"
+              className="flex-1 px-3 py-1.5 rounded-lg border border-[#E3DAC8] bg-[#FAF7F2] text-xs font-mono text-[#23170E] placeholder-[#736251] focus:outline-none focus:border-[#DC6E26] uppercase"
             />
             <button
               type="submit"
               disabled={promoValidating || !promoCodeInput.trim()}
-              className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-colors disabled:opacity-50 shrink-0"
+              className="px-4 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-medium transition-colors disabled:opacity-50 shrink-0"
             >
               {promoValidating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Apply'}
             </button>
@@ -447,14 +445,14 @@ export function PricingUpgradeDialog({
         </div>
 
         {promoError && (
-          <div className="text-xs text-rose-400 font-mono flex items-center gap-1.5">
+          <div className="text-xs text-[#882315] font-mono flex items-center gap-1.5 bg-[#FCECE9] border border-[#F4CFC8] p-2.5 rounded-lg">
             <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
             <span>{promoError}</span>
           </div>
         )}
 
         {appliedPromo && (
-          <div className="text-xs text-emerald-400 font-mono flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-lg">
+          <div className="text-xs text-[#2B5910] font-mono flex items-center gap-1.5 bg-[#ECF6E3] border border-[#D4E9C1] p-2.5 rounded-lg">
             <Check className="h-3.5 w-3.5 shrink-0" />
             <span>
               Code <strong>{appliedPromo.code}</strong> applied!{' '}
@@ -466,23 +464,23 @@ export function PricingUpgradeDialog({
 
         {/* Feedback Alerts */}
         {checkoutError && (
-          <div className="p-3 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs font-mono flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />
+          <div className="p-3 rounded-lg border border-[#F4CFC8] bg-[#FCECE9] text-[#882315] text-xs font-mono flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-[#882315]" />
             <span>{checkoutError}</span>
           </div>
         )}
 
         {checkoutSuccess && (
-          <div className="p-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-mono flex items-center gap-2">
-            <Check className="h-4 w-4 shrink-0 text-emerald-400" />
+          <div className="p-3 rounded-lg border border-[#D4E9C1] bg-[#ECF6E3] text-[#2B5910] text-xs font-mono flex items-center gap-2">
+            <Check className="h-4 w-4 shrink-0 text-[#2B5910]" />
             <span>{checkoutSuccess}</span>
           </div>
         )}
 
         {/* Payment Gateway Actions */}
-        <div className="pt-4 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-xs text-zinc-400 flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+        <div className="pt-4 border-t border-[#E3DAC8] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-xs text-[#736251] flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-[#2B5910] shrink-0" />
             <span>Secured via Razorpay Checkout (256-bit SSL encryption in INR).</span>
           </div>
 
@@ -491,7 +489,7 @@ export function PricingUpgradeDialog({
               type="button"
               onClick={onClose}
               disabled={checkoutLoading || verifying}
-              className="flex-1 sm:flex-initial px-4 py-2 rounded-lg border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition-colors disabled:opacity-50"
+              className="flex-1 sm:flex-initial px-4 py-2 rounded-full border border-[#E3DAC8] bg-[#F2ECE1] hover:bg-[#EFE9DF] text-[#23170E] text-xs font-medium transition-colors disabled:opacity-50"
             >
               Continue on Free Plan
             </button>
@@ -499,7 +497,7 @@ export function PricingUpgradeDialog({
               type="button"
               onClick={handleCheckout}
               disabled={checkoutLoading || verifying}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shadow-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {checkoutLoading || verifying ? (
                 <>

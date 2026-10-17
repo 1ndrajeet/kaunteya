@@ -414,14 +414,14 @@ export default function AdminIntegrationsPage({
   if (role !== 'admin') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-3">
-        <ShieldCheck className="h-8 w-8 text-rose-400 mx-auto" />
-        <h3 className="text-base font-semibold text-zinc-100">Administrator Access Required</h3>
-        <p className="text-xs text-zinc-400 max-w-md">
+        <ShieldCheck className="h-8 w-8 text-[#DC6E26] mx-auto" />
+        <h3 className="text-xl font-serif font-bold text-[#23170E]">Administrator Access Required</h3>
+        <p className="text-xs text-[#6E5D4E] max-w-md">
           Only workspace administrators can manage external Slack installations and identity mappings.
         </p>
         <Link
           href={`/workspace/${workspaceId}/tasks`}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-200 text-xs hover:bg-zinc-700"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E3DAC8] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#23170E] text-xs font-semibold transition-colors"
         >
           Back to Workspace
         </Link>
@@ -434,10 +434,10 @@ export default function AdminIntegrationsPage({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-100 flex items-center gap-2">
-            <Settings className="h-6 w-6 text-indigo-400" /> Workspace Integrations & Webhooks
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#23170E] flex items-center gap-2">
+            <Settings className="h-6 w-6 text-[#DC6E26]" /> Workspace Integrations &amp; Webhooks
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-[#6E5D4E] mt-1">
             Connect TaskPilot to Slack for conversational intake and GitHub App for verifiable development evidence.
           </p>
         </div>
@@ -445,37 +445,35 @@ export default function AdminIntegrationsPage({
         <button
           onClick={fetchData}
           disabled={loading}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/60 text-zinc-300 text-xs hover:border-zinc-700"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E3DAC8] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#23170E] text-xs font-medium transition-colors"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
         </button>
       </div>
 
       {/* Integration Tabs */}
-      <div className="flex items-center gap-2 p-1 bg-zinc-900/80 border border-zinc-800 rounded-xl w-fit">
+      <div className="flex items-center gap-2 p-1.5 bg-[#FAF7F2] border border-[#E3DAC8] rounded-full w-fit">
         <button
           onClick={() => setActiveTab('slack')}
-          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            activeTab === 'slack'
-              ? 'bg-zinc-800 text-zinc-100 shadow-sm border border-zinc-700/60'
-              : 'text-zinc-400 hover:text-zinc-200'
-          }`}
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${activeTab === 'slack'
+            ? 'bg-[#23170E] text-white shadow-xs'
+            : 'text-[#6E5D4E] hover:text-[#23170E]'
+            }`}
         >
-          <MessageSquare className="h-4 w-4 text-indigo-400" />
+          <MessageSquare className="h-4 w-4 text-[#DC6E26]" />
           Slack Workspace
           {installation?.installation_status === 'active' && (
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[#2B5910]" />
           )}
         </button>
         <button
           onClick={() => setActiveTab('github')}
-          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            activeTab === 'github'
-              ? 'bg-zinc-800 text-zinc-100 shadow-sm border border-zinc-700/60'
-              : 'text-zinc-400 hover:text-zinc-200'
-          }`}
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${activeTab === 'github'
+            ? 'bg-[#23170E] text-white shadow-xs'
+            : 'text-[#6E5D4E] hover:text-[#23170E]'
+            }`}
         >
-          <Github className="h-4 w-4 text-purple-400" />
+          <Github className="h-4 w-4 text-[#DC6E26]" />
           GitHub App &amp; Evidence
         </button>
       </div>
@@ -485,60 +483,56 @@ export default function AdminIntegrationsPage({
       ) : (
         <>
           {errorMsg && (
-            <div className="p-3.5 rounded-xl border border-rose-900/50 bg-rose-950/30 text-rose-300 text-xs flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
+            <div className="p-3.5 rounded-2xl border border-[#F4CFC8] bg-[#FCECE9] text-[#882315] text-xs flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-[#882315] shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3.5 rounded-xl border border-emerald-900/50 bg-emerald-950/30 text-emerald-300 text-xs flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+            <div className="p-3.5 rounded-2xl border border-[#D4E9C1] bg-[#ECF6E3] text-[#2B5910] text-xs flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-[#2B5910] shrink-0" />
               <span>{successMsg}</span>
             </div>
           )}
 
           {/* 1. Connection Status Card */}
-          <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm space-y-4">
+          <div className="p-6 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-4 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                <div className="h-10 w-10 rounded-xl bg-[#FCF3E3] border border-[#F1DCBA] flex items-center justify-center text-[#DC6E26]">
                   <MessageSquare className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                  <h2 className="text-base font-serif font-bold text-[#23170E] flex items-center gap-2">
                     {installation?.slack_team_name ||
                       backendStatus?.slack?.health?.bot_identity?.team ||
                       'No Slack Workspace Connected'}
                     <span
-                      className={`text-[10px] font-mono uppercase font-semibold px-2 py-0.5 rounded flex items-center gap-1 ${
-                        installation?.installation_status === 'active' ||
+                      className={`text-[10px] font-mono uppercase font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 ${installation?.installation_status === 'active' ||
                         backendStatus?.slack?.health?.status === 'ok'
-                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                          : 'bg-zinc-800 text-zinc-400'
-                      }`}
+                        ? 'bg-[#ECF6E3] text-[#2B5910] border border-[#D4E9C1]'
+                        : 'bg-[#F2ECE1] text-[#6E5D4E] border border-[#E3DAC8]'
+                        }`}
                     >
                       {(installation?.installation_status === 'active' ||
                         backendStatus?.slack?.health?.status === 'ok') && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      )}
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#2B5910] animate-pulse" />
+                        )}
                       {installation?.installation_status === 'active' ||
-                      backendStatus?.slack?.health?.status === 'ok'
+                        backendStatus?.slack?.health?.status === 'ok'
                         ? 'Connected (Events API Active)'
                         : 'Disconnected'}
                     </span>
                   </h2>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-[#6E5D4E]">
                     {installation || backendStatus?.slack?.health?.bot_identity
-                      ? `Team: ${
-                          installation?.slack_team_id ||
-                          backendStatus?.slack?.health?.bot_identity?.team_id
-                        } • Bot: @${
-                          backendStatus?.slack?.health?.bot_identity?.user ||
-                          installation?.bot_user_id
-                        } (${
-                          backendStatus?.slack?.health?.bot_identity?.bot_id || 'Active'
-                        })`
+                      ? `Team: ${installation?.slack_team_id ||
+                      backendStatus?.slack?.health?.bot_identity?.team_id
+                      } • Bot: @${backendStatus?.slack?.health?.bot_identity?.user ||
+                      installation?.bot_user_id
+                      } (${backendStatus?.slack?.health?.bot_identity?.bot_id || 'Active'
+                      })`
                       : 'Connect an authorized Slack app to enable conversational intake and GitHub verification.'}
                   </p>
                 </div>
@@ -548,7 +542,7 @@ export default function AdminIntegrationsPage({
                 {installation ? (
                   <button
                     onClick={handleDisconnect}
-                    className="px-3 py-1.5 rounded-lg border border-rose-900/40 bg-rose-950/20 text-rose-300 hover:bg-rose-950/40 text-xs font-medium transition-colors"
+                    className="px-3.5 py-1.5 rounded-full border border-[#F4CFC8] bg-[#FCECE9] text-[#882315] hover:bg-[#fbdcd6] text-xs font-semibold transition-colors"
                   >
                     Disconnect
                   </button>
@@ -558,16 +552,16 @@ export default function AdminIntegrationsPage({
                       onClick={() => {
                         window.location.href = `/api/slack/install?workspaceId=${workspaceId}`;
                       }}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#4A154B] hover:bg-[#3b113b] text-white text-xs font-semibold transition-all shadow-sm cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#4A154B] hover:bg-[#3b113b] text-white text-xs font-semibold transition-all shadow-xs cursor-pointer"
                     >
                       <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
-                        <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/>
+                        <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z" />
                       </svg>
                       Add to Slack
                     </button>
                     <button
                       onClick={() => setIsConnectModalOpen(true)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#E3DAC8] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#23170E] text-xs font-semibold transition-colors cursor-pointer"
                     >
                       <Plus className="h-4 w-4" /> Manual Connect
                     </button>
@@ -576,28 +570,28 @@ export default function AdminIntegrationsPage({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-zinc-800/80 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-[#E3DAC8] text-xs">
               <div className="space-y-0.5">
-                <span className="text-[10px] text-zinc-500 font-mono uppercase">Runtime Engine</span>
-                <p className="font-mono text-indigo-300">
+                <span className="text-[10px] text-[#6E5D4E] font-mono uppercase font-semibold">Runtime Engine</span>
+                <p className="font-mono text-[#DC6E26] font-semibold">
                   {backendStatus?.slack?.status?.runtime || 'FastAPI Events API'}
                 </p>
               </div>
               <div className="space-y-0.5">
-                <span className="text-[10px] text-zinc-500 font-mono uppercase">HMAC Signing Secret</span>
-                <p className="font-mono text-emerald-400">
+                <span className="text-[10px] text-[#6E5D4E] font-mono uppercase font-semibold">HMAC Signing Secret</span>
+                <p className="font-mono text-[#2B5910] font-semibold">
                   {backendStatus?.slack?.health?.signing_secret_configured ? 'Verified (SHA-256)' : 'Pending'}
                 </p>
               </div>
               <div className="space-y-0.5">
-                <span className="text-[10px] text-zinc-500 font-mono uppercase">Claim Detection</span>
-                <p className="font-mono text-zinc-200">
+                <span className="text-[10px] text-[#6E5D4E] font-mono uppercase font-semibold">Claim Detection</span>
+                <p className="font-mono text-[#23170E]">
                   {backendStatus?.slack?.status?.features?.conversational_claim_detection ? 'Enabled (Deterministic)' : 'Active'}
                 </p>
               </div>
               <div className="space-y-0.5">
-                <span className="text-[10px] text-zinc-500 font-mono uppercase">GitHub Loop</span>
-                <p className="font-mono text-purple-300">
+                <span className="text-[10px] text-[#6E5D4E] font-mono uppercase font-semibold">GitHub Loop</span>
+                <p className="font-mono text-[#6E5D4E]">
                   {backendStatus?.slack?.status?.features?.github_verification_loop ? 'Operational' : 'Ready'}
                 </p>
               </div>
@@ -605,45 +599,45 @@ export default function AdminIntegrationsPage({
           </div>
 
           {/* 1.5 Diagnostic Sandbox for Slack Claims */}
-          <div className="p-6 rounded-2xl border border-indigo-900/40 bg-indigo-950/10 backdrop-blur-sm space-y-4">
+          <div className="p-6 rounded-2xl border border-[#E3DAC8] bg-[#F2ECE1] space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <Terminal className="h-4 w-4 text-indigo-400" />
-                <h3 className="text-xs font-bold text-zinc-200 uppercase tracking-wider font-mono">
+                <Terminal className="h-4 w-4 text-[#DC6E26]" />
+                <h3 className="text-xs font-bold text-[#23170E] uppercase tracking-wider font-mono">
                   Live Slack Claim &amp; Verification Diagnostic Simulator
                 </h3>
               </div>
-              <span className="text-[10px] font-mono text-zinc-500">Internal Backend Tool</span>
+              <span className="text-[10px] font-mono text-[#6E5D4E]">Internal Backend Tool</span>
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[#6E5D4E]">
               Test conversational Slack completion claims directly against the Python backend to verify task resolution, blocker classification, and GitHub commit matching.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1 sm:col-span-1">
-                <label className="text-[11px] text-zinc-400 font-mono">Slack User ID</label>
+                <label className="text-[11px] text-[#6E5D4E] font-mono font-medium">Slack User ID</label>
                 <input
                   type="text"
                   value={diagnosticSlackUser}
                   onChange={(e) => setDiagnosticSlackUser(e.target.value)}
                   placeholder="e.g. U0C9NRMSXUM"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#FAF7F2] border border-[#E3DAC8] rounded-xl px-3 py-1.5 text-xs text-[#23170E] font-mono focus:outline-none focus:border-[#DC6E26]"
                 />
               </div>
               <div className="space-y-1 sm:col-span-2">
-                <label className="text-[11px] text-zinc-400 font-mono">Simulated Slack Message</label>
+                <label className="text-[11px] text-[#6E5D4E] font-mono font-medium">Simulated Slack Message</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={diagnosticText}
                     onChange={(e) => setDiagnosticText(e.target.value)}
                     placeholder="e.g. CORE-14 is complete"
-                    className="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-indigo-500"
+                    className="flex-1 bg-[#FAF7F2] border border-[#E3DAC8] rounded-xl px-3 py-1.5 text-xs text-[#23170E] font-mono focus:outline-none focus:border-[#DC6E26]"
                   />
                   <button
                     onClick={handleRunDiagnostic}
                     disabled={diagnosticRunning}
-                    className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shrink-0 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    className="px-4 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold shrink-0 transition-colors flex items-center gap-1.5 disabled:opacity-50 shadow-xs"
                   >
                     {diagnosticRunning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5" />}
                     Test Intake
@@ -653,494 +647,492 @@ export default function AdminIntegrationsPage({
             </div>
 
             {diagnosticError && (
-              <div className="p-3 rounded-lg border border-rose-900/50 bg-rose-950/20 text-rose-300 text-xs">
+              <div className="p-3 rounded-xl border border-[#F4CFC8] bg-[#FCECE9] text-[#882315] text-xs">
                 {diagnosticError}
               </div>
             )}
 
             {diagnosticResult && (
-              <div className="p-3.5 rounded-xl border border-zinc-800 bg-zinc-950/80 space-y-2 text-xs">
+              <div className="p-3.5 rounded-xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-zinc-400 text-[11px]">
-                    Intent: <span className="text-indigo-400 font-semibold">{diagnosticResult.intent}</span>
+                  <span className="font-mono text-[#6E5D4E] text-[11px]">
+                    Intent: <span className="text-[#DC6E26] font-semibold">{diagnosticResult.intent}</span>
                     {diagnosticResult.task_identifier && ` • Task: ${diagnosticResult.task_identifier}`}
                   </span>
                   <span
-                    className={`font-mono text-[10px] px-2 py-0.5 rounded ${
-                      diagnosticResult.ok
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                    }`}
+                    className={`font-mono text-[10px] px-2.5 py-0.5 rounded-full ${diagnosticResult.ok
+                      ? 'bg-[#ECF6E3] text-[#2B5910] border border-[#D4E9C1]'
+                      : 'bg-[#FCF3E3] text-[#824B04] border border-[#F1DCBA]'
+                      }`}
                   >
                     Status: {diagnosticResult.verification_status || diagnosticResult.new_task_status || 'Processed'}
                   </span>
                 </div>
-                <div className="p-2.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-[11px] leading-relaxed">
+                <div className="p-2.5 rounded-lg bg-[#F2ECE1] border border-[#E3DAC8] text-[#23170E] font-mono text-[11px] leading-relaxed">
                   {diagnosticResult.reply_message}
                 </div>
               </div>
             )}
           </div>
 
-      {/* 2. Setup Guide Accordion */}
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden">
-        <button
-          onClick={() => setGuideOpen(!guideOpen)}
-          className="w-full p-4 flex items-center justify-between text-left hover:bg-zinc-900/50 transition-colors"
-        >
-          <div className="flex items-center gap-2.5">
-            <Settings className="h-4 w-4 text-indigo-400" />
-            <span className="text-xs font-bold text-zinc-200">Slack App Configuration & Webhook Setup Guide</span>
-          </div>
-          {guideOpen ? (
-            <ChevronDown className="h-4 w-4 text-zinc-400" />
-          ) : (
-            <ChevronRight className="h-4 w-4 text-zinc-400" />
-          )}
-        </button>
-
-        {guideOpen && (
-          <div className="p-5 border-t border-zinc-800 space-y-4 text-xs text-zinc-300 bg-zinc-950/40 leading-relaxed">
-            <div className="space-y-1">
-              <p className="font-semibold text-zinc-100">1. Event Subscription Request URL</p>
-              <p className="text-zinc-400 text-[11px]">
-                In your Slack App Dashboard &rarr; <strong>Event Subscriptions</strong>, toggle On and set the Request URL:
-              </p>
-              <div className="flex items-center gap-2 pt-1">
-                <code className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-indigo-300 font-mono text-[11px] flex-1 truncate">
-                  {webhookUrl}
-                </code>
-                <button
-                  onClick={handleCopyWebhookUrl}
-                  className="px-3 py-2 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-300 hover:text-white flex items-center gap-1.5 text-xs font-mono"
-                >
-                  {copiedUrl ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-                  {copiedUrl ? 'Copied' : 'Copy'}
-                </button>
+          {/* 2. Setup Guide Accordion */}
+          <div className="rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] overflow-hidden">
+            <button
+              onClick={() => setGuideOpen(!guideOpen)}
+              className="w-full p-4 flex items-center justify-between text-left hover:bg-[#F2ECE1] transition-colors"
+            >
+              <div className="flex items-center gap-2.5">
+                <Settings className="h-4 w-4 text-[#DC6E26]" />
+                <span className="text-xs font-bold text-[#23170E]">Slack App Configuration &amp; Webhook Setup Guide</span>
               </div>
-            </div>
+              {guideOpen ? (
+                <ChevronDown className="h-4 w-4 text-[#6E5D4E]" />
+              ) : (
+                <ChevronRight className="h-4 w-4 text-[#6E5D4E]" />
+              )}
+            </button>
 
-            <div className="space-y-1">
-              <p className="font-semibold text-zinc-100">2. Required Bot Scopes (OAuth & Permissions)</p>
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {[
-                  'app_mentions:read',
-                  'chat:write',
-                  'channels:history',
-                  'im:history',
-                  'im:write',
-                  'users:read',
-                  'users:read.email',
-                ].map((scope) => (
-                  <span
-                    key={scope}
-                    className="font-mono text-[10px] px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-indigo-300"
-                  >
-                    {scope}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <p className="font-semibold text-zinc-100">3. Subscribe to Bot Events</p>
-              <p className="text-zinc-400 text-[11px]">
-                Under <strong>Subscribe to bot events</strong>, add: <code className="text-zinc-200">app_mention</code>,{' '}
-                <code className="text-zinc-200">message.im</code>, and{' '}
-                <code className="text-zinc-200">message.channels</code>.
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* 3. Member Identity Mapping Table */}
-      <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-indigo-400" />
-            <h2 className="text-sm font-bold text-zinc-100">Slack Identity Mapping</h2>
-            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">
-              {members.filter((m) => m.mapping?.link_status === 'linked').length}/{members.length} linked
-            </span>
-          </div>
-        </div>
-
-        <p className="text-xs text-zinc-400">
-          Only mapped members can create tasks or report progress from Slack. Unmapped users are prompted to link their
-          identity.
-        </p>
-
-        <div className="border border-zinc-800/80 rounded-xl overflow-hidden bg-zinc-950/40 divide-y divide-zinc-800/60">
-          {members.map((member) => {
-            const isLinked = member.mapping?.link_status === 'linked';
-
-            return (
-              <div
-                key={member.userId}
-                className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-zinc-900/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                    {member.displayName[0]?.toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-zinc-200">{member.displayName}</span>
-                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400">
-                        {member.role}
-                      </span>
-                    </div>
-                    {member.email && <span className="text-[11px] text-zinc-500 font-mono">{member.email}</span>}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs">
-                  {isLinked ? (
-                    <div className="flex items-center gap-2">
-                      <div className="text-right">
-                        <span className="font-mono text-[11px] text-indigo-300 block">
-                          ID: {member.mapping?.slack_user_id}
-                        </span>
-                        {member.mapping?.slack_username && (
-                          <span className="text-[10px] text-zinc-500 font-mono">
-                            @{member.mapping.slack_username}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        Linked
-                      </span>
-                      <button
-                        onClick={() => openMappingModal(member)}
-                        className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
-                        title="Edit Slack ID"
-                      >
-                        <Edit2 className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => handleUnlink(member.mapping!.id, member.displayName)}
-                        className="p-1 rounded text-zinc-500 hover:text-rose-400 hover:bg-zinc-800"
-                        title="Unlink Identity"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono text-zinc-500 italic">Not mapped</span>
-                      <button
-                        onClick={() => openMappingModal(member)}
-                        className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition-colors cursor-pointer"
-                      >
-                        Map Slack ID
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 4. Follow-up Automation Controls */}
-      <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
-              <Clock className="h-4 w-4 text-indigo-400" /> Automated Follow-up Automation
-            </h2>
-            <p className="text-xs text-zinc-400 mt-1">
-              Checks open assigned tasks and prompts members in Slack for progress updates, status changes, and blockers.
-            </p>
-          </div>
-
-          <button
-            onClick={handleTriggerFollowups}
-            disabled={sweeping || !installation}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors shadow-sm disabled:opacity-50"
-          >
-            {sweeping ? (
-              <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" /> Sweeping Tasks...
-              </>
-            ) : (
-              <>
-                <Play className="h-3.5 w-3.5" /> Trigger Follow-up Sweep Now
-              </>
-            )}
-          </button>
-        </div>
-
-        {sweepResult && (
-          <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-950/60 space-y-2 text-xs">
-            <h4 className="font-semibold text-zinc-200">Follow-up Evaluation Result:</h4>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px]">
-              <div>Evaluated: {sweepResult.tasksEvaluated ?? 0}</div>
-              <div className="text-emerald-400">Sent: {sweepResult.followupsSent ?? 0}</div>
-              <div className="text-zinc-400">Skipped (Recent): {sweepResult.skippedRecent ?? 0}</div>
-              <div className="text-amber-400">Unmapped: {sweepResult.unmappedAssignees ?? 0}</div>
-            </div>
-            {sweepResult.errors && sweepResult.errors.length > 0 && (
-              <div className="pt-2 text-rose-400 text-[11px] space-y-1">
-                {sweepResult.errors.map((e: string, i: number) => (
-                  <div key={i}>&bull; {e}</div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* 5. Integration Event Logs & Diagnostics */}
-      <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Terminal className="h-4 w-4 text-indigo-400" />
-            <h2 className="text-sm font-bold text-zinc-100">External Event Diagnostics</h2>
-            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">
-              {events.length} logged
-            </span>
-          </div>
-        </div>
-
-        {events.length === 0 ? (
-          <div className="p-6 rounded-xl border border-dashed border-zinc-800 text-center text-xs text-zinc-500">
-            No external events logged yet. Events delivered to `/api/slack/events` will appear here.
-          </div>
-        ) : (
-          <div className="border border-zinc-800/80 rounded-xl overflow-hidden bg-zinc-950/40 divide-y divide-zinc-800/60">
-            {events.map((evt) => {
-              const isExpanded = expandedEventId === evt.id;
-              const dateStr = new Date(evt.received_at).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-              });
-
-              return (
-                <div key={evt.id} className="p-3 space-y-1.5 text-xs hover:bg-zinc-900/40 transition-colors">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-[10px] text-zinc-500">{dateStr}</span>
-                      <span className="font-mono font-semibold text-zinc-200">{evt.event_type}</span>
-                      <span
-                        className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
-                          evt.processing_status === 'processed'
-                            ? 'bg-emerald-500/10 text-emerald-400'
-                            : evt.processing_status === 'failed'
-                            ? 'bg-rose-500/10 text-rose-400'
-                            : 'bg-zinc-800 text-zinc-400'
-                        }`}
-                      >
-                        {evt.processing_status}
-                      </span>
-                    </div>
-
+            {guideOpen && (
+              <div className="p-5 border-t border-[#E3DAC8] space-y-4 text-xs text-[#6E5D4E] bg-[#FAF7F2] leading-relaxed">
+                <div className="space-y-1">
+                  <p className="font-semibold text-[#23170E]">1. Event Subscription Request URL</p>
+                  <p className="text-[#6E5D4E] text-[11px]">
+                    In your Slack App Dashboard &rarr; <strong>Event Subscriptions</strong>, toggle On and set the Request URL:
+                  </p>
+                  <div className="flex items-center gap-2 pt-1">
+                    <code className="p-2 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] text-[#DC6E26] font-mono text-[11px] flex-1 truncate">
+                      {webhookUrl}
+                    </code>
                     <button
-                      onClick={() => setExpandedEventId(isExpanded ? null : evt.id)}
-                      className="text-[11px] font-mono text-zinc-500 hover:text-indigo-400 flex items-center gap-1"
+                      onClick={handleCopyWebhookUrl}
+                      className="px-3.5 py-2 rounded-full border border-[#E3DAC8] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#23170E] flex items-center gap-1.5 text-xs font-mono font-medium transition-colors"
                     >
-                      <Info className="h-3 w-3" />
-                      <span>{isExpanded ? 'Hide' : 'Payload'}</span>
+                      {copiedUrl ? <Check className="h-3.5 w-3.5 text-[#2B5910]" /> : <Copy className="h-3.5 w-3.5" />}
+                      {copiedUrl ? 'Copied' : 'Copy'}
                     </button>
                   </div>
-
-                  {evt.error_summary && (
-                    <p className="text-[11px] text-rose-400 font-mono">{evt.error_summary}</p>
-                  )}
-
-                  {isExpanded && (
-                    <pre className="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800 font-mono text-[10px] text-zinc-300 overflow-x-auto mt-1">
-                      {JSON.stringify(evt.metadata, null, 2)}
-                    </pre>
-                  )}
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
 
-      {/* Connect Modal */}
-      {isConnectModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-              <h3 className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                <MessageSquare className="h-4 w-4 text-indigo-400" /> Connect Slack Workspace
-              </h3>
-              <button
-                onClick={() => setIsConnectModalOpen(false)}
-                className="p-1 rounded-md text-zinc-400 hover:text-zinc-200"
-              >
-                <X className="h-4 w-4" />
-              </button>
+                <div className="space-y-1">
+                  <p className="font-semibold text-[#23170E]">2. Required Bot Scopes (OAuth &amp; Permissions)</p>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {[
+                      'app_mentions:read',
+                      'chat:write',
+                      'channels:history',
+                      'im:history',
+                      'im:write',
+                      'users:read',
+                      'users:read.email',
+                    ].map((scope) => (
+                      <span
+                        key={scope}
+                        className="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-[#F2ECE1] border border-[#E3DAC8] text-[#23170E]"
+                      >
+                        {scope}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <p className="font-semibold text-[#23170E]">3. Subscribe to Bot Events</p>
+                  <p className="text-[#6E5D4E] text-[11px]">
+                    Under <strong>Subscribe to bot events</strong>, add: <code className="text-[#23170E] font-semibold">app_mention</code>,{' '}
+                    <code className="text-[#23170E] font-semibold">message.im</code>, and{' '}
+                    <code className="text-[#23170E] font-semibold">message.channels</code>.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 3. Member Identity Mapping Table */}
+          <div className="p-6 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-4 shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-[#DC6E26]" />
+                <h2 className="text-base font-serif font-bold text-[#23170E]">Slack Identity Mapping</h2>
+                <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#F2ECE1] border border-[#E3DAC8] text-[#6E5D4E]">
+                  {members.filter((m) => m.mapping?.link_status === 'linked').length}/{members.length} linked
+                </span>
+              </div>
             </div>
 
-            <form onSubmit={handleConnectSlack} className="space-y-3.5 text-xs">
-              <div className="space-y-1">
-                <label className="font-medium text-zinc-300">Slack Workspace / Team Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Acme Corp"
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 focus:outline-none focus:border-indigo-500"
-                />
-              </div>
+            <p className="text-xs text-[#6E5D4E]">
+              Only mapped members can create tasks or report progress from Slack. Unmapped users are prompted to link their
+              identity.
+            </p>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="font-medium text-zinc-300">Slack Team ID</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="T01234567"
-                    value={teamId}
-                    onChange={(e) => setTeamId(e.target.value.toUpperCase())}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
+            <div className="border border-[#E3DAC8] rounded-2xl overflow-hidden bg-[#FAF7F2] divide-y divide-[#E3DAC8]">
+              {members.map((member) => {
+                const isLinked = member.mapping?.link_status === 'linked';
 
-                <div className="space-y-1">
-                  <label className="font-medium text-zinc-300">Bot User ID</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="U09876543"
-                    value={botUserId}
-                    onChange={(e) => setBotUserId(e.target.value.toUpperCase())}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-              </div>
+                return (
+                  <div
+                    key={member.userId}
+                    className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#F2ECE1]/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-[#DC6E26] flex items-center justify-center text-xs font-bold text-white shrink-0">
+                        {member.displayName[0]?.toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-[#23170E]">{member.displayName}</span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#F2ECE1] border border-[#E3DAC8] text-[#6E5D4E]">
+                            {member.role}
+                          </span>
+                        </div>
+                        {member.email && <span className="text-[11px] text-[#6E5D4E] font-mono">{member.email}</span>}
+                      </div>
+                    </div>
 
-              <div className="space-y-1">
-                <label className="font-medium text-zinc-300">Bot User OAuth Token (xoxb-...)</label>
-                <input
-                  type="password"
-                  placeholder="xoxb-your-bot-token"
-                  value={botToken}
-                  onChange={(e) => setBotToken(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-indigo-500"
-                />
-                <p className="text-[10px] text-zinc-500">
-                  Stored securely server-side; never exposed to browser.
+                    <div className="flex items-center gap-3 text-xs">
+                      {isLinked ? (
+                        <div className="flex items-center gap-2">
+                          <div className="text-right">
+                            <span className="font-mono text-[11px] text-[#DC6E26] block font-semibold">
+                              ID: {member.mapping?.slack_user_id}
+                            </span>
+                            {member.mapping?.slack_username && (
+                              <span className="text-[10px] text-[#6E5D4E] font-mono">
+                                @{member.mapping.slack_username}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#ECF6E3] text-[#2B5910] border border-[#D4E9C1]">
+                            Linked
+                          </span>
+                          <button
+                            onClick={() => openMappingModal(member)}
+                            className="p-1.5 rounded-full text-[#6E5D4E] hover:text-[#23170E] hover:bg-[#F2ECE1] transition-colors"
+                            title="Edit Slack ID"
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleUnlink(member.mapping!.id, member.displayName)}
+                            className="p-1.5 rounded-full text-[#6E5D4E] hover:text-[#882315] hover:bg-[#FCECE9] transition-colors"
+                            title="Unlink Identity"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-mono text-[#6E5D4E] italic">Not mapped</span>
+                          <button
+                            onClick={() => openMappingModal(member)}
+                            className="px-3.5 py-1.5 rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#E3DAC8] text-[#23170E] text-xs font-semibold transition-colors cursor-pointer"
+                          >
+                            Map Slack ID
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 4. Follow-up Automation Controls */}
+          <div className="p-6 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-4 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-base font-serif font-bold text-[#23170E] flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-[#DC6E26]" /> Automated Follow-up Automation
+                </h2>
+                <p className="text-xs text-[#6E5D4E] mt-1">
+                  Checks open assigned tasks and prompts members in Slack for progress updates, status changes, and blockers.
                 </p>
               </div>
 
-              <div className="space-y-1">
-                <label className="font-medium text-zinc-300">Default Intake Channel ID (Optional)</label>
-                <input
-                  type="text"
-                  placeholder="C01234567"
-                  value={defaultChannelId}
-                  onChange={(e) => setDefaultChannelId(e.target.value.toUpperCase())}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsConnectModalOpen(false)}
-                  className="px-3.5 py-1.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-zinc-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={connecting}
-                  className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium disabled:opacity-50"
-                >
-                  {connecting ? 'Connecting...' : 'Save Connection'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Map Identity Modal */}
-      {isMappingModalOpen && selectedMember && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-              <h3 className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                <Users className="h-4 w-4 text-indigo-400" /> Map Slack User ID
-              </h3>
               <button
-                onClick={() => setIsMappingModalOpen(false)}
-                className="p-1 rounded-md text-zinc-400 hover:text-zinc-200"
+                onClick={handleTriggerFollowups}
+                disabled={sweeping || !installation}
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold transition-colors shadow-xs disabled:opacity-50"
               >
-                <X className="h-4 w-4" />
+                {sweeping ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Sweeping Tasks...
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-3.5 w-3.5" /> Trigger Follow-up Sweep Now
+                  </>
+                )}
               </button>
             </div>
 
-            <form onSubmit={handleSaveMapping} className="space-y-3.5 text-xs">
-              <div>
-                <span className="text-zinc-400">Mapping member:</span>
-                <p className="font-bold text-zinc-100 text-sm mt-0.5">{selectedMember.displayName}</p>
-                {selectedMember.email && (
-                  <p className="text-zinc-500 text-[11px] font-mono">{selectedMember.email}</p>
+            {sweepResult && (
+              <div className="p-4 rounded-xl border border-[#E3DAC8] bg-[#F2ECE1] space-y-2 text-xs">
+                <h4 className="font-semibold text-[#23170E]">Follow-up Evaluation Result:</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px]">
+                  <div>Evaluated: {sweepResult.tasksEvaluated ?? 0}</div>
+                  <div className="text-[#2B5910] font-semibold">Sent: {sweepResult.followupsSent ?? 0}</div>
+                  <div className="text-[#6E5D4E]">Skipped (Recent): {sweepResult.skippedRecent ?? 0}</div>
+                  <div className="text-[#824B04] font-semibold">Unmapped: {sweepResult.unmappedAssignees ?? 0}</div>
+                </div>
+                {sweepResult.errors && sweepResult.errors.length > 0 && (
+                  <div className="pt-2 text-[#882315] text-[11px] space-y-1">
+                    {sweepResult.errors.map((e: string, i: number) => (
+                      <div key={i}>&bull; {e}</div>
+                    ))}
+                  </div>
                 )}
               </div>
-
-              {!installation && (
-                <div className="p-2.5 rounded-lg border border-amber-900/50 bg-amber-950/20 text-amber-300 text-[11px]">
-                  No active Slack installation is registered for this workspace yet. Saving this mapping will automatically link this workspace to your verified Slack bot credentials.
-                </div>
-              )}
-
-              <div className="space-y-1">
-                <label className="font-medium text-zinc-300">Slack User ID</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. U0123456789"
-                  value={slackUserIdInput}
-                  onChange={(e) => setSlackUserIdInput(e.target.value.toUpperCase())}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-indigo-500"
-                />
-                <p className="text-[10px] text-zinc-500">
-                  Find in Slack profile &rarr; More actions (...) &rarr; Copy member ID.
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-medium text-zinc-300">Slack Username (Optional)</label>
-                <input
-                  type="text"
-                  placeholder="alice"
-                  value={slackUsernameInput}
-                  onChange={(e) => setSlackUsernameInput(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 font-mono focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsMappingModalOpen(false)}
-                  className="px-3.5 py-1.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-zinc-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={savingMapping}
-                  className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium disabled:opacity-50"
-                >
-                  {savingMapping ? 'Saving...' : 'Save Mapping'}
-                </button>
-              </div>
-            </form>
+            )}
           </div>
-        </div>
-      )}
+
+          {/* 5. Integration Event Logs & Diagnostics */}
+          <div className="p-6 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-4 shadow-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Terminal className="h-4 w-4 text-[#DC6E26]" />
+                <h2 className="text-base font-serif font-bold text-[#23170E]">External Event Diagnostics</h2>
+                <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-[#F2ECE1] border border-[#E3DAC8] text-[#6E5D4E]">
+                  {events.length} logged
+                </span>
+              </div>
+            </div>
+
+            {events.length === 0 ? (
+              <div className="p-6 rounded-2xl border border-dashed border-[#E3DAC8] text-center text-xs text-[#6E5D4E]">
+                No external events logged yet. Events delivered to `/api/slack/events` will appear here.
+              </div>
+            ) : (
+              <div className="border border-[#E3DAC8] rounded-2xl overflow-hidden bg-[#FAF7F2] divide-y divide-[#E3DAC8]">
+                {events.map((evt) => {
+                  const isExpanded = expandedEventId === evt.id;
+                  const dateStr = new Date(evt.received_at).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                  });
+
+                  return (
+                    <div key={evt.id} className="p-3.5 space-y-1.5 text-xs hover:bg-[#F2ECE1]/50 transition-colors">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-[10px] text-[#6E5D4E]">{dateStr}</span>
+                          <span className="font-mono font-semibold text-[#23170E]">{evt.event_type}</span>
+                          <span
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${evt.processing_status === 'processed'
+                              ? 'bg-[#ECF6E3] text-[#2B5910] border border-[#D4E9C1]'
+                              : evt.processing_status === 'failed'
+                                ? 'bg-[#FCECE9] text-[#882315] border border-[#F4CFC8]'
+                                : 'bg-[#F2ECE1] text-[#6E5D4E] border border-[#E3DAC8]'
+                              }`}
+                          >
+                            {evt.processing_status}
+                          </span>
+                        </div>
+
+                        <button
+                          onClick={() => setExpandedEventId(isExpanded ? null : evt.id)}
+                          className="text-[11px] font-mono text-[#6E5D4E] hover:text-[#DC6E26] flex items-center gap-1 transition-colors"
+                        >
+                          <Info className="h-3 w-3" />
+                          <span>{isExpanded ? 'Hide' : 'Payload'}</span>
+                        </button>
+                      </div>
+
+                      {evt.error_summary && (
+                        <p className="text-[11px] text-[#882315] font-mono">{evt.error_summary}</p>
+                      )}
+
+                      {isExpanded && (
+                        <pre className="p-2.5 rounded-xl bg-[#F2ECE1] border border-[#E3DAC8] font-mono text-[10px] text-[#23170E] overflow-x-auto mt-1">
+                          {JSON.stringify(evt.metadata, null, 2)}
+                        </pre>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Connect Modal */}
+          {isConnectModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#23170E]/50 backdrop-blur-sm animate-in fade-in">
+              <div className="w-full max-w-md rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] shadow-2xl p-6 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#E3DAC8]">
+                  <h3 className="text-base font-serif font-bold text-[#23170E] flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4 text-[#DC6E26]" /> Connect Slack Workspace
+                  </h3>
+                  <button
+                    onClick={() => setIsConnectModalOpen(false)}
+                    className="p-1.5 rounded-full text-[#6E5D4E] hover:text-[#23170E] hover:bg-[#F2ECE1] transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleConnectSlack} className="space-y-3.5 text-xs">
+                  <div className="space-y-1">
+                    <label className="font-semibold text-[#23170E]">Slack Workspace / Team Name</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Acme Corp"
+                      value={teamName}
+                      onChange={(e) => setTeamName(e.target.value)}
+                      className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-3 py-2 text-[#23170E] focus:outline-none focus:border-[#DC6E26]"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="font-semibold text-[#23170E]">Slack Team ID</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="T01234567"
+                        value={teamId}
+                        onChange={(e) => setTeamId(e.target.value.toUpperCase())}
+                        className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-3 py-2 text-[#23170E] font-mono focus:outline-none focus:border-[#DC6E26]"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-semibold text-[#23170E]">Bot User ID</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="U09876543"
+                        value={botUserId}
+                        onChange={(e) => setBotUserId(e.target.value.toUpperCase())}
+                        className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-3 py-2 text-[#23170E] font-mono focus:outline-none focus:border-[#DC6E26]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-semibold text-[#23170E]">Bot User OAuth Token (xoxb-...)</label>
+                    <input
+                      type="password"
+                      placeholder="xoxb-your-bot-token"
+                      value={botToken}
+                      onChange={(e) => setBotToken(e.target.value)}
+                      className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-3 py-2 text-[#23170E] font-mono focus:outline-none focus:border-[#DC6E26]"
+                    />
+                    <p className="text-[10px] text-[#6E5D4E]">
+                      Stored securely server-side; never exposed to browser.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-semibold text-[#23170E]">Default Intake Channel ID (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="C01234567"
+                      value={defaultChannelId}
+                      onChange={(e) => setDefaultChannelId(e.target.value.toUpperCase())}
+                      className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-3 py-2 text-[#23170E] font-mono focus:outline-none focus:border-[#DC6E26]"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsConnectModalOpen(false)}
+                      className="px-4 py-1.5 rounded-full border border-[#E3DAC8] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#23170E] text-xs font-semibold transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={connecting}
+                      className="px-4 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white font-semibold text-xs shadow-xs transition-colors disabled:opacity-50"
+                    >
+                      {connecting ? 'Connecting...' : 'Save Connection'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Map Identity Modal */}
+          {isMappingModalOpen && selectedMember && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#23170E]/50 backdrop-blur-sm animate-in fade-in">
+              <div className="w-full max-w-md rounded-3xl border border-[#E3DAC8] bg-[#FAF7F2] shadow-2xl p-6 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#E3DAC8]">
+                  <h3 className="text-base font-serif font-bold text-[#23170E] flex items-center gap-2">
+                    <Users className="h-4 w-4 text-[#DC6E26]" /> Map Slack User ID
+                  </h3>
+                  <button
+                    onClick={() => setIsMappingModalOpen(false)}
+                    className="p-1.5 rounded-full text-[#6E5D4E] hover:text-[#23170E] hover:bg-[#F2ECE1] transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSaveMapping} className="space-y-3.5 text-xs">
+                  <div>
+                    <span className="text-[#6E5D4E]">Mapping member:</span>
+                    <p className="font-bold text-[#23170E] text-sm mt-0.5">{selectedMember.displayName}</p>
+                    {selectedMember.email && (
+                      <p className="text-[#6E5D4E] text-[11px] font-mono">{selectedMember.email}</p>
+                    )}
+                  </div>
+
+                  {!installation && (
+                    <div className="p-2.5 rounded-xl border border-[#F1DCBA] bg-[#FCF3E3] text-[#824B04] text-[11px]">
+                      No active Slack installation is registered for this workspace yet. Saving this mapping will automatically link this workspace to your verified Slack bot credentials.
+                    </div>
+                  )}
+
+                  <div className="space-y-1">
+                    <label className="font-semibold text-[#23170E]">Slack User ID</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. U0123456789"
+                      value={slackUserIdInput}
+                      onChange={(e) => setSlackUserIdInput(e.target.value.toUpperCase())}
+                      className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-3 py-2 text-[#23170E] font-mono focus:outline-none focus:border-[#DC6E26]"
+                    />
+                    <p className="text-[10px] text-[#6E5D4E]">
+                      Find in Slack profile &rarr; More actions (...) &rarr; Copy member ID.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-semibold text-[#23170E]">Slack Username (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="alice"
+                      value={slackUsernameInput}
+                      onChange={(e) => setSlackUsernameInput(e.target.value)}
+                      className="w-full bg-[#F2ECE1] border border-[#E3DAC8] rounded-xl px-3 py-2 text-[#23170E] font-mono focus:outline-none focus:border-[#DC6E26]"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsMappingModalOpen(false)}
+                      className="px-4 py-1.5 rounded-full border border-[#E3DAC8] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#23170E] text-xs font-semibold transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={savingMapping}
+                      className="px-4 py-1.5 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white font-semibold text-xs shadow-xs transition-colors disabled:opacity-50"
+                    >
+                      {savingMapping ? 'Saving...' : 'Save Mapping'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

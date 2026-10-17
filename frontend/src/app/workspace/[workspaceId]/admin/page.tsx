@@ -169,20 +169,20 @@ export default function AdminPortalPage({
   if (role && role !== 'admin') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 sm:p-12 text-center space-y-4">
-        <div className="h-14 w-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20">
+        <div className="h-14 w-14 rounded-2xl bg-[#FCF3E3] text-[#D68B1C] flex items-center justify-center mx-auto border border-[#F1DCBA]">
           <ShieldCheck className="h-7 w-7" />
         </div>
         <div className="space-y-1">
-          <h2 className="text-lg font-bold text-zinc-100">Administrator Access Required</h2>
-          <p className="text-xs text-zinc-400 max-w-md">
-            You are signed in as a <span className="font-mono text-indigo-400 uppercase font-semibold">{role}</span>. The administration portal is restricted to workspace administrators.
+          <h2 className="font-serif text-2xl font-bold text-[#23170E]">Administrator Access Required</h2>
+          <p className="text-xs text-[#6E5D4E] max-w-md">
+            You are signed in as a <span className="font-mono text-[#DC6E26] uppercase font-semibold">{role}</span>. The administration portal is restricted to workspace administrators.
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
           {role === 'lead' && (
             <Link
               href={`/workspace/${workspaceId}/lead`}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold transition-colors shadow-xs"
             >
               <Compass className="h-4 w-4" /> Go to Team Lead Portal
             </Link>
@@ -190,14 +190,14 @@ export default function AdminPortalPage({
           {role === 'member' && (
             <Link
               href={`/workspace/${workspaceId}/member`}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold transition-colors shadow-xs"
             >
               <CheckSquare className="h-4 w-4" /> Go to My Tasks
             </Link>
           )}
           <Link
             href={`/workspace/${workspaceId}/tasks`}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-medium transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#E3DAC8] bg-[#F2ECE1] hover:bg-[#EFE9DF] text-[#23170E] text-xs font-semibold transition-colors"
           >
             Workspace Tasks
           </Link>
@@ -208,8 +208,8 @@ export default function AdminPortalPage({
 
   if (loading && !stats.totalMembers) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-12 text-center text-zinc-400 gap-3">
-        <Loader2 className="h-6 w-6 animate-spin text-indigo-500" />
+      <div className="flex-1 flex flex-col items-center justify-center p-12 text-center text-[#736251] gap-3">
+        <Loader2 className="h-6 w-6 animate-spin text-[#DC6E26]" />
         <span className="text-xs font-mono">Loading administration metrics...</span>
       </div>
     );
@@ -221,14 +221,14 @@ export default function AdminPortalPage({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-100 flex items-center gap-2">
-              <ShieldCheck className="h-6 w-6 text-indigo-400" /> Administration Portal
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#23170E] flex items-center gap-2">
+              <ShieldCheck className="h-7 w-7 text-[#DC6E26]" /> Administration Portal
             </h1>
-            <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+            <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-[#FBECE1] text-[#9A410D] border border-[#F3D5BE]">
               Governance
             </span>
           </div>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-[#6E5D4E] mt-1">
             Top-level workspace management, team lead designations, member access, and system health.
           </p>
         </div>
@@ -236,13 +236,13 @@ export default function AdminPortalPage({
         <div className="flex items-center gap-2">
           <Link
             href={`/workspace/${workspaceId}/admin/team`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-700 hover:bg-zinc-800 text-zinc-200 text-xs font-medium transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[#E3DAC8] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#23170E] text-xs font-semibold transition-colors shadow-2xs"
           >
-            <Users className="h-3.5 w-3.5 text-indigo-400" /> Manage Team
+            <Users className="h-3.5 w-3.5 text-[#DC6E26]" /> Manage Team
           </Link>
           <button
             onClick={() => setIsCreateTaskOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors shadow-sm shadow-indigo-600/30"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#DC6E26] hover:bg-[#C05617] text-white text-xs font-semibold transition-colors shadow-xs"
           >
             <Plus className="h-3.5 w-3.5" /> New Task
           </button>
@@ -252,85 +252,85 @@ export default function AdminPortalPage({
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
         {/* Total Projects */}
-        <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 space-y-1">
-          <span className="text-[11px] font-medium text-zinc-400 flex items-center gap-1">
-            <Layers className="h-3 w-3 text-indigo-400" /> Projects
+        <div className="p-4 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-1 shadow-2xs">
+          <span className="text-[11px] font-medium text-[#6E5D4E] flex items-center gap-1">
+            <Layers className="h-3.5 w-3.5 text-[#DC6E26]" /> Projects
           </span>
-          <div className="text-2xl font-bold text-zinc-100">{stats.totalProjects}</div>
-          <span className="text-[10px] text-zinc-500 font-mono">Active tracking</span>
+          <div className="text-2xl font-bold text-[#23170E]">{stats.totalProjects}</div>
+          <span className="text-[10px] text-[#736251] font-mono">Active tracking</span>
         </div>
 
         {/* Open Tasks */}
-        <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 space-y-1">
-          <span className="text-[11px] font-medium text-zinc-400 flex items-center gap-1">
-            <CheckSquare className="h-3 w-3 text-indigo-400" /> Open Tasks
+        <div className="p-4 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-1 shadow-2xs">
+          <span className="text-[11px] font-medium text-[#6E5D4E] flex items-center gap-1">
+            <CheckSquare className="h-3.5 w-3.5 text-[#DC6E26]" /> Open Tasks
           </span>
-          <div className="text-2xl font-bold text-zinc-100">{stats.openTasks}</div>
-          <span className="text-[10px] text-zinc-500 font-mono">In pipeline</span>
+          <div className="text-2xl font-bold text-[#23170E]">{stats.openTasks}</div>
+          <span className="text-[10px] text-[#736251] font-mono">In pipeline</span>
         </div>
 
         {/* Unassigned Tasks */}
-        <div className="p-4 rounded-xl border border-amber-900/40 bg-zinc-900/60 space-y-1">
-          <span className="text-[11px] font-medium text-amber-400 flex items-center gap-1">
-            <Clock className="h-3 w-3" /> Unassigned
+        <div className="p-4 rounded-2xl border border-[#F1DCBA] bg-[#FCF3E3]/60 space-y-1 shadow-2xs">
+          <span className="text-[11px] font-medium text-[#D68B1C] flex items-center gap-1">
+            <Clock className="h-3.5 w-3.5" /> Unassigned
           </span>
-          <div className="text-2xl font-bold text-amber-400">{stats.unassignedTasks}</div>
+          <div className="text-2xl font-bold text-[#D68B1C]">{stats.unassignedTasks}</div>
           <Link
             href={`/workspace/${workspaceId}/incoming`}
-            className="text-[10px] text-amber-300/80 hover:underline flex items-center gap-0.5"
+            className="text-[10px] text-[#A86407] hover:underline flex items-center gap-0.5 font-medium"
           >
             Triage queue &rarr;
           </Link>
         </div>
 
         {/* Overdue */}
-        <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 space-y-1">
-          <span className="text-[11px] font-medium text-zinc-400 flex items-center gap-1">
-            <AlertCircle className="h-3 w-3 text-rose-400" /> Overdue
+        <div className="p-4 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-1 shadow-2xs">
+          <span className="text-[11px] font-medium text-[#6E5D4E] flex items-center gap-1">
+            <AlertCircle className="h-3.5 w-3.5 text-[#B33624]" /> Overdue
           </span>
-          <div className={`text-2xl font-bold ${stats.overdueTasks > 0 ? 'text-rose-400' : 'text-zinc-100'}`}>
+          <div className={`text-2xl font-bold ${stats.overdueTasks > 0 ? 'text-[#B33624]' : 'text-[#23170E]'}`}>
             {stats.overdueTasks}
           </div>
-          <span className="text-[10px] text-zinc-500 font-mono">Needs attention</span>
+          <span className="text-[10px] text-[#736251] font-mono">Needs attention</span>
         </div>
 
         {/* Completed */}
-        <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 space-y-1">
-          <span className="text-[11px] font-medium text-zinc-400 flex items-center gap-1">
-            <TrendingUp className="h-3 w-3 text-emerald-400" /> Completed
+        <div className="p-4 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-1 shadow-2xs">
+          <span className="text-[11px] font-medium text-[#6E5D4E] flex items-center gap-1">
+            <TrendingUp className="h-3.5 w-3.5 text-[#5E9E2E]" /> Completed
           </span>
-          <div className="text-2xl font-bold text-emerald-400">{stats.completedTasks}</div>
-          <span className="text-[10px] text-zinc-500 font-mono">Verified work</span>
+          <div className="text-2xl font-bold text-[#4F8E27]">{stats.completedTasks}</div>
+          <span className="text-[10px] text-[#736251] font-mono">Verified work</span>
         </div>
 
         {/* Team Members */}
-        <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 space-y-1">
-          <span className="text-[11px] font-medium text-zinc-400 flex items-center gap-1">
-            <Users className="h-3 w-3 text-violet-400" /> Members
+        <div className="p-4 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] space-y-1 shadow-2xs">
+          <span className="text-[11px] font-medium text-[#6E5D4E] flex items-center gap-1">
+            <Users className="h-3.5 w-3.5 text-[#824B23]" /> Members
           </span>
-          <div className="text-2xl font-bold text-zinc-100">{stats.totalMembers}</div>
-          <span className="text-[10px] text-zinc-500 font-mono">1 designated lead</span>
+          <div className="text-2xl font-bold text-[#23170E]">{stats.totalMembers}</div>
+          <span className="text-[10px] text-[#736251] font-mono">1 designated lead</span>
         </div>
       </div>
 
       {/* Governance & Team Lead Box */}
-      <div className="p-5 rounded-xl border border-zinc-800 bg-zinc-900/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-5 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xs">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Compass className="h-4 w-4 text-violet-400" />
-            <h3 className="text-sm font-semibold text-zinc-200">Designated Team Lead</h3>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-violet-500/20 text-violet-300">
+            <Compass className="h-4 w-4 text-[#824B23]" />
+            <h3 className="text-sm font-semibold text-[#23170E]">Designated Team Lead</h3>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#F5ECE4] text-[#592F11] border border-[#E6D3C3] font-semibold">
               Enforced by Database
             </span>
           </div>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-[#6E5D4E]">
             {leadMember ? (
               <>
-                Current lead is <strong className="text-zinc-200">{leadMember.display_name}</strong>. The lead is
+                Current lead is <strong className="text-[#23170E]">{leadMember.display_name}</strong>. The lead is
                 responsible for triaging incoming requests and directing daily delivery.
               </>
             ) : (
-              <span className="text-amber-400">
+              <span className="text-[#D68B1C]">
                 No designated team lead configured yet. Please assign a team lead to unblock routing.
               </span>
             )}
@@ -339,7 +339,7 @@ export default function AdminPortalPage({
 
         <Link
           href={`/workspace/${workspaceId}/admin/team`}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors shrink-0"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#824B23] hover:bg-[#6B3C1A] text-white text-xs font-semibold transition-colors shrink-0 shadow-xs"
         >
           {leadMember ? 'Reassign Lead' : 'Designate Lead'} &rarr;
         </Link>
@@ -349,54 +349,54 @@ export default function AdminPortalPage({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick Management Links */}
         <div className="space-y-3">
-          <h3 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
-            <ShieldCheck className="h-3.5 w-3.5 text-indigo-400" /> Administrative Operations
+          <h3 className="text-xs font-semibold text-[#6E5D4E] uppercase tracking-wider flex items-center gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5 text-[#DC6E26]" /> Administrative Operations
           </h3>
 
           <div className="space-y-2.5">
             <Link
               href={`/workspace/${workspaceId}/projects`}
-              className="group p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-900/80 transition-all flex items-center justify-between"
+              className="group p-4 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] hover:border-[#DC6E26]/60 hover:shadow-md transition-all flex items-center justify-between shadow-2xs"
             >
               <div className="space-y-0.5">
-                <span className="font-semibold text-xs text-zinc-200 group-hover:text-white flex items-center gap-2">
-                  <Layers className="h-4 w-4 text-indigo-400" /> Project Management
+                <span className="font-semibold text-xs text-[#23170E] group-hover:text-[#DC6E26] flex items-center gap-2">
+                  <Layers className="h-4 w-4 text-[#DC6E26]" /> Project Management
                 </span>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-[#6E5D4E]">
                   Create, edit, or archive workspace projects and associate GitHub repository links.
                 </p>
               </div>
-              <ArrowRight className="h-4 w-4 text-zinc-500 group-hover:text-zinc-300 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 text-[#736251] group-hover:text-[#DC6E26] transition-transform group-hover:translate-x-1" />
             </Link>
 
             <Link
               href={`/workspace/${workspaceId}/admin/team`}
-              className="group p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-900/80 transition-all flex items-center justify-between"
+              className="group p-4 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] hover:border-[#DC6E26]/60 hover:shadow-md transition-all flex items-center justify-between shadow-2xs"
             >
               <div className="space-y-0.5">
-                <span className="font-semibold text-xs text-zinc-200 group-hover:text-white flex items-center gap-2">
-                  <Users className="h-4 w-4 text-violet-400" /> Member Invitations &amp; Roles
+                <span className="font-semibold text-xs text-[#23170E] group-hover:text-[#DC6E26] flex items-center gap-2">
+                  <Users className="h-4 w-4 text-[#824B23]" /> Member Invitations &amp; Roles
                 </span>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-[#6E5D4E]">
                   Generate secure invite codes, inspect joined members, and adjust workspace roles.
                 </p>
               </div>
-              <ArrowRight className="h-4 w-4 text-zinc-500 group-hover:text-zinc-300 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 text-[#736251] group-hover:text-[#DC6E26] transition-transform group-hover:translate-x-1" />
             </Link>
 
             <Link
               href={`/workspace/${workspaceId}/tasks`}
-              className="group p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:border-zinc-700 hover:bg-zinc-900/80 transition-all flex items-center justify-between"
+              className="group p-4 rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] hover:border-[#DC6E26]/60 hover:shadow-md transition-all flex items-center justify-between shadow-2xs"
             >
               <div className="space-y-0.5">
-                <span className="font-semibold text-xs text-zinc-200 group-hover:text-white flex items-center gap-2">
-                  <CheckSquare className="h-4 w-4 text-emerald-400" /> Global Tasks Oversight
+                <span className="font-semibold text-xs text-[#23170E] group-hover:text-[#DC6E26] flex items-center gap-2">
+                  <CheckSquare className="h-4 w-4 text-[#5E9E2E]" /> Global Tasks Oversight
                 </span>
-                <p className="text-[11px] text-zinc-400">
+                <p className="text-[11px] text-[#6E5D4E]">
                   Inspect the unified Kanban and list views across all projects with full administrative access.
                 </p>
               </div>
-              <ArrowRight className="h-4 w-4 text-zinc-500 group-hover:text-zinc-300 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 text-[#736251] group-hover:text-[#DC6E26] transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
         </div>
@@ -404,42 +404,42 @@ export default function AdminPortalPage({
         {/* Recent Audit Trail Log */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
-              <Activity className="h-3.5 w-3.5 text-indigo-400" /> Recent Audit Trail
+            <h3 className="text-xs font-semibold text-[#6E5D4E] uppercase tracking-wider flex items-center gap-1.5">
+              <Activity className="h-3.5 w-3.5 text-[#DC6E26]" /> Recent Audit Trail
             </h3>
             <Link
               href={`/workspace/${workspaceId}/activity`}
-              className="text-[11px] text-indigo-400 hover:underline"
+              className="text-[11px] text-[#DC6E26] hover:underline font-medium"
             >
               View Full Log &rarr;
             </Link>
           </div>
 
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-3 space-y-2 max-h-[280px] overflow-y-auto">
+          <div className="rounded-2xl border border-[#E3DAC8] bg-[#FAF7F2] p-3 space-y-2 max-h-[280px] overflow-y-auto shadow-2xs">
             {activities.length === 0 ? (
-              <div className="text-center py-6 text-xs text-zinc-600 font-mono">No recent activity recorded.</div>
+              <div className="text-center py-6 text-xs text-[#736251] font-mono">No recent activity recorded.</div>
             ) : (
               activities.map((act) => (
                 <div
                   key={act.id}
-                  className="p-2.5 rounded-lg border border-zinc-800/80 bg-zinc-950/50 text-xs flex items-center justify-between"
+                  className="p-3 rounded-xl border border-[#E4DBC9] bg-[#F2ECE1]/60 text-xs flex items-center justify-between"
                 >
                   <div className="space-y-0.5">
-                    <div className="flex items-center gap-1.5 text-zinc-200 font-medium">
-                      <span className="text-zinc-400 font-normal">
+                    <div className="flex items-center gap-1.5 text-[#23170E] font-medium">
+                      <span className="text-[#6E5D4E] font-normal">
                         {act.actor?.display_name || 'System'}:
                       </span>
-                      <span className="text-indigo-300 font-mono text-[11px]">
+                      <span className="text-[#DC6E26] font-mono text-[11px]">
                         {act.entity_type} {act.event_type}
                       </span>
                     </div>
                     {act.metadata?.task_identifier && (
-                      <span className="text-[10px] font-mono text-zinc-500">
+                      <span className="text-[10px] font-mono text-[#736251]">
                         Task: {act.metadata.task_identifier}
                       </span>
                     )}
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-500 shrink-0">
+                  <span className="text-[10px] font-mono text-[#736251] shrink-0">
                     {new Date(act.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
